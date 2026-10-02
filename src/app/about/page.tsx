@@ -130,37 +130,54 @@ export default function AboutPage() {
               <h2 className="mx-auto">Meet the team behind <span className="hl">PrimeHomeKanpur</span></h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 max-w-5xl mx-auto">
               {[
                 {
                   initials: 'AP',
-                  gradient: 'from-[#3B82F6] to-[#00C2D9]',
+                  bgGradient: 'bg-gradient-to-tr from-[#3B82F6] via-[#6366F1] to-[#00C2D9]',
+                  glowColor: 'shadow-[0_0_28px_rgba(59,130,246,0.45)] border-[#00C2D9]/40',
                   name: 'Abhishek Pathak',
                   role: 'Founder & CEO',
                   bio: '14+ years in Kanpur real estate. Leading company vision, verified property benchmarks, and tenant satisfaction.',
                 },
                 {
                   initials: 'PP',
-                  gradient: 'from-[#F97316] to-[#EF4444]',
+                  bgGradient: 'bg-gradient-to-tr from-[#F97316] via-[#EA580C] to-[#EC4899]',
+                  glowColor: 'shadow-[0_0_28px_rgba(249,115,22,0.45)] border-[#F97316]/40',
                   name: 'Piyush Pandey',
                   role: 'Co-Founder',
                   bio: 'Oversees landlord partnerships, business growth, strategic listings, and end-to-end lease execution.',
                 },
                 {
                   initials: 'AK',
-                  gradient: 'from-[#0F766E] to-[#3B82F6]',
+                  bgGradient: 'bg-gradient-to-tr from-[#0F766E] via-[#10B981] to-[#3B82F6]',
+                  glowColor: 'shadow-[0_0_28px_rgba(16,185,129,0.45)] border-[#10B981]/40',
                   name: 'Akhil Kumar',
                   role: 'Head of Listing & Management',
                   bio: 'Personally inspects properties before cataloging, coordinates tour schedules, and handles documentation.',
                 },
               ].map((p) => (
-                <div key={p.name} className="agent-card text-center flex flex-col items-center">
-                  <div className={`agent-avatar ${p.gradient} mb-4`}>
-                    {p.initials}
+                <div
+                  key={p.name}
+                  className="rounded-3xl border border-white/10 bg-[#120C29] p-8 sm:p-9 text-center flex flex-col items-center justify-between shadow-[0_12px_40px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-amber-400/40 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(139,92,246,0.2)]"
+                >
+                  <div className="flex flex-col items-center">
+                    {/* Vibrant Colored Circle */}
+                    <div
+                      className={`w-20 h-20 sm:w-22 sm:h-22 rounded-full ${p.bgGradient} ${p.glowColor} border-2 flex items-center justify-center text-white font-black text-2xl sm:text-3xl tracking-tight mb-5 shadow-lg transform transition-transform group-hover:scale-105`}
+                    >
+                      {p.initials}
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-1">
+                      {p.name}
+                    </h3>
+                    <p className="text-sm font-bold text-[#00C2D9] uppercase tracking-wider mb-4">
+                      {p.role}
+                    </p>
+                    <p className="text-text-secondary text-sm leading-relaxed max-w-xs">
+                      {p.bio}
+                    </p>
                   </div>
-                  <h3 className="agent-name">{p.name}</h3>
-                  <p className="agent-role text-accent-cyan">{p.role}</p>
-                  <p className="agent-bio mt-2 text-xs leading-relaxed">{p.bio}</p>
                 </div>
               ))}
             </div>

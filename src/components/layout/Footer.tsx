@@ -162,7 +162,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-8 text-xs text-text-muted border-t border-white/5">
           <div>
-            &copy; 2026 PrimeHomeKanpur. All rights reserved. Kanpur, Uttar Pradesh.
+            &copy; 2026 PrimeHomeKanpur. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
             <Link href="/terms" className="hover:text-white transition-colors">

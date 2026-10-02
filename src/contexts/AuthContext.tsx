@@ -4,18 +4,19 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { User, Session } from '@supabase/supabase-js'
-import type { UserProfile, UserRole } from '@/types'
+import type { UserProfile } from '@/types'
+import { TeamRole, Permission, can } from '@/lib/permissions'
 
 interface AuthContextType {
   user: User | null
   profile: UserProfile | null
   session: Session | null
-  role: UserRole | null
+  role: 'ADMIN' | 'TENANT' | null
+  teamRole: TeamRole | null
   isLoading: boolean
   isAuthenticated: boolean
   isAdmin: boolean
-  isSuperAdmin: boolean
-  isStaff: boolean
+  can: (permission: Permission) => boolean
   signIn: (email: string, password: string, redirectTo?: string) => Promise<{ error: Error | null; role?: string }>
   signInWithGoogle: (redirectTo?: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: Error | null; session?: Session | null }>
@@ -29,11 +30,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const ADMIN_ROLES: UserRole[] = ['super_admin', 'admin', 'property_manager', 'listing_manager', 'review_manager', 'ADMIN']
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [teamRole, setTeamRole] = useState<TeamRole | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [authModalOpen, setAuthModalOpen] = useState(false)
@@ -43,24 +43,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = useCallback(async (authUser: User) => {
     try {
-      // Primary admin email override
-      const isSuperAdminEmail = authUser.email === 'primehomekanpur@gmail.com'
+      // 1. Call claim_team_access RPC to promote pre-approved emails immediately
+      let claimedRole: string | null = null
+      try {
+        const { data: rpcRole, error: rpcErr } = await supabase.rpc('claim_team_access')
+        if (!rpcErr && rpcRole) {
+          claimedRole = rpcRole
+        }
+      } catch (err) {
+        console.warn('claim_team_access RPC notice:', err)
+      }
 
+      // 2. Fetch profile from database
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', authUser.id)
         .single()
 
+      // 3. Fetch team role from team_members
+      const { data: memberData } = await supabase
+        .from('team_members')
+        .select('team_role, is_active')
+        .or(`user_id.eq.${authUser.id},email.eq.${authUser.email?.toLowerCase()}`)
+        .eq('is_active', true)
+        .maybeSingle()
+
+      const resolvedTeamRole = (claimedRole || memberData?.team_role || (data?.role === 'ADMIN' ? 'OWNER' : null)) as TeamRole | null
+      setTeamRole(resolvedTeamRole)
+
+      const isAdminRole = !!claimedRole || memberData?.is_active || data?.role === 'ADMIN'
+
       if (error || !data) {
-        // Fallback default profile
         const defaultProfile: UserProfile = {
           id: authUser.id,
           email: authUser.email || '',
-          full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+          full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Admin',
           phone: authUser.user_metadata?.phone || null,
           avatar_url: authUser.user_metadata?.avatar_url || null,
-          role: isSuperAdminEmail ? 'super_admin' : (authUser.user_metadata?.role || 'user'),
+          role: isAdminRole ? 'ADMIN' : 'TENANT',
           is_active: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -69,13 +90,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return defaultProfile
       }
 
-      // If email is super admin email, enforce super_admin role
-      if (isSuperAdminEmail && data.role !== 'super_admin') {
-        data.role = 'super_admin'
-      }
+      const userProfile = {
+        ...data,
+        role: isAdminRole ? 'ADMIN' : ('TENANT' as 'ADMIN' | 'TENANT'),
+      } as UserProfile
 
-      setProfile(data as UserProfile)
-      return data as UserProfile
+      setProfile(userProfile)
+      return userProfile
     } catch {
       return null
     }
@@ -122,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await fetchProfile(currentSession.user)
         } else {
           setProfile(null)
+          setTeamRole(null)
         }
 
         setIsLoading(false)
@@ -147,27 +169,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error }
       }
 
-      let userRole: UserRole = 'user'
-      if (data.user) {
-        const p = await fetchProfile(data.user)
-        userRole = p?.role || (data.user.email === 'primehomekanpur@gmail.com' ? 'super_admin' : 'user')
+      // Call claim_team_access RPC to check and promote pre-approved emails
+      let claimedRole: string | null = null
+      try {
+        const { data: rpcRole } = await supabase.rpc('claim_team_access')
+        claimedRole = rpcRole
+      } catch (rpcErr) {
+        console.error('RPC claim_team_access error:', rpcErr)
       }
 
-      const isStaffRole = ADMIN_ROLES.includes(userRole) || email === 'primehomekanpur@gmail.com'
+      let userRole: 'ADMIN' | 'TENANT' = 'TENANT'
+      if (data.user) {
+        const p = await fetchProfile(data.user)
+        userRole = p?.role === 'ADMIN' || !!claimedRole ? 'ADMIN' : 'TENANT'
+      }
+
+      const isAdminUser = userRole === 'ADMIN' || !!claimedRole
 
       if (explicitRedirect) {
         router.push(explicitRedirect)
-      } else if (isStaffRole) {
+      } else if (isAdminUser) {
         router.push('/admin')
       } else {
-        router.push('/dashboard')
+        router.push('/')
       }
 
       setIsLoading(false)
       return { error: null, role: userRole }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setIsLoading(false)
-      return { error: err }
+      return { error: err instanceof Error ? err : new Error(String(err)) }
     }
   }
 
@@ -177,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const origin = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000')
       const redirectTo = `${origin}/auth/callback${explicitRedirect ? `?next=${encodeURIComponent(explicitRedirect)}` : ''}`
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo,
@@ -194,18 +225,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       return { error: null }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setIsLoading(false)
-      return { error: err }
+      return { error: err instanceof Error ? err : new Error(String(err)) }
     }
   }
 
   const signUp = async (email: string, password: string, fullName: string, phone?: string) => {
     setIsLoading(true)
     try {
-      const isSuperAdminEmail = email === 'primehomekanpur@gmail.com'
-      const role = isSuperAdminEmail ? 'super_admin' : 'user'
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -213,7 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data: {
             full_name: fullName,
             phone: phone || '',
-            role,
+            role: 'TENANT',
           },
         },
       })
@@ -224,19 +252,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.user && data.session) {
-        await fetchProfile(data.user)
-        if (isSuperAdminEmail) {
+        // Try claiming team access in case this was a pre-approved email
+        try {
+          await supabase.rpc('claim_team_access')
+        } catch {
+          // ignore
+        }
+        const p = await fetchProfile(data.user)
+        if (p?.role === 'ADMIN') {
           router.push('/admin')
         } else {
-          router.push('/dashboard')
+          router.push('/')
         }
       }
 
       setIsLoading(false)
       return { error: null, session: data.session }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setIsLoading(false)
-      return { error: err }
+      return { error: err instanceof Error ? err : new Error(String(err)) }
     }
   }
 
@@ -245,12 +279,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await supabase.auth.signOut()
       setUser(null)
       setProfile(null)
+      setTeamRole(null)
       setSession(null)
       router.push('/')
       router.refresh()
     } catch (err) {
       console.error('Sign out error:', err)
-      router.push('/')
     }
   }
 
@@ -263,11 +297,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuthModalOpen(false)
   }
 
-  const role = profile?.role || (user?.email === 'primehomekanpur@gmail.com' ? 'super_admin' : null)
-  const isSuperAdmin = role === 'super_admin' || user?.email === 'primehomekanpur@gmail.com'
-  const isStaff = isSuperAdmin || (role ? ADMIN_ROLES.includes(role) : false)
-  const isAdmin = isStaff
-  const isAuthenticated = Boolean(user)
+  const hasPermission = (permission: Permission) => {
+    return can(teamRole, permission)
+  }
+
+  const isAdmin = profile?.role === 'ADMIN' || !!teamRole
 
   return (
     <AuthContext.Provider
@@ -275,12 +309,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         profile,
         session,
-        role,
+        role: (profile?.role === 'ADMIN' ? 'ADMIN' : 'TENANT') as 'ADMIN' | 'TENANT',
+        teamRole,
         isLoading,
-        isAuthenticated,
+        isAuthenticated: !!user,
         isAdmin,
-        isSuperAdmin,
-        isStaff,
+        can: hasPermission,
         signIn,
         signInWithGoogle,
         signUp,

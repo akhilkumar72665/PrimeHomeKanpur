@@ -49,10 +49,10 @@ export default function WriteReviewModal({ property, isOpen, onClose, onSuccess 
         .insert({
           user_id: user!.id,
           property_id: property?.id || null,
+          reviewer_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Verified Tenant',
           rating,
-          title: title || null,
           comment: comment.trim(),
-          status: 'pending',
+          status: 'PENDING',
         })
 
       setLoading(false)

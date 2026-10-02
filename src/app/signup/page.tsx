@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { Lock, Mail, User, Phone, ArrowRight, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react'
+import { Lock, Mail, User, Phone, ArrowRight, AlertCircle, CheckCircle2, ShieldCheck, Eye, EyeOff } from 'lucide-react'
 
 function GoogleIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
@@ -34,6 +34,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [consent, setConsent] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
@@ -78,24 +79,24 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-16 px-4 flex items-center justify-center relative">
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen pt-24 sm:pt-28 pb-16 px-4 flex items-center justify-center relative">
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 sm:w-96 h-80 sm:h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
-        <div className="text-center mb-7">
-          <Link href="/" className="inline-flex items-center gap-3 mb-5 group">
+        <div className="text-center mb-6 sm:mb-7">
+          <Link href="/" className="inline-flex items-center gap-3 mb-4 sm:mb-5 group">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-primary to-accent-cyan flex items-center justify-center text-white font-extrabold text-xl shadow-[0_0_24px_rgba(168,85,247,0.4)] group-hover:scale-105 transition-transform">
               P
             </div>
             <span className="text-2xl font-extrabold text-white tracking-tight">PrimeHomeKanpur</span>
           </Link>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">Create an Account</h1>
-          <p className="text-sm text-text-secondary mt-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Create an Account</h1>
+          <p className="text-xs sm:text-sm text-text-secondary mt-1.5">
             Save favorite properties, schedule visits, and write verified reviews
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-[#0C0A1A]/95 backdrop-blur-xl p-7 sm:p-8 shadow-2xl shadow-purple-950/50">
+        <div className="rounded-3xl border border-white/10 bg-[#0C0A1A]/95 backdrop-blur-xl p-6 sm:p-8 shadow-2xl shadow-purple-950/50">
           {errorMsg && (
             <div className="mb-5 flex items-center gap-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-rose-300">
               <AlertCircle size={16} className="shrink-0" />
@@ -115,7 +116,7 @@ export default function SignUpPage() {
             type="button"
             onClick={handleGoogleSignUp}
             disabled={googleLoading || loading}
-            className="w-full h-11 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-white font-medium text-sm transition-all flex items-center justify-center gap-3 shadow-sm hover:border-white/30 disabled:opacity-50 active:scale-[0.99]"
+            className="w-full h-12 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-white font-medium text-sm transition-all flex items-center justify-center gap-3 shadow-sm hover:border-white/30 disabled:opacity-50 active:scale-[0.99]"
           >
             {googleLoading ? (
               <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -138,15 +139,18 @@ export default function SignUpPage() {
               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
                 Full Name
               </label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-[#00C2D9]">
+                  <User size={18} />
+                </div>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Rahul Sharma"
-                  className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan/80 focus:ring-1 focus:ring-accent-cyan/40 transition-all"
+                  placeholder="e.g. Rahul Sharma"
+                  style={{ paddingLeft: '2.85rem' }}
+                  className="w-full h-12 pr-4 rounded-xl bg-white/[0.05] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan/40 transition-all"
                 />
               </div>
             </div>
@@ -155,50 +159,71 @@ export default function SignUpPage() {
               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
                 Email Address
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-[#00C2D9]">
+                  <Mail size={18} />
+                </div>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="me@example.com"
-                  className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan/80 focus:ring-1 focus:ring-accent-cyan/40 transition-all"
+                  placeholder="name@example.com"
+                  style={{ paddingLeft: '2.85rem' }}
+                  className="w-full h-12 pr-4 rounded-xl bg-white/[0.05] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan/40 transition-all"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
-                Phone Number (Optional)
+                Mobile Number <span className="text-[#EF4444] font-bold">*</span>
               </label>
-              <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-[#00C2D9]">
+                  <Phone size={18} />
+                </div>
                 <input
                   type="tel"
+                  required
+                  pattern="[0-9]{10}"
+                  maxLength={10}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+91 9876543210"
-                  className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan/80 focus:ring-1 focus:ring-accent-cyan/40 transition-all"
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                  placeholder="10-digit mobile number (e.g. 9151435647)"
+                  style={{ paddingLeft: '2.85rem' }}
+                  className="w-full h-12 pr-4 rounded-xl bg-white/[0.05] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan/40 transition-all"
                 />
               </div>
+              <p className="text-[11px] text-text-muted mt-1">We will send visit schedules &amp; property updates on this number.</p>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-text-secondary mb-1.5 uppercase tracking-wider">
                 Password
               </label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
+              <div className="relative flex items-center">
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-[#00C2D9]">
+                  <Lock size={18} />
+                </div>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="w-full h-11 pl-10 pr-4 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan/80 focus:ring-1 focus:ring-accent-cyan/40 transition-all"
+                  style={{ paddingLeft: '2.85rem', paddingRight: '2.85rem' }}
+                  className="w-full h-12 rounded-xl bg-white/[0.05] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan/40 transition-all"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-white p-1 transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
@@ -224,7 +249,7 @@ export default function SignUpPage() {
             <button
               type="submit"
               disabled={loading || googleLoading}
-              className="w-full h-11 mt-3 rounded-xl bg-gradient-to-r from-primary via-purple-600 to-accent-cyan text-white font-semibold text-sm hover:opacity-95 transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-purple-900/40"
+              className="w-full h-12 mt-3 rounded-xl bg-gradient-to-r from-primary via-purple-600 to-accent-cyan text-white font-bold text-sm hover:opacity-95 transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-purple-900/40 cursor-pointer"
             >
               {loading ? 'Creating account...' : 'Create Account'}
               {!loading && <ArrowRight size={16} />}
@@ -234,7 +259,7 @@ export default function SignUpPage() {
           <div className="mt-6 pt-5 border-t border-white/10 text-center">
             <p className="text-xs text-text-secondary">
               Already have an account?{' '}
-              <Link href="/signin" className="text-accent-cyan font-semibold hover:underline">
+              <Link href="/signin" className="text-accent-cyan font-bold hover:underline">
                 Sign in here
               </Link>
             </p>

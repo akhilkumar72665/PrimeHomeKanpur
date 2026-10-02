@@ -269,12 +269,17 @@ export default function GuestAuthModal() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1 uppercase tracking-wider">Phone Number (Optional)</label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1 uppercase tracking-wider">
+                Mobile Number <span className="text-[#EF4444] font-bold">*</span>
+              </label>
               <input
                 type="tel"
+                required
+                pattern="[0-9]{10}"
+                maxLength={10}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+91 9876543210"
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                placeholder="10-digit mobile number"
                 className="w-full h-10 px-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-cyan/80 focus:ring-1 focus:ring-accent-cyan/40 transition-all"
               />
             </div>

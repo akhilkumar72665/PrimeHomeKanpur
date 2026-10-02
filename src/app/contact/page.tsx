@@ -49,15 +49,13 @@ export default function ContactPage() {
       const fullMessage = `[Interest: ${interest}] ${location ? `[Location: ${location}] ` : ''}${message}`
 
       const { error } = await supabase
-        .from('contact_messages')
+        .from('inquiries')
         .insert({
-          user_id: user?.id || null,
-          name,
-          email,
-          phone: phone || null,
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone ? phone.trim() : null,
           message: fullMessage,
-          status: 'new',
-          consent_given: true,
+          status: 'NEW',
         })
 
       setLoading(false)
