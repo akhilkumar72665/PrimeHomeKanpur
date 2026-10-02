@@ -52,7 +52,7 @@ export default function TermsPage() {
 
             <h2 className="text-2xl font-bold text-white mt-8 mb-4">Contact Us</h2>
             <p className="text-text-secondary mb-4">
-              For questions about these Terms & Conditions, please contact us at pathak424448@gmail.com
+              For questions about these Terms & Conditions, please contact us at primehomekanpur@gmail.com
             </p>
           </div>
         </div>

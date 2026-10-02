@@ -1,9 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Phone } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import {
+  Phone,
+  User,
+  Heart,
+  Calendar,
+  Star,
+  LogOut,
+  Shield,
+  ChevronDown,
+  LayoutDashboard,
+  Sparkles
+} from 'lucide-react'
 
 const navItems = [
   { name: 'Home', href: '/' },
@@ -18,48 +30,48 @@ const navItems = [
 export default function Header() {
   const pathname = usePathname() || '/'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Determine CTA text based on pathname
-  let ctaText = 'Explore Rentals'
-  let ctaHref = '/rentals'
+  const { user, profile, isAuthenticated, isAdmin, signOut } = useAuth()
 
-  if (pathname === '/') {
-    ctaText = 'Explore Rentals'
-    ctaHref = '/rentals'
-  } else if (pathname === '/about') {
-    ctaText = 'Contact Us'
-    ctaHref = '/contact'
-  } else if (pathname === '/rentals') {
-    ctaText = 'List Property'
-    ctaHref = '/contact'
-  } else if (pathname.startsWith('/rentals/')) {
-    ctaText = 'Schedule Tour'
-    ctaHref = '#schedule-visit'
-  } else if (pathname === '/agents') {
-    ctaText = 'Talk to Agent'
-    ctaHref = '/contact'
-  } else if (pathname === '/services') {
-    ctaText = 'Get Service'
-    ctaHref = '/contact'
-  } else if (pathname === '/faq') {
-    ctaText = 'Ask a Question'
-    ctaHref = '/contact'
-  } else if (pathname === '/contact') {
-    ctaText = 'Call Now'
-    ctaHref = 'tel:+916398987290'
-  }
+  // Scroll detection for enhanced glass navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
+      }
+    }
 
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
-    <header className="site">
+    <header className={`site ${scrolled ? 'scrolled' : ''}`}>
       <nav aria-label="Primary Navigation">
-        {/* Brand */}
+        {/* Brand Logo */}
         <Link href="/" className="brand">
           <div className="logo-icon">P</div>
           <span>PrimeHomeKanpur</span>
         </Link>
 
-        {/* Center Desktop Navigation & Mobile Drawer */}
+        {/* Center Desktop Navigation */}
         <div className={`navlinks ${mobileMenuOpen ? 'open' : ''}`}>
           {navItems.map((item) => {
             const isActive =
@@ -80,24 +92,190 @@ export default function Header() {
             )
           })}
 
-          {/* Mobile-only CTA */}
-          <Link
-            href={ctaHref}
-            className="menu-cta btn dark"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            {pathname === '/contact' && <Phone className="w-4 h-4 text-accent-pink" />}
-            {ctaText}
-          </Link>
+          {/* Mobile-only Action Links */}
+          <div className="md:hidden pt-4 pb-2 border-t border-white/10 flex flex-col gap-2 w-full">
+            <Link
+              href="/rentals"
+              className="btn btn-primary btn-loop-shine w-full text-center py-2.5 text-sm font-bold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Explore Rentals
+            </Link>
+
+            {!isAuthenticated ? (
+              <Link
+                href="/signin"
+                className="btn btn-secondary w-full text-center py-2.5 text-sm font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+            ) : (
+              <div className="flex flex-col gap-1.5 pt-2">
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-amber-400 bg-amber-400/10 hover:bg-amber-400/20"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Shield size={16} /> Admin Dashboard
+                  </Link>
+                )}
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white hover:bg-white/5"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LayoutDashboard size={16} /> Dashboard Overview
+                </Link>
+                <Link
+                  href="/dashboard/wishlist"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-text-secondary hover:text-white hover:bg-white/5"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Heart size={16} /> Wishlist
+                </Link>
+                <Link
+                  href="/dashboard/visits"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-text-secondary hover:text-white hover:bg-white/5"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Calendar size={16} /> My Visits
+                </Link>
+                <Link
+                  href="/dashboard/reviews"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-text-secondary hover:text-white hover:bg-white/5"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Star size={16} /> My Reviews
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    signOut()
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-rose-400 hover:bg-rose-500/10 text-left mt-1"
+                >
+                  <LogOut size={16} /> Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Right CTA & Mobile Toggle */}
+        {/* Right Desktop CTA + Sign In / User Menu */}
         <div className="nav-right">
-          <Link href={ctaHref} className="nav-cta btn dark">
-            {pathname === '/contact' && <Phone className="w-4 h-4 text-accent-pink" />}
-            {ctaText}
+          {/* Explore Rentals with 3-second continuous glass shine */}
+          <Link
+            href="/rentals"
+            className="nav-cta btn btn-primary btn-loop-shine font-bold tracking-tight shadow-md flex items-center gap-1.5"
+          >
+            <span>Explore Rentals</span>
           </Link>
 
+          {/* Unauthenticated: Sign In button */}
+          {!isAuthenticated ? (
+            <Link
+              href="/signin"
+              className="btn btn-secondary py-2 px-4 text-xs font-semibold rounded-xl border border-white/10 hover:border-primary/50 text-white transition-all"
+            >
+              Sign In
+            </Link>
+          ) : (
+            /* Authenticated: Account Dropdown */
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="flex items-center gap-2 py-1.5 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white text-xs font-semibold transition-all"
+                aria-expanded={userDropdownOpen}
+              >
+                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-primary to-accent-cyan flex items-center justify-center text-white text-xs font-bold">
+                  {profile?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                <span className="max-w-[100px] truncate hidden sm:inline-block">
+                  {profile?.full_name?.split(' ')[0] || 'Account'}
+                </span>
+                <ChevronDown size={14} className={`text-text-muted transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-[#0E0B1F] border border-white/10 p-2 shadow-2xl shadow-purple-950/60 z-50 animate-fade-in">
+                  <div className="px-3 py-2.5 border-b border-white/10 mb-1">
+                    <p className="text-xs font-bold text-white truncate">
+                      {profile?.full_name || 'User'}
+                    </p>
+                    <p className="text-[11px] text-text-muted truncate mt-0.5">
+                      {user?.email}
+                    </p>
+                    {isAdmin && (
+                      <span className="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                        {profile?.role?.replace('_', ' ') || 'Admin'}
+                      </span>
+                    )}
+                  </div>
+
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:bg-amber-400/10 transition-colors"
+                    >
+                      <Shield size={14} /> Admin Dashboard
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-text-secondary hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <LayoutDashboard size={14} /> Account Overview
+                  </Link>
+
+                  <Link
+                    href="/dashboard/wishlist"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-text-secondary hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Heart size={14} /> Wishlist
+                  </Link>
+
+                  <Link
+                    href="/dashboard/visits"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-text-secondary hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Calendar size={14} /> My Visits
+                  </Link>
+
+                  <Link
+                    href="/dashboard/reviews"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-text-secondary hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Star size={14} /> My Reviews
+                  </Link>
+
+                  <div className="pt-1 mt-1 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUserDropdownOpen(false)
+                        signOut()
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-rose-400 hover:bg-rose-500/10 transition-colors text-left"
+                    >
+                      <LogOut size={14} /> Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Mobile Hamburger Menu */}
           <button
             id="menuBtn"
             type="button"

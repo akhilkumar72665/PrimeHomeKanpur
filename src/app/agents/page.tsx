@@ -17,10 +17,10 @@ export default async function AgentsPage() {
   ]
 
   const row2Areas = [
-    { name: 'Sharda Nagar', grad: 'p4' },
-    { name: 'Shastri Nagar', grad: 'p7' },
+    { name: 'Civil Lines', grad: 'p4' },
+    { name: 'Swaroop Nagar', grad: 'p7' },
     { name: 'Barra', grad: 'p2' },
-    { name: 'Panki', grad: 'p1' },
+    { name: 'Govind Nagar', grad: 'p1' },
     { name: 'Kidwai Nagar', grad: 'p8' },
   ]
 
@@ -56,26 +56,26 @@ export default async function AgentsPage() {
               <span className="pill mx-auto mb-4"><span className="dot" />Our Team</span>
               <h2 className="mx-auto">The people who&apos;ll help you find <span className="hl">your next home</span></h2>
               <p className="text-text-secondary text-sm md:text-base mt-4">
-                Average 8+ years experience each · 500+ cumulative deals closed · 4.9★ client rating
+                14+ years Kanpur experience · Transparent 15-day brokerage · ₹300 visit fee
               </p>
             </div>
 
-            <div className="team-grid">
-              {agents.map((agent) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {agents.slice(0, 3).map((agent) => (
                 <AgentCard key={agent.id} agent={agent} />
               ))}
             </div>
           </div>
         </section>
 
-        {/* 3. Area Coverage (Opposite scrolling marquees) */}
+        {/* 3. Area Coverage */}
         <section className="sect gray">
           <div className="wrap">
             <div className="text-center max-w-2xl mx-auto mb-10">
               <span className="pill mx-auto mb-4"><span className="dot" />Area Coverage</span>
               <h2 className="mx-auto">Every neighborhood in <span className="hl">Kanpur</span>, covered</h2>
               <p className="text-text-secondary text-sm md:text-base mt-4">
-                Hover to pause. Our agents operate across all major Kanpur areas — so wherever you need to rent, we have a local expert.
+                Our agents operate across all major Kanpur areas — so wherever you need to rent, we have a local expert ready.
               </p>
             </div>
           </div>
@@ -129,22 +129,22 @@ export default async function AgentsPage() {
                     {
                       icon: <ShieldCheck className="w-5 h-5 text-gray-900" />,
                       title: "You'll never feel pressured",
-                      description: "Our agents are salaried + incentivised on client ratings, not quick closures. No pushy sales, ever.",
+                      description: "Our agents prioritize long-term client trust over rushed deals. Zero pushy sales tactics, ever.",
                     },
                     {
                       icon: <MapPin className="w-5 h-5 text-gray-900" />,
-                      title: "They know the area like a local",
-                      description: "Which societies have 24×7 water? Which areas flood in rains? Our agents live this information daily.",
+                      title: "They know every Kanpur street like a local",
+                      description: "Which societies have 24×7 power backup? Which pockets have quiet family neighborhoods? We guide you honestly.",
                     },
                     {
                       icon: <Clock className="w-5 h-5 text-gray-900" />,
-                      title: "Fast, 24/7 responsiveness",
-                      description: "Average first response time is under 20 minutes. We actually answer calls — during work hours and on weekends.",
+                      title: "Fast responsiveness & physical tours",
+                      description: "We schedule visits quickly at a flat ₹300 charge and assist with lease verification.",
                     },
                     {
                       icon: <Sparkles className="w-5 h-5 text-gray-900" />,
-                      title: "Bonus: free move-in support",
-                      description: "Packer and mover referrals, utility setup help, and neighborhood tips — free with every closed deal.",
+                      title: "Free call consultation",
+                      description: "Call us anytime for market rent estimates, landlord terms, or neighborhood suggestions.",
                     },
                   ].map((item, idx) => (
                     <div key={item.title} className={`flex gap-4 items-start ${idx > 0 ? 'pt-4 border-t border-line/60' : ''}`}>
@@ -168,17 +168,17 @@ export default async function AgentsPage() {
           <div className="wrap">
             <div className="cta-section">
               <h2>
-                Want to work with a <span className="hl">specific agent?</span>
+                Want to connect with our <span className="hl">listing executive?</span>
               </h2>
               <p>
-                Tell us your preferred area, budget, or agent name — and we&apos;ll connect you directly. No IVR, no waiting, just real humans.
+                Tell us your preferred area or budget, or call us directly at <span className="text-white font-bold">+91 9151435647</span>.
               </p>
               <div className="cta-btns">
-                <Link href="/contact" className="btn orange">
+                <Link href="/contact" className="btn orange btn-loop-shine">
                   Request an Agent
                 </Link>
-                <a href="tel:+916398987290" className="btn dark">
-                  <Phone className="w-4 h-4 mr-1 text-[#EC4899]" /> Call Now: +91 6398987290
+                <a href="tel:+919151435647" className="btn dark">
+                  <Phone className="w-4 h-4 mr-1 text-[#EC4899]" /> Call +91 9151435647
                 </a>
               </div>
             </div>

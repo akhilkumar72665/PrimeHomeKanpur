@@ -2,8 +2,9 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/cards/PropertyCard'
+import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter'
 import { getFeaturedProperties } from '@/lib/data/properties'
-import { Star, Search, Shield, Clock, Award, Check, ArrowRight } from 'lucide-react'
+import { Star, Search, Shield, Clock, Award, Check, ArrowRight, Building, Sparkles } from 'lucide-react'
 
 export default async function HomePage() {
   const featuredProperties = await getFeaturedProperties(6)
@@ -19,7 +20,7 @@ export default async function HomePage() {
             {/* Trusted Avatar Stack */}
             <div className="flex items-center gap-3 mb-6">
               <div className="flex -space-x-2">
-                {['JM', 'AR', 'KP'].map((initials) => (
+                {['AP', 'PP', 'AK'].map((initials) => (
                   <div
                     key={initials}
                     className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4C1D95] border-2 border-bg flex items-center justify-center text-white text-xs font-bold shadow-lg"
@@ -33,7 +34,7 @@ export default async function HomePage() {
                   <Star key={i} className="w-4 h-4 fill-current" />
                 ))}
               </div>
-              <span className="text-text-secondary text-sm font-medium">Trusted by 40+ clients</span>
+              <span className="text-text-secondary text-sm font-medium">83+ Verified Client Reviews</span>
             </div>
 
             {/* H1 Heading */}
@@ -43,13 +44,16 @@ export default async function HomePage() {
 
             {/* Subtitle */}
             <p className="text-text-secondary text-lg md:text-xl mb-8 max-w-2xl leading-relaxed">
-              Find your perfect rental with ease. Explore verified listings, get landlord-ready support, and move in with confidence.
+              Find your perfect rental with ease. Explore verified listings, transparent 15-day brokerage, ₹300 visit fee, and move in with confidence.
             </p>
 
             {/* CTA Button */}
-            <div className="mb-14">
-              <Link href="/rentals" className="btn orange text-base">
+            <div className="mb-14 flex flex-wrap items-center gap-4">
+              <Link href="/rentals" className="btn orange text-base btn-loop-shine">
                 Explore Rentals <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+              <Link href="/contact" className="btn dark text-base">
+                Free Call Consultation
               </Link>
             </div>
 
@@ -67,8 +71,9 @@ export default async function HomePage() {
                   <option value="Swaroop Nagar">Swaroop Nagar</option>
                   <option value="Civil Lines">Civil Lines</option>
                   <option value="Barra">Barra</option>
-                  <option value="Panki">Panki</option>
+                  <option value="Kalyanpur">Kalyanpur</option>
                   <option value="Kidwai Nagar">Kidwai Nagar</option>
+                  <option value="Govind Nagar">Govind Nagar</option>
                 </select>
               </div>
 
@@ -113,25 +118,13 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 2. Stats Strip */}
+        {/* 2. Stats Strip with Dual Digit Animation (1st up, 2nd down) */}
         <section className="statsbar">
-          <div className="wrap">
-            <div className="cell">
-              <b>83</b>
-              <span>Total Reviews</span>
-            </div>
-            <div className="cell">
-              <b>14</b>
-              <span>Years of Experience</span>
-            </div>
-            <div className="cell">
-              <b>67</b>
-              <span>Rentals Listed</span>
-            </div>
-            <div className="cell">
-              <b>98%</b>
-              <span>Satisfaction Rate</span>
-            </div>
+          <div className="wrap grid grid-cols-2 md:grid-cols-4 gap-4">
+            <AnimatedStatCounter value={83} label="Total Reviews" />
+            <AnimatedStatCounter value={14} label="Years of Experience" />
+            <AnimatedStatCounter value={67} label="Rentals Listed" />
+            <AnimatedStatCounter value={98} suffix="%" label="Satisfaction Rate" />
           </div>
         </section>
 
@@ -143,11 +136,11 @@ export default async function HomePage() {
                 <span className="pill"><span className="dot" />Rental Listings</span>
                 <h2 className="mt-4">Explore Premium <span className="hl">Rentals</span> Chosen For You</h2>
               </div>
-              <Link href="/rentals" className="btn orange shrink-0">
+              <Link href="/rentals" className="btn orange shrink-0 btn-loop-shine">
                 View All Rentals <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
-            <p className="result-info mb-8">Showing {featuredProperties.length} rentals across Kanpur</p>
+            <p className="result-info mb-8">Showing verified rentals across Kanpur</p>
 
             <div className="listings">
               {featuredProperties.map((property) => (
@@ -181,11 +174,11 @@ export default async function HomePage() {
                 { name: 'Awas Vikas', grad: 'p8' },
                 { name: 'Swaroop Nagar', grad: 'p10' },
                 { name: 'Civil Lines', grad: 'p9' },
-                { name: 'Arya Nagar', grad: 'p11' },
+                { name: 'Govind Nagar', grad: 'p11' },
                 { name: 'Kalyanpur', grad: 'p12' },
                 { name: 'Barra', grad: 'p1' },
-                { name: 'Panki', grad: 'p2' },
                 { name: 'Kidwai Nagar', grad: 'p7' },
+                { name: 'Awadhpuri', grad: 'p2' },
               ].concat([
                 { name: 'Gurudev Chauraha', grad: 'p1' },
                 { name: 'Kakadeo', grad: 'p7' },
@@ -194,11 +187,11 @@ export default async function HomePage() {
                 { name: 'Awas Vikas', grad: 'p8' },
                 { name: 'Swaroop Nagar', grad: 'p10' },
                 { name: 'Civil Lines', grad: 'p9' },
-                { name: 'Arya Nagar', grad: 'p11' },
+                { name: 'Govind Nagar', grad: 'p11' },
                 { name: 'Kalyanpur', grad: 'p12' },
                 { name: 'Barra', grad: 'p1' },
-                { name: 'Panki', grad: 'p2' },
                 { name: 'Kidwai Nagar', grad: 'p7' },
+                { name: 'Awadhpuri', grad: 'p2' },
               ]).map((area, idx) => (
                 <div key={`${area.name}-${idx}`} className={`area-card ${area.grad}`}>
                   <div className="area-content">
@@ -218,30 +211,24 @@ export default async function HomePage() {
               <span className="pill mx-auto mb-4"><span className="dot" />Testimonials</span>
               <h2 className="mx-auto">Clients <span className="hl">Success Stories</span></h2>
               <p className="text-text-secondary text-sm md:text-base mt-4 leading-relaxed">
-                Our clients&apos; success stories highlight achievements, satisfaction, and results, reflecting our expertise, dedication, and trusted partnerships.
+                Our clients&apos; success stories highlight verified physical visits, fair 15-day brokerage, and prompt lease completion across Kanpur.
               </p>
             </div>
 
             {/* Featured Quote with Floating Avatars */}
             <div className="relative py-8 my-6">
-              {/* 6 Floating Avatars */}
+              {/* Floating Avatars */}
               <div className="hidden md:flex absolute top-4 left-8 w-11 h-11 rounded-full bg-gradient-to-br from-[#4C1D95] to-[#7C3AED] border-2 border-primary/40 items-center justify-center text-white text-xs font-bold shadow-lg float-avatar">
-                JM
+                AS
               </div>
               <div className="hidden md:flex absolute top-10 right-12 w-10 h-10 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#EC4899] border-2 border-violet/40 items-center justify-center text-white text-xs font-bold shadow-lg float-avatar" style={{ animationDelay: '0.9s' }}>
-                KP
+                VM
               </div>
               <div className="hidden md:flex absolute bottom-8 left-14 w-9 h-9 rounded-full bg-gradient-to-br from-[#0F766E] to-[#00C2D9] border-2 border-primary/40 items-center justify-center text-white text-[11px] font-bold shadow-lg float-avatar" style={{ animationDelay: '1.4s' }}>
-                SL
+                RV
               </div>
               <div className="hidden md:flex absolute bottom-6 right-16 w-10 h-10 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] border-2 border-violet/40 items-center justify-center text-white text-xs font-bold shadow-lg float-avatar" style={{ animationDelay: '1.9s' }}>
-                AR
-              </div>
-              <div className="hidden md:flex absolute top-1/2 left-2 -translate-y-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-[#5B21B6] to-[#8B5CF6] border border-white/20 items-center justify-center text-white text-[10px] font-bold opacity-80 float-avatar" style={{ animationDelay: '0.5s' }}>
-                RS
-              </div>
-              <div className="hidden md:flex absolute top-1/2 right-2 -translate-y-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-[#0891B2] to-[#22D3EE] border border-white/20 items-center justify-center text-white text-[10px] font-bold opacity-80 float-avatar" style={{ animationDelay: '1.6s' }}>
-                NM
+                KP
               </div>
 
               {/* Main Featured Card */}
@@ -252,15 +239,15 @@ export default async function HomePage() {
                   ))}
                 </div>
                 <p className="text-white text-lg md:text-2xl mb-8 leading-relaxed font-semibold">
-                  &ldquo;PrimeHomeKanpur made the entire rental-search process surprisingly easy. The interface is smooth, the details are clear, and I actually enjoyed comparing different places.&rdquo;
+                  &ldquo;PrimeHomeKanpur found me a verified 2BHK within 48 hours of shifting to Kanpur. The transparent ₹300 visit fee and clear 15 days brokerage saved me from unverified market brokers.&rdquo;
                 </p>
                 <div className="flex items-center justify-center gap-4">
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4C1D95] border-2 border-primary/50 flex items-center justify-center text-white font-bold text-lg shadow-md">
-                    JM
+                    AS
                   </div>
                   <div className="text-left">
-                    <p className="text-white font-bold text-base">Jyoti Mishra</p>
-                    <p className="text-text-secondary text-sm">Tenant · Kakadeo</p>
+                    <p className="text-white font-bold text-base">Dr. Ananya Shukla</p>
+                    <p className="text-text-secondary text-sm">Resident Doctor · Swaroop Nagar</p>
                   </div>
                 </div>
               </div>
@@ -270,25 +257,30 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
               {[
                 {
-                  initials: 'AR',
-                  name: 'Ankit Rao',
-                  role: 'Working Professional',
-                  quote: 'Found my 2BHK in Vikas Nagar within a week. The agent was responsive and the paperwork was handled professionally.',
+                  initials: 'VM',
+                  name: 'Vikas Malhotra',
+                  role: 'Tech Lead · Civil Lines',
+                  quote: 'Booking a visit online was instant. The agent walked us through every single detail, verified landlord papers, and managed lease drafting seamlessly.',
+                },
+                {
+                  initials: 'RV',
+                  name: 'Rohan & Sneha Verma',
+                  role: 'Property Owners · Vijay Nagar',
+                  quote: 'Listed our duplex on PrimeHomeKanpur. Their listing manager verified the flat the same afternoon and we had a family tenant signed in a week.',
                 },
                 {
                   initials: 'KP',
-                  name: 'Kavita Pathak',
-                  role: 'Property Owner',
-                  quote: 'As a landlord, they screened tenants thoroughly and my property was vacant for only 10 days. Highly recommended.',
-                },
-                {
-                  initials: 'SL',
-                  name: 'Shubham Lal',
-                  role: 'Bachelor · Swaroop Nagar',
-                  quote: 'The verified listings saved me a lot of time. Photos matched reality exactly and the rent was fair.',
+                  name: 'Kavita Pandey',
+                  role: 'Tenant · Kakadeo',
+                  quote: 'The verified listings saved us endless phone calls. Photos matched reality exactly, zero hidden charges, and honest guidance throughout.',
                 },
               ].map((t) => (
                 <div key={t.name} className="feat flex flex-col justify-between">
+                  <div className="flex items-center gap-1 text-[#EF4444] mb-3">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                    ))}
+                  </div>
                   <p className="text-text-secondary text-sm leading-relaxed mb-6">
                     &ldquo;{t.quote}&rdquo;
                   </p>
@@ -311,13 +303,11 @@ export default async function HomePage() {
         <section className="sect gray">
           <div className="wrap">
             <div className="why-grid items-center gap-12">
-              {/* Left Visual: Overlapping Gradient Frame */}
               <div className="relative w-full aspect-[4/3] max-w-md mx-auto lg:max-w-none">
                 <div className="absolute top-0 left-0 w-[80%] h-[80%] rounded-3xl bg-gradient-to-br from-[#3b0764] via-[#581c87] to-[#7c3aed] border-2 border-violet/30 shadow-[0_20px_50px_rgba(124,58,237,0.35)]" />
                 <div className="absolute bottom-0 right-0 w-[80%] h-[80%] rounded-3xl bg-gradient-to-br from-[#0f766e] via-[#0d9488] to-[#00c2d9] border-2 border-primary/40 shadow-[0_25px_60px_rgba(0,194,217,0.25)] p1" />
               </div>
 
-              {/* Right Content */}
               <div>
                 <span className="pill mb-4"><span className="dot" />Why Choose Us</span>
                 <h2 className="mb-8">Why choose our <span className="hl">rental expertise</span></h2>
@@ -326,23 +316,23 @@ export default async function HomePage() {
                   {[
                     {
                       icon: <Search className="w-5 h-5 text-[#04121a]" />,
-                      title: 'Expert Guidance',
-                      description: 'Find rentals by filtering for application competition and recent rent updates to make informed decisions easily.',
+                      title: 'Expert Kanpur Guidance',
+                      description: 'Find rentals with complete clarity on rent, maintenance, deposit, and verified landlord preferences.',
                     },
                     {
                       icon: <Shield className="w-5 h-5 text-[#04121a]" />,
-                      title: 'Verified Rental Selection',
-                      description: 'Every listing is checked in person before it reaches our catalog, so photos always match reality.',
+                      title: 'Physically Verified Listings',
+                      description: 'Every rental is inspected in person before it reaches our catalog, so photos always match reality.',
                     },
                     {
                       icon: <Clock className="w-5 h-5 text-[#04121a]" />,
-                      title: 'Stress-Free Process',
-                      description: 'We track applications, deposits, and lease deadlines so you are never chasing a document.',
+                      title: 'Transparent Pricing Structure',
+                      description: '15 days rent as brokerage, ₹300 visit charge, and free call consultation with no hidden surprises.',
                     },
                     {
                       icon: <Award className="w-5 h-5 text-[#04121a]" />,
-                      title: 'Proven Track Record',
-                      description: 'Over a decade of leases signed across 43 neighborhoods and counting.',
+                      title: 'Proven 14-Year Track Record',
+                      description: 'Over 14 years of dedicated rental matching across 40+ Kanpur neighborhoods.',
                     },
                   ].map((item, idx) => (
                     <div key={item.title} className={`flex gap-4 items-start ${idx > 0 ? 'pt-4 border-t border-line/60' : ''}`}>
@@ -367,31 +357,31 @@ export default async function HomePage() {
             <div className="sect-head row">
               <div>
                 <span className="pill"><span className="dot" />Our Services</span>
-                <h2 className="mt-4">We offer a complete spectrum of <span className="hl">rental services for your needs</span></h2>
+                <h2 className="mt-4">We offer a complete spectrum of <span className="hl">rental services</span></h2>
               </div>
               <p className="text-text-secondary text-sm max-w-md hidden md:block">
-                We currently focus only on rentals — helping landlords rent hassle free, backed by unparalleled results and expertise.
+                Focused on Kanpur rentals — helping tenants discover verified homes and landlords rent hassle-free.
               </p>
             </div>
 
             <div className="services mt-8">
               {[
                 {
-                  title: 'Find a rental',
-                  description: 'Discover verified rental properties across Kanpur.',
-                  bullets: ['Neighborhood matching', 'Move-in date filtering', 'Verified listings only'],
+                  title: 'Find a Rental',
+                  description: 'Discover verified homes with physical on-site visits.',
+                  bullets: ['15 days brokerage on deal', '₹300 visit charge', 'Free call consultation'],
                   featured: false,
                 },
                 {
-                  title: 'List your rental',
-                  description: 'Free professional listing for landlords.',
-                  bullets: ['Free professional photos', 'Tenant screening', 'Lease drafting'],
+                  title: 'List Your Rental',
+                  description: 'Professional listing and tenant screening for landlords.',
+                  bullets: ['Rent > ₹10k: ₹2,000 listing charge', 'Rent < ₹10k: ₹1,000 listing charge', '15 days brokerage after deal'],
                   featured: true,
                 },
                 {
-                  title: 'Renewals & appraisal',
-                  description: 'Expert support for lease renewals.',
-                  bullets: ['Market rent appraisal', 'Lease renewal support', 'Deposit handling'],
+                  title: 'Lease & Documentation',
+                  description: 'Complete legal lease drafting and verification support.',
+                  bullets: ['Police verification support', 'Standard lease agreements', 'Move-in assistance'],
                   featured: false,
                 },
               ].map((service) => (
@@ -401,13 +391,13 @@ export default async function HomePage() {
                 >
                   {service.featured && (
                     <div className="absolute top-3 right-3 bg-[#EF4444] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                      Most requested
+                      Landlord Choice
                     </div>
                   )}
 
                   <div>
                     <div className="w-12 h-12 rounded-xl bg-[#2A1566] border border-[#7C3AED]/40 flex items-center justify-center mb-6 text-primary">
-                      <Search className="w-6 h-6" />
+                      <Building className="w-6 h-6" />
                     </div>
 
                     <h3 className="text-white font-bold text-xl mb-2">{service.title}</h3>
@@ -427,7 +417,7 @@ export default async function HomePage() {
                     href="/services"
                     className={`btn w-full ${service.featured ? 'orange' : 'outline'}`}
                   >
-                    Read more
+                    Read Details
                   </Link>
                 </div>
               ))}
@@ -440,18 +430,18 @@ export default async function HomePage() {
           <div className="wrap">
             <div className="cta-section">
               <h2>
-                Ready to find your <span className="hl">dream rental?</span>
+                Ready to find your <span className="hl">dream rental in Kanpur?</span>
               </h2>
               <p>
-                Join hundreds of happy tenants and landlords who trust PrimeHomeKanpur for all their rental needs in Kanpur.
+                Call us directly at <span className="text-white font-bold">+91 9151435647</span> or browse verified homes with immediate tour scheduling.
               </p>
               <div className="cta-btns">
-                <Link href="/rentals" className="btn orange">
+                <Link href="/rentals" className="btn orange btn-loop-shine">
                   Browse Rentals
                 </Link>
-                <Link href="/contact" className="btn dark">
-                  List Your Property
-                </Link>
+                <a href="tel:+919151435647" className="btn dark">
+                  Call +91 9151435647
+                </a>
               </div>
             </div>
           </div>

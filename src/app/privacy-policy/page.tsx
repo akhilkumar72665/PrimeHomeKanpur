@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
 
             <h2 className="text-2xl font-bold text-white mt-8 mb-4">Contact Us</h2>
             <p className="text-text-secondary mb-4">
-              If you have any questions about this Privacy Policy, please contact us at pathak424448@gmail.com
+              If you have any questions about this Privacy Policy, please contact us at primehomekanpur@gmail.com
             </p>
           </div>
         </div>
