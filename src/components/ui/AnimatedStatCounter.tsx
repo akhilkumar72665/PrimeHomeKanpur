@@ -14,6 +14,7 @@ export default function AnimatedStatCounter({
   label,
 }: AnimatedStatCounterProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const [displayCount, setDisplayCount] = useState(0)
   const elementRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,50 +35,57 @@ export default function AnimatedStatCounter({
     return () => observer.disconnect()
   }, [])
 
-  const digits = value.toString().split('')
+  // Smooth number counting up animation
+  useEffect(() => {
+    if (!isVisible) return
+
+    let start = 0
+    const duration = 1200
+    const frameDuration = 1000 / 60
+    const totalFrames = Math.round(duration / frameDuration)
+    let frame = 0
+
+    const timer = setInterval(() => {
+      frame++
+      const progress = frame / totalFrames
+      // Ease out cubic
+      const easeProgress = 1 - Math.pow(1 - progress, 3)
+      const current = Math.round(easeProgress * value)
+      
+      setDisplayCount(current)
+
+      if (frame >= totalFrames) {
+        setDisplayCount(value)
+        clearInterval(timer)
+      }
+    }, frameDuration)
+
+    return () => clearInterval(timer)
+  }, [isVisible, value])
 
   return (
-    <div ref={elementRef} className="stat-card flex flex-col items-center text-center p-4">
-      <div className="flex items-baseline justify-center font-extrabold text-3xl sm:text-4xl text-white tracking-tight overflow-hidden py-1">
-        <div className="flex items-center">
-          {digits.map((digit, idx) => {
-            // First digit (idx === 0) animates upward from translateY(100%) to translateY(0)
-            // Second digit (idx === 1) animates downward from translateY(-100%) to translateY(0)
-            // Subsequent digits alternate
-            const isUpward = idx % 2 === 0
-            const transformStart = isUpward ? 'translateY(110%)' : 'translateY(-110%)'
-            const transitionDelay = `${idx * 120}ms`
+    <div
+      ref={elementRef}
+      className="group relative flex flex-col items-center justify-center text-center p-5 md:p-6 rounded-2xl bg-gradient-to-b from-[#160e36]/60 to-[#0c0721]/80 border border-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-primary/30 hover:shadow-[0_12px_40px_rgba(0,194,217,0.15)] hover:-translate-y-0.5"
+    >
+      {/* Top subtle highlight line */}
+      <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-            return (
-              <span
-                key={idx}
-                className="inline-block transition-transform duration-1000 ease-out will-change-transform"
-                style={{
-                  transform: isVisible ? 'translateY(0)' : transformStart,
-                  opacity: isVisible ? 1 : 0,
-                  transitionDelay,
-                }}
-              >
-                {digit}
-              </span>
-            )
-          })}
-        </div>
+      {/* Large Glowing Number */}
+      <div className="flex items-baseline justify-center font-black text-4xl sm:text-5xl md:text-6xl tracking-tight py-1">
+        <span className="bg-gradient-to-br from-white via-[#f0f9ff] to-[#38bdf8] bg-clip-text text-transparent drop-shadow-[0_4px_16px_rgba(56,189,248,0.35)] tabular-nums">
+          {isVisible ? displayCount : 0}
+        </span>
 
         {suffix && (
-          <span
-            className="text-primary ml-0.5 text-2xl sm:text-3xl transition-opacity duration-700 ease-out"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transitionDelay: '350ms',
-            }}
-          >
+          <span className="text-primary font-bold text-2xl sm:text-3xl md:text-4xl ml-1 drop-shadow-[0_2px_10px_rgba(0,194,217,0.4)]">
             {suffix}
           </span>
         )}
       </div>
 
-      <div className="stat-label text-xs sm:text-sm font-medium text-text-secondary mt-1">
+      {/* Label */}
+      <div className="text-xs sm:text-sm font-semibold tracking-wide text-text-secondary mt-2 group-hover:text-white transition-colors">
         {label}
       </div>
     </div>

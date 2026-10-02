@@ -4,12 +4,12 @@ import React from 'react'
  * 3D-styled Magnifying Glass Icon (Find a rental)
  * Matches Image 1: Cyan/blue glass lens with gloss, metallic rim and dark squircle container
  */
-export function FindRentalIcon({ className = 'w-14 h-14' }: { className?: string }) {
+export function FindRentalIcon({ className = 'w-13 h-13' }: { className?: string }) {
   return (
-    <div className={`relative flex items-center justify-center rounded-[18px] bg-gradient-to-b from-[#112438] to-[#0a1524] border border-[#1b3d5b]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_20px_rgba(0,0,0,0.35)] ${className}`}>
+    <div className={`relative flex items-center justify-center rounded-[16px] bg-gradient-to-b from-[#112438] to-[#0a1524] border border-[#1b3d5b]/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_6px_18px_rgba(0,0,0,0.35)] transition-all duration-300 group-hover:scale-105 group-hover:border-[#00C2D9]/60 group-hover:shadow-[0_0_24px_rgba(0,194,217,0.35)] ${className}`}>
       <svg
         viewBox="0 0 64 64"
-        className="w-9 h-9 drop-shadow-[0_4px_10px_rgba(34,211,238,0.35)]"
+        className="w-8 h-8 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 drop-shadow-[0_4px_10px_rgba(34,211,238,0.4)]"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -29,10 +29,6 @@ export function FindRentalIcon({ className = 'w-14 h-14' }: { className?: string
             <stop offset="50%" stopColor="#0284C7" />
             <stop offset="100%" stopColor="#0369A1" />
           </linearGradient>
-          <filter id="lensGlow" x="0" y="0" width="64" height="64" filterUnits="userSpaceOnUse">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
         </defs>
 
         {/* Handle */}
@@ -58,8 +54,8 @@ export function FindRentalIcon({ className = 'w-14 h-14' }: { className?: string
         <circle cx="27" cy="27" r="12.5" fill="url(#lensGrad)" fillOpacity="0.85" />
 
         {/* Gloss / Specular Highlights on Lens */}
-        <ellipse cx="23" cy="21" rx="5.5" ry="3.2" transform="rotate(-30 23 21)" fill="white" fillOpacity="0.75" />
-        <circle cx="32" cy="31" r="1.8" fill="white" fillOpacity="0.45" />
+        <ellipse cx="23" cy="21" rx="5.5" ry="3.2" transform="rotate(-30 23 21)" fill="white" fillOpacity="0.85" />
+        <circle cx="32" cy="31" r="1.8" fill="white" fillOpacity="0.5" />
       </svg>
     </div>
   )
@@ -69,12 +65,12 @@ export function FindRentalIcon({ className = 'w-14 h-14' }: { className?: string
  * 3D-styled House Icon (List your rental)
  * Matches Image 1: Warm coral/orange roof, chimney, front door, glowing windows on dark warm container
  */
-export function ListRentalHouseIcon({ className = 'w-14 h-14' }: { className?: string }) {
+export function ListRentalHouseIcon({ className = 'w-13 h-13' }: { className?: string }) {
   return (
-    <div className={`relative flex items-center justify-center rounded-[18px] bg-gradient-to-b from-[#2a1720] to-[#170e14] border border-[#52293b]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_20px_rgba(0,0,0,0.35)] ${className}`}>
+    <div className={`relative flex items-center justify-center rounded-[16px] bg-gradient-to-b from-[#2a1720] to-[#170e14] border border-[#52293b]/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_6px_18px_rgba(0,0,0,0.35)] transition-all duration-300 group-hover:scale-105 group-hover:border-[#EA580C]/60 group-hover:shadow-[0_0_24px_rgba(234,88,12,0.35)] ${className}`}>
       <svg
         viewBox="0 0 64 64"
-        className="w-9 h-9 drop-shadow-[0_4px_10px_rgba(249,115,22,0.35)]"
+        className="w-8 h-8 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-2 drop-shadow-[0_4px_10px_rgba(249,115,22,0.4)]"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -137,12 +133,12 @@ export function ListRentalHouseIcon({ className = 'w-14 h-14' }: { className?: s
  * 3D-styled Clipboard / Document Icon (Renewals & appraisal)
  * Matches Image 1: Clipboard with orange clip, note lines on dark purple squircle container
  */
-export function RenewalsDocIcon({ className = 'w-14 h-14' }: { className?: string }) {
+export function RenewalsDocIcon({ className = 'w-13 h-13' }: { className?: string }) {
   return (
-    <div className={`relative flex items-center justify-center rounded-[18px] bg-gradient-to-b from-[#22173b] to-[#120b24] border border-[#44306d]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_20px_rgba(0,0,0,0.35)] ${className}`}>
+    <div className={`relative flex items-center justify-center rounded-[16px] bg-gradient-to-b from-[#22173b] to-[#120b24] border border-[#44306d]/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_6px_18px_rgba(0,0,0,0.35)] transition-all duration-300 group-hover:scale-105 group-hover:border-[#A855F7]/60 group-hover:shadow-[0_0_24px_rgba(168,85,247,0.35)] ${className}`}>
       <svg
         viewBox="0 0 64 64"
-        className="w-9 h-9 drop-shadow-[0_4px_10px_rgba(168,85,247,0.35)]"
+        className="w-8 h-8 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 drop-shadow-[0_4px_10px_rgba(168,85,247,0.4)]"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >

@@ -134,22 +134,30 @@ export default function PropertyCard({ property, initialIsFavorite = false, onFa
           />
         )}
 
-        {/* Tags */}
-        <span className="tag rent">For Rent</span>
-        {showBadge && (
-          <span className={`tag ${isPremium ? 'premium' : 'featured'}`}>
-            {badgeText}
+        {/* Badges Stack on Top-Left */}
+        <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 flex-wrap max-w-[calc(100%-48px)] pointer-events-none">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FFE4E6] text-[#E11D48] shadow-sm">
+            For Rent
           </span>
-        )}
+          {showBadge && (
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold shadow-sm ${
+              isPremium
+                ? 'bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white'
+                : 'bg-[#00C2D9] text-[#04121a]'
+            }`}>
+              {badgeText}
+            </span>
+          )}
+        </div>
 
-        {/* Wishlist Button */}
+        {/* Wishlist Button Top-Right */}
         <button
           type="button"
           onClick={handleWishlistClick}
           aria-label={isFavorite ? 'Remove from wishlist' : 'Save to wishlist'}
-          className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
+          className={`absolute top-3 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
             isFavorite
-              ? 'bg-rose-500/90 border-rose-400 text-white shadow-[0_0_12px_rgba(244,63,94,0.6)] scale-105'
+              ? 'bg-rose-500/95 border-rose-400 text-white shadow-[0_0_12px_rgba(244,63,94,0.6)] scale-105'
               : 'bg-black/50 border-white/20 text-white hover:bg-black/80 hover:scale-110 hover:border-white/40'
           }`}
         >

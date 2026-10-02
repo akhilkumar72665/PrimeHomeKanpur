@@ -43,9 +43,9 @@ export default async function HomePage() {
               Find your next rental with <span className="hl">PrimeHomeKanpur</span>
             </h1>
 
-            {/* Subtitle */}
+            {/* Subtitle (Clean & modern without brokerage fee clause) */}
             <p className="text-text-secondary text-lg md:text-xl mb-8 max-w-2xl leading-relaxed">
-              Find your perfect rental with ease. Explore verified listings, transparent 15-day brokerage, ₹300 visit fee, and move in with confidence.
+              Find your perfect rental with ease. Explore 100% physically verified homes across Kanpur, schedule instant physical visits, and move into your ideal home hassle-free.
             </p>
 
             {/* CTA Button */}
@@ -119,12 +119,12 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 2. Stats Strip with Dual Digit Animation (1st up, 2nd down) */}
-        <section className="statsbar">
-          <div className="wrap grid grid-cols-2 md:grid-cols-4 gap-4">
-            <AnimatedStatCounter value={83} label="Total Reviews" />
-            <AnimatedStatCounter value={14} label="Years of Experience" />
-            <AnimatedStatCounter value={67} label="Rentals Listed" />
+        {/* 2. Stats Strip with Large Animated Digits & 5 Years of Experience */}
+        <section className="statsbar py-8">
+          <div className="wrap grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <AnimatedStatCounter value={83} suffix="+" label="Total Reviews" />
+            <AnimatedStatCounter value={5} suffix="+" label="Years of Experience" />
+            <AnimatedStatCounter value={67} suffix="+" label="Rentals Listed" />
             <AnimatedStatCounter value={98} suffix="%" label="Satisfaction Rate" />
           </div>
         </section>
@@ -352,13 +352,13 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 7. Our Rental Services (Matching Image 1) */}
-        <section className="sect bg-bg py-16" id="services">
+        {/* 7. Our Rental Services (Matching Image 1 & 5 with top lining & animations) */}
+        <section className="sect bg-bg py-14" id="services">
           <div className="wrap">
             {/* Header matching Image 1 */}
-            <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="text-center max-w-3xl mx-auto mb-12">
               <OurServicesPill text="Our Services" />
-              <h2 className="text-3xl md:text-5xl lg:text-[2.75rem] font-extrabold text-white tracking-[-0.03em] leading-tight mb-4">
+              <h2 className="text-3xl md:text-4xl lg:text-[2.6rem] font-extrabold text-white tracking-[-0.03em] leading-tight mb-3">
                 We offer a complete spectrum of rental services for your needs
               </h2>
               <p className="text-text-secondary text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
@@ -366,25 +366,27 @@ export default async function HomePage() {
               </p>
             </div>
 
-            {/* 3 Services Cards matching Image 1 */}
-            <div className="grid gap-6 lg:grid-cols-3">
+            {/* 3 Compact Services Cards with Top Lining & Animations */}
+            <div className="grid gap-5 md:gap-6 lg:grid-cols-3 max-w-6xl mx-auto">
               {/* Card 1: Find a rental */}
-              <div className="relative flex flex-col justify-between rounded-[26px] border border-white/10 bg-[#120c29] p-7 md:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-[#00C2D9]/40 hover:shadow-[0_16px_50px_rgba(0,194,217,0.12)]">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] border border-white/10 bg-[#120c29] p-6 shadow-[0_10px_35px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#00C2D9]/50 hover:shadow-[0_18px_50px_rgba(0,194,217,0.18)] before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-[#00C2D9] before:to-transparent">
                 <div>
-                  <FindRentalIcon className="w-[60px] h-[60px] mb-6" />
-                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Find a rental</h3>
-                  <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                  <FindRentalIcon className="w-[52px] h-[52px] mb-5" />
+                  <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-[#67E8F9] transition-colors">
+                    Find a rental
+                  </h3>
+                  <p className="text-text-secondary text-sm leading-relaxed mb-5">
                     Browse verified rentals matched to your budget and move-in date.
                   </p>
-                  <div className="border-t border-white/5 pt-5 mb-8">
-                    <ul className="space-y-3.5">
+                  <div className="border-t border-white/5 pt-4 mb-6">
+                    <ul className="space-y-3">
                       {[
                         'Neighborhood matching',
                         'Move-in date filtering',
                         'Verified listings only',
                       ].map((item) => (
-                        <li key={item} className="flex items-center gap-2.5 text-sm text-[#E2E8F0] font-medium">
-                          <Check className="w-4 h-4 text-[#00C2D9] shrink-0" strokeWidth={3} />
+                        <li key={item} className="flex items-center gap-2.5 text-xs sm:text-sm text-[#E2E8F0] font-medium">
+                          <Check className="w-3.5 h-3.5 text-[#00C2D9] shrink-0" strokeWidth={3} />
                           <span>{item}</span>
                         </li>
                       ))}
@@ -393,34 +395,36 @@ export default async function HomePage() {
                 </div>
                 <Link
                   href="/rentals"
-                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-[#170f36] px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[#20154a] hover:border-white/20"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 bg-[#170f36] px-4 py-3 text-center text-sm font-semibold text-white transition-all duration-300 hover:bg-[#20154a] hover:border-white/20 hover:scale-[1.01]"
                 >
                   Read more
                 </Link>
               </div>
 
               {/* Card 2: List your rental (Most Requested) */}
-              <div className="relative flex flex-col justify-between rounded-[26px] border border-white/10 bg-[#120c29] p-7 md:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-[#F97316]/40 hover:shadow-[0_16px_50px_rgba(249,115,22,0.12)]">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] border border-white/10 bg-[#120c29] p-6 shadow-[0_10px_35px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#EA580C]/50 hover:shadow-[0_18px_50px_rgba(234,88,12,0.18)] before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-[#F97316] before:to-transparent">
                 {/* Most requested badge */}
-                <div className="absolute right-6 top-6 rounded-full bg-[#EA580C] px-3.5 py-1 text-[11px] font-bold text-white shadow-[0_4px_12px_rgba(234,88,12,0.4)]">
+                <div className="absolute right-5 top-5 rounded-full bg-[#EA580C] px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-[0_4px_12px_rgba(234,88,12,0.45)]">
                   Most requested
                 </div>
 
                 <div>
-                  <ListRentalHouseIcon className="w-[60px] h-[60px] mb-6" />
-                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">List your rental</h3>
-                  <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                  <ListRentalHouseIcon className="w-[52px] h-[52px] mb-5" />
+                  <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-[#FDBA74] transition-colors">
+                    List your rental
+                  </h3>
+                  <p className="text-text-secondary text-sm leading-relaxed mb-5">
                     Get your property listed, screened, and rented out fast.
                   </p>
-                  <div className="border-t border-white/5 pt-5 mb-8">
-                    <ul className="space-y-3.5">
+                  <div className="border-t border-white/5 pt-4 mb-6">
+                    <ul className="space-y-3">
                       {[
                         'Free listing photos',
                         'Tenant screening',
                         'Lease drafting',
                       ].map((item) => (
-                        <li key={item} className="flex items-center gap-2.5 text-sm text-[#E2E8F0] font-medium">
-                          <Check className="w-4 h-4 text-[#00C2D9] shrink-0" strokeWidth={3} />
+                        <li key={item} className="flex items-center gap-2.5 text-xs sm:text-sm text-[#E2E8F0] font-medium">
+                          <Check className="w-3.5 h-3.5 text-[#00C2D9] shrink-0" strokeWidth={3} />
                           <span>{item}</span>
                         </li>
                       ))}
@@ -429,29 +433,31 @@ export default async function HomePage() {
                 </div>
                 <Link
                   href="/contact"
-                  className="inline-flex w-full items-center justify-center rounded-2xl bg-[#00C2D9] px-5 py-3.5 text-center text-sm font-bold text-[#051824] shadow-[0_6px_20px_rgba(0,194,217,0.35)] transition hover:bg-[#22D3EE] hover:shadow-[0_8px_24px_rgba(34,211,238,0.45)]"
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-[#00C2D9] px-4 py-3 text-center text-sm font-bold text-[#051824] shadow-[0_6px_20px_rgba(0,194,217,0.35)] transition-all duration-300 hover:bg-[#22D3EE] hover:shadow-[0_8px_24px_rgba(34,211,238,0.5)] hover:scale-[1.01]"
                 >
                   Read more
                 </Link>
               </div>
 
               {/* Card 3: Renewals & appraisal */}
-              <div className="relative flex flex-col justify-between rounded-[26px] border border-white/10 bg-[#120c29] p-7 md:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-[#8B5CF6]/40 hover:shadow-[0_16px_50px_rgba(139,92,246,0.12)]">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] border border-white/10 bg-[#120c29] p-6 shadow-[0_10px_35px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#8B5CF6]/50 hover:shadow-[0_18px_50px_rgba(139,92,246,0.18)] before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-[#A855F7] before:to-transparent">
                 <div>
-                  <RenewalsDocIcon className="w-[60px] h-[60px] mb-6" />
-                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Renewals &amp; appraisal</h3>
-                  <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                  <RenewalsDocIcon className="w-[52px] h-[52px] mb-5" />
+                  <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-[#C084FC] transition-colors">
+                    Renewals &amp; appraisal
+                  </h3>
+                  <p className="text-text-secondary text-sm leading-relaxed mb-5">
                     Get a free rent appraisal so pricing and renewals are always fair.
                   </p>
-                  <div className="border-t border-white/5 pt-5 mb-8">
-                    <ul className="space-y-3.5">
+                  <div className="border-t border-white/5 pt-4 mb-6">
+                    <ul className="space-y-3">
                       {[
                         'Market rent appraisal',
                         'Lease renewal support',
                         'Deposit handling',
                       ].map((item) => (
-                        <li key={item} className="flex items-center gap-2.5 text-sm text-[#E2E8F0] font-medium">
-                          <Check className="w-4 h-4 text-[#00C2D9] shrink-0" strokeWidth={3} />
+                        <li key={item} className="flex items-center gap-2.5 text-xs sm:text-sm text-[#E2E8F0] font-medium">
+                          <Check className="w-3.5 h-3.5 text-[#00C2D9] shrink-0" strokeWidth={3} />
                           <span>{item}</span>
                         </li>
                       ))}
@@ -460,7 +466,7 @@ export default async function HomePage() {
                 </div>
                 <Link
                   href="/services"
-                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-[#170f36] px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[#20154a] hover:border-white/20"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 bg-[#170f36] px-4 py-3 text-center text-sm font-semibold text-white transition-all duration-300 hover:bg-[#20154a] hover:border-white/20 hover:scale-[1.01]"
                 >
                   Read more
                 </Link>

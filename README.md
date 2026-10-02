@@ -35,7 +35,7 @@ A full-stack rental real estate platform for Kanpur, Uttar Pradesh, India. Built
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/akhilkumar72665/New-Project.git>
 cd primehomekanpur
 ```
 
