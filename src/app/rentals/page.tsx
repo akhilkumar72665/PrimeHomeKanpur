@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/cards/PropertyCard'
+import HomeSearchSection from '@/components/home/HomeSearchSection'
 import { getProperties } from '@/lib/data/properties'
 import { createClient } from '@/lib/supabase/server'
 import { Search, Heart, Phone, ArrowRight, Check, Calendar, Key } from 'lucide-react'
@@ -151,104 +152,48 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
 
         {/* 2. Filter Bar Overlapping Hero */}
         <section className="searchbar">
-          <div className="wrap">
-            <form action="/rentals" method="GET" className="card-s">
-              {/* Location Filter */}
-              {settings.filters?.location !== false && (
-                <div className="field">
-                  <label htmlFor="rentals-location">Location</label>
-                  <select
-                    id="rentals-location"
-                    name="location"
-                    defaultValue={params.location || ''}
-                  >
-                    <option value="">All Kanpur areas</option>
-                    {locations.map((loc) => (
-                      <option key={loc.id} value={loc.name}>
-                        {loc.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* BHK Filter */}
-              {settings.filters?.bedrooms !== false && (
-                <div className="field">
-                  <label htmlFor="rentals-bhk">BHK</label>
-                  <select id="rentals-bhk" name="bhk" defaultValue={params.bhk || ''}>
-                    <option value="">Any BHK</option>
-                    <option value="1">1 BHK</option>
-                    <option value="2">2 BHK</option>
-                    <option value="3">3 BHK</option>
-                    <option value="4">4+ BHK</option>
-                  </select>
-                </div>
-              )}
-
-              {/* Price Range Filter */}
-              {settings.filters?.rent !== false && (
-                <div className="field">
-                  <label htmlFor="rentals-price">Price Range</label>
-                  <select id="rentals-price" name="price" defaultValue={params.price || ''}>
-                    <option value="">Any budget</option>
-                    <option value="under-10k">Under ₹10,000</option>
-                    <option value="10k-20k">₹10,000 – ₹20,000</option>
-                    <option value="20k-30k">₹20,000 – ₹30,000</option>
-                    <option value="above-30k">Above ₹30,000</option>
-                  </select>
-                </div>
-              )}
-
-              {/* Tenant Type Filter */}
-              {settings.filters?.type !== false && (
-                <div className="field">
-                  <label htmlFor="rentals-tenant">Tenant Type</label>
-                  <select id="rentals-tenant" name="tenant" defaultValue={params.tenant || ''}>
-                    <option value="">Any tenant type</option>
-                    <option value="Family">Family</option>
-                    <option value="Bachelor">Bachelor</option>
-                    <option value="Professional">Professional</option>
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <button type="submit" className="btn orange w-full">
-                  <Search className="w-4 h-4 mr-1" /> Search
-                </button>
-              </div>
-            </form>
+          <div className="wrap max-w-7xl mx-auto">
+            <HomeSearchSection />
           </div>
         </section>
 
         {/* 3. All Rental Properties Grid */}
         <section className="sect bg-bg">
-          <div className="wrap">
-            <div className="sect-head row">
+          <div className="wrap max-w-7xl mx-auto">
+            <div className="sect-head row flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 sm:mb-8">
               <div>
-                <h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
                   All <span className="hl">Rental</span> Properties
                 </h2>
-                <p className="result-info mt-2">
+                <p className="result-info text-text-muted text-xs sm:text-sm mt-1.5">
                   Showing {properties.length} rentals across Kanpur
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <button type="button" className="btn dark">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <Link href="/dashboard/wishlist" className="btn dark text-xs sm:text-sm py-2 px-3 sm:px-4">
                   <Heart className="w-4 h-4 mr-1.5 text-accent-pink" /> Shortlist
-                </button>
-                <Link href="/contact" className="btn orange">
-                  <Phone className="w-4 h-4 mr-1.5 text-accent-pink" /> Get Assistance
+                </Link>
+                <Link href="/contact" className="btn orange text-xs sm:text-sm py-2 px-3 sm:px-4 btn-loop-shine">
+                  <Phone className="w-4 h-4 mr-1.5" /> Get Assistance
                 </Link>
               </div>
             </div>
 
-            <div className="listings">
-              {properties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-            </div>
+            {properties.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                {properties.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 px-4 rounded-3xl border border-white/10 bg-white/[0.02]">
+                <p className="text-lg font-bold text-white mb-2">No matching rentals found</p>
+                <p className="text-xs text-text-muted mb-6">Try clearing some filters or exploring other Kanpur localities.</p>
+                <Link href="/rentals" className="btn orange text-xs font-bold py-2.5 px-5">
+                  Reset All Filters
+                </Link>
+              </div>
+            )}
           </div>
         </section>
 

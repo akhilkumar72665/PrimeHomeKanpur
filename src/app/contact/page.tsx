@@ -270,16 +270,18 @@ export default function ContactPage() {
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Row 1: Name & Phone */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="field">
                         <label htmlFor="contact-name">Full Name *</label>
                         <input
                           id="contact-name"
                           type="text"
+                          autoComplete="name"
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="Your Name"
+                          placeholder="Your Full Name"
+                          className="h-12"
                         />
                       </div>
                       <div className="field">
@@ -287,25 +289,31 @@ export default function ContactPage() {
                         <input
                           id="contact-phone"
                           type="tel"
+                          inputMode="tel"
+                          autoComplete="tel"
                           required
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="+91 9151435647"
+                          className="h-12"
                         />
                       </div>
                     </div>
 
                     {/* Row 2: Email & Interested In */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="field">
                         <label htmlFor="contact-email">Email Address *</label>
                         <input
                           id="contact-email"
                           type="email"
+                          inputMode="email"
+                          autoComplete="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="name@example.com"
+                          className="h-12"
                         />
                       </div>
                       <div className="field">
@@ -314,6 +322,7 @@ export default function ContactPage() {
                           id="contact-interest"
                           value={interest}
                           onChange={(e) => setInterest(e.target.value)}
+                          className="h-12"
                         >
                           <option value="Renting a property">Renting a property</option>
                           <option value="Listing my property">Listing my property</option>
@@ -332,7 +341,8 @@ export default function ContactPage() {
                         type="text"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        placeholder="e.g. Kakadeo, Civil Lines, Swaroop Nagar, Barra"
+                        placeholder="e.g. Kakadeo, Swaroop Nagar, Civil Lines..."
+                        className="h-12"
                       />
                     </div>
 

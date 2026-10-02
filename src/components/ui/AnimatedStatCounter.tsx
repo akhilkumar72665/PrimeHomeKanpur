@@ -14,7 +14,7 @@ export default function AnimatedStatCounter({
   label,
 }: AnimatedStatCounterProps) {
   const [isVisible, setIsVisible] = useState(false)
-  const [displayCount, setDisplayCount] = useState(0)
+  const [displayCount, setDisplayCount] = useState(value)
   const elementRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

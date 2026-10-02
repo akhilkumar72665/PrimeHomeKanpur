@@ -77,31 +77,35 @@ export default function Footer() {
         </div>
 
         {/* 4 Columns Lower Section */}
-        <div className="foot-grid">
+        <div className="foot-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Newsletter */}
-          <div>
-            <div className="foot-title font-bold text-white mb-3">Subscribe to our newsletter</div>
-            <p className="text-text-muted text-sm mb-4 leading-relaxed">
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="foot-title font-bold text-white mb-3 text-base">Subscribe to our newsletter</div>
+            <p className="text-text-muted text-xs sm:text-sm mb-4 leading-relaxed">
               Get the latest rental listings and market updates in Kanpur delivered straight to your inbox.
             </p>
-            <form className="flex gap-2">
+            <form className="flex flex-col sm:flex-row gap-2 max-w-md">
               <input
                 type="email"
+                inputMode="email"
+                autoComplete="email"
+                required
+                aria-label="Email address for newsletter"
                 placeholder="Enter your email"
-                className="h-11 flex-1 rounded-xl border border-border bg-[#0A0719] px-4 text-sm text-white placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+                className="h-12 flex-1 rounded-xl border border-white/15 bg-[#0A0719] px-4 text-sm text-white placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
               />
               <button
                 type="submit"
-                className="btn btn-primary h-11 px-5 text-sm font-semibold rounded-xl"
+                className="btn btn-primary h-12 px-5 text-sm font-bold rounded-xl whitespace-nowrap active:scale-95"
               >
-                Submit
+                Subscribe
               </button>
             </form>
           </div>
 
           {/* Navigation */}
           <div>
-            <div className="foot-title font-bold text-white mb-3">Navigation</div>
+            <div className="foot-title font-bold text-white mb-3 text-sm uppercase tracking-wider">Navigation</div>
             <ul className="space-y-2.5">
               {[
                 { label: 'Home', href: '/' },
@@ -112,7 +116,7 @@ export default function Footer() {
                 { label: 'Contact', href: '/contact' },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors">
+                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-1 inline-block">
                     {link.label}
                   </Link>
                 </li>
@@ -122,7 +126,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <div className="foot-title font-bold text-white mb-3">Company</div>
+            <div className="foot-title font-bold text-white mb-3 text-sm uppercase tracking-wider">Company</div>
             <ul className="space-y-2.5">
               {[
                 { label: 'About Us', href: '/about' },
@@ -132,7 +136,7 @@ export default function Footer() {
                 { label: 'Sign In', href: '/signin' },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors">
+                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-1 inline-block">
                     {link.label}
                   </Link>
                 </li>
@@ -142,7 +146,7 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <div className="foot-title font-bold text-white mb-3">Legal</div>
+            <div className="foot-title font-bold text-white mb-3 text-sm uppercase tracking-wider">Legal</div>
             <ul className="space-y-2.5">
               {[
                 { label: 'Privacy Policy', href: '/privacy-policy' },
@@ -150,7 +154,7 @@ export default function Footer() {
                 { label: 'Cookie Policy', href: '/cookie-policy' },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors">
+                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-1 inline-block">
                     {link.label}
                   </Link>
                 </li>
@@ -160,18 +164,18 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-8 text-xs text-text-muted border-t border-white/5">
-          <div>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 text-xs text-text-muted border-t border-white/5">
+          <div className="text-center sm:text-left">
             &copy; 2026 PrimeHomeKanpur. All rights reserved.
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/terms" className="hover:text-white transition-colors">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            <Link href="/terms" className="hover:text-white transition-colors py-1">
               Terms of Use
             </Link>
-            <Link href="/privacy-policy" className="hover:text-white transition-colors">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors py-1">
               Privacy Policy
             </Link>
-            <Link href="/cookie-policy" className="hover:text-white transition-colors">
+            <Link href="/cookie-policy" className="hover:text-white transition-colors py-1">
               Cookie Policy
             </Link>
           </div>

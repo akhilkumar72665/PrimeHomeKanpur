@@ -89,24 +89,24 @@ export default function PropertyMediaViewer({
               </div>
             )}
 
-            {/* Navigation Arrows (if >1 image) */}
+            {/* Navigation Arrows (if >1 image) - Always visible on mobile, hover-revealed on desktop */}
             {validImages.length > 1 && (
               <>
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/70 hover:bg-black/95 text-white flex items-center justify-center backdrop-blur-md border border-white/25 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 active:scale-95 z-10"
                   aria-label="Previous image"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={22} />
                 </button>
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/70 hover:bg-black/95 text-white flex items-center justify-center backdrop-blur-md border border-white/25 transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 active:scale-95 z-10"
                   aria-label="Next image"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={22} />
                 </button>
               </>
             )}

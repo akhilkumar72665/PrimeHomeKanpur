@@ -3,124 +3,82 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/cards/PropertyCard'
 import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter'
+import HomeSearchSection from '@/components/home/HomeSearchSection'
 import { getFeaturedProperties } from '@/lib/data/properties'
-import { Star, Search, Shield, Clock, Award, Check, ArrowRight } from 'lucide-react'
+import { Star, Shield, Clock, Award, Check, ArrowRight, MapPin, Search } from 'lucide-react'
 import { OurServicesPill, FindRentalIcon, ListRentalHouseIcon, RenewalsDocIcon } from '@/components/ui/Service3DIcons'
 
 export default async function HomePage() {
   const featuredProperties = await getFeaturedProperties(6)
 
+  const popularAreas = [
+    { name: 'Gurudev Chauraha', count: '14+ Listings', grad: 'from-[#0F766E] to-[#00C2D9]' },
+    { name: 'Kakadeo', count: '22+ Listings', grad: 'from-[#831843] to-[#EC4899]' },
+    { name: 'Vijay Nagar', count: '10+ Listings', grad: 'from-[#1E3A8A] to-[#3B82F6]' },
+    { name: 'Swaroop Nagar', count: '18+ Listings', grad: 'from-[#4C1D95] to-[#7C3AED]' },
+    { name: 'Civil Lines', count: '12+ Listings', grad: 'from-[#166534] to-[#22C55E]' },
+    { name: 'Awas Vikas', count: '15+ Listings', grad: 'from-[#92400E] to-[#EAB308]' },
+    { name: 'Vikas Nagar', count: '9+ Listings', grad: 'from-[#134E4A] to-[#2DD4BF]' },
+    { name: 'Barra', count: '16+ Listings', grad: 'from-[#7F1D1D] to-[#EF4444]' },
+    { name: 'Kalyanpur', count: '19+ Listings', grad: 'from-[#5B21B6] to-[#8B5CF6]' },
+    { name: 'Kidwai Nagar', count: '11+ Listings', grad: 'from-[#0891B2] to-[#22D3EE]' },
+  ]
+
   return (
-    <div className="min-h-screen flex flex-col bg-bg text-text">
+    <div className="min-h-screen flex flex-col bg-bg text-text overflow-x-hidden">
       <Header />
 
-      <main>
+      <main className="flex-1">
         {/* 1. Hero Section */}
-        <section className="hero" id="top">
-          <div className="wrap hero-inner">
+        <section className="hero py-12 md:py-20" id="top">
+          <div className="wrap hero-inner max-w-7xl mx-auto">
             {/* Trusted Avatar Stack */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex -space-x-2">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-6">
+              <div className="flex -space-x-2 shrink-0">
                 {['AP', 'PP', 'AK'].map((initials) => (
                   <div
                     key={initials}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4C1D95] border-2 border-bg flex items-center justify-center text-white text-xs font-bold shadow-lg"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4C1D95] border-2 border-[#07050F] flex items-center justify-center text-white text-xs font-bold shadow-lg"
                   >
                     {initials}
                   </div>
                 ))}
               </div>
-              <div className="flex items-center gap-1 text-[#EF4444]">
+              <div className="flex items-center gap-1 text-[#EF4444] shrink-0">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} className="w-4 h-4 fill-current" />
+                  <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
                 ))}
               </div>
-              <span className="text-text-secondary text-sm font-medium">83+ Verified Client Reviews</span>
+              <span className="text-text-secondary text-xs sm:text-sm font-medium">83+ Verified Client Reviews</span>
             </div>
 
             {/* H1 Heading */}
-            <h1 className="max-w-4xl text-5xl md:text-6xl lg:text-[4.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] text-white mb-6">
+            <h1 className="max-w-4xl text-3xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-extrabold leading-[1.05] tracking-tight text-white mb-4 sm:mb-6">
               Find your next rental with <span className="hl">PrimeHomeKanpur</span>
             </h1>
 
-            {/* Subtitle (Clean & modern without brokerage fee clause) */}
-            <p className="text-text-secondary text-lg md:text-xl mb-8 max-w-2xl leading-relaxed">
+            {/* Subtitle */}
+            <p className="text-text-secondary text-sm sm:text-lg md:text-xl mb-8 max-w-2xl leading-relaxed">
               Find your perfect rental with ease. Explore 100% physically verified homes across Kanpur, schedule instant physical visits, and move into your ideal home hassle-free.
             </p>
 
-            {/* CTA Button */}
-            <div className="mb-14 flex flex-wrap items-center gap-4">
-              <Link href="/rentals" className="btn orange text-base btn-loop-shine">
+            {/* CTA Buttons */}
+            <div className="mb-10 sm:mb-14 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <Link href="/rentals" className="btn orange text-sm sm:text-base btn-loop-shine justify-center py-3">
                 Explore Rentals <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
-              <Link href="/contact" className="btn dark text-base">
+              <Link href="/contact" className="btn dark text-sm sm:text-base justify-center py-3">
                 Free Call Consultation
               </Link>
             </div>
 
-            {/* 4-Field Search Bar Card */}
-            <form action="/rentals" method="GET" className="card-s">
-              <div className="field">
-                <label htmlFor="hero-location">Location</label>
-                <select id="hero-location" name="location" defaultValue="">
-                  <option value="">All Kanpur areas</option>
-                  <option value="Gurudev Chauraha">Gurudev Chauraha</option>
-                  <option value="Kakadeo">Kakadeo</option>
-                  <option value="Vijay Nagar">Vijay Nagar</option>
-                  <option value="Vikas Nagar">Vikas Nagar</option>
-                  <option value="Awas Vikas">Awas Vikas</option>
-                  <option value="Swaroop Nagar">Swaroop Nagar</option>
-                  <option value="Civil Lines">Civil Lines</option>
-                  <option value="Barra">Barra</option>
-                  <option value="Kalyanpur">Kalyanpur</option>
-                  <option value="Kidwai Nagar">Kidwai Nagar</option>
-                  <option value="Govind Nagar">Govind Nagar</option>
-                </select>
-              </div>
-
-              <div className="field">
-                <label htmlFor="hero-bhk">BHK</label>
-                <select id="hero-bhk" name="bhk" defaultValue="">
-                  <option value="">Any BHK</option>
-                  <option value="1">1 BHK</option>
-                  <option value="2">2 BHK</option>
-                  <option value="3">3 BHK</option>
-                  <option value="4">4+ BHK</option>
-                </select>
-              </div>
-
-              <div className="field">
-                <label htmlFor="hero-price">Price Range</label>
-                <select id="hero-price" name="price" defaultValue="">
-                  <option value="">Any budget</option>
-                  <option value="under-10k">Under ₹10,000</option>
-                  <option value="10k-20k">₹10,000 – ₹20,000</option>
-                  <option value="20k-30k">₹20,000 – ₹30,000</option>
-                  <option value="above-30k">Above ₹30,000</option>
-                </select>
-              </div>
-
-              <div className="field">
-                <label htmlFor="hero-tenant">Tenant Type</label>
-                <select id="hero-tenant" name="tenant" defaultValue="">
-                  <option value="">Any tenant type</option>
-                  <option value="Family">Family</option>
-                  <option value="Bachelor">Bachelor</option>
-                  <option value="Professional">Professional</option>
-                </select>
-              </div>
-
-              <div>
-                <button type="submit" className="btn orange w-full">
-                  <Search className="w-4 h-4 mr-1" /> Search Rentals
-                </button>
-              </div>
-            </form>
+            {/* Mobile-First Responsive Search Bar / Bottom Sheet */}
+            <HomeSearchSection />
           </div>
         </section>
 
-        {/* 2. Stats Strip with Large Animated Digits & 5 Years of Experience */}
-        <section className="statsbar py-8">
+        {/* 2. Stats Strip with Large Animated Digits */}
+        <section className="statsbar py-8 sm:py-10 bg-[#0E0A24]/60 border-y border-white/5">
           <div className="wrap grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <AnimatedStatCounter value={83} suffix="+" label="Total Reviews" />
             <AnimatedStatCounter value={5} suffix="+" label="Years of Experience" />
@@ -131,19 +89,21 @@ export default async function HomePage() {
 
         {/* 3. Rental Listings Grid */}
         <section className="sect bg-bg">
-          <div className="wrap">
-            <div className="sect-head row">
+          <div className="wrap max-w-7xl mx-auto">
+            <div className="sect-head row flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 sm:mb-8">
               <div>
                 <span className="pill"><span className="dot" />Rental Listings</span>
-                <h2 className="mt-4">Explore Premium <span className="hl">Rentals</span> Chosen For You</h2>
+                <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
+                  Explore Premium <span className="hl">Rentals</span> Chosen For You
+                </h2>
               </div>
-              <Link href="/rentals" className="btn orange shrink-0 btn-loop-shine">
+              <Link href="/rentals" className="btn orange shrink-0 btn-loop-shine text-xs sm:text-sm py-2.5 px-4 self-start sm:self-auto">
                 View All Rentals <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
-            <p className="result-info mb-8">Showing verified rentals across Kanpur</p>
+            <p className="result-info text-text-muted text-xs sm:text-sm mb-6 sm:mb-8">Showing verified rentals across Kanpur</p>
 
-            <div className="listings">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {featuredProperties.map((property) => (
                 <PropertyCard key={property.id} property={property} />
               ))}
@@ -151,55 +111,41 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 4. Popular Working Areas (Marquee) */}
-        <section className="sect gray">
-          <div className="wrap">
-            <div className="sect-head row">
+        {/* 4. Popular Working Areas (Swipeable Carousel on Mobile) */}
+        <section className="sect gray overflow-hidden">
+          <div className="wrap max-w-7xl mx-auto">
+            <div className="sect-head row flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
               <div>
                 <span className="pill"><span className="dot" />Popular Areas</span>
-                <h2 className="mt-4">Our Rental Expertise Across Diverse <span className="hl">Working Areas</span></h2>
+                <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
+                  Our Rental Expertise Across Diverse <span className="hl">Working Areas</span>
+                </h2>
               </div>
-              <Link href="/agents" className="btn orange shrink-0">
+              <Link href="/rentals" className="btn orange shrink-0 text-xs sm:text-sm py-2.5 px-4 self-start sm:self-auto">
                 View All Locations <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
           </div>
 
-          <div className="marquee mt-6">
-            <div className="marquee-track">
-              {[
-                { name: 'Gurudev Chauraha', grad: 'p1' },
-                { name: 'Kakadeo', grad: 'p7' },
-                { name: 'Vijay Nagar', grad: 'p2' },
-                { name: 'Vikas Nagar', grad: 'p6' },
-                { name: 'Awas Vikas', grad: 'p8' },
-                { name: 'Swaroop Nagar', grad: 'p10' },
-                { name: 'Civil Lines', grad: 'p9' },
-                { name: 'Govind Nagar', grad: 'p11' },
-                { name: 'Kalyanpur', grad: 'p12' },
-                { name: 'Barra', grad: 'p1' },
-                { name: 'Kidwai Nagar', grad: 'p7' },
-                { name: 'Awadhpuri', grad: 'p2' },
-              ].concat([
-                { name: 'Gurudev Chauraha', grad: 'p1' },
-                { name: 'Kakadeo', grad: 'p7' },
-                { name: 'Vijay Nagar', grad: 'p2' },
-                { name: 'Vikas Nagar', grad: 'p6' },
-                { name: 'Awas Vikas', grad: 'p8' },
-                { name: 'Swaroop Nagar', grad: 'p10' },
-                { name: 'Civil Lines', grad: 'p9' },
-                { name: 'Govind Nagar', grad: 'p11' },
-                { name: 'Kalyanpur', grad: 'p12' },
-                { name: 'Barra', grad: 'p1' },
-                { name: 'Kidwai Nagar', grad: 'p7' },
-                { name: 'Awadhpuri', grad: 'p2' },
-              ]).map((area, idx) => (
-                <div key={`${area.name}-${idx}`} className={`area-card ${area.grad}`}>
-                  <div className="area-content">
-                    <h3>{area.name}</h3>
-                    <p>Kanpur</p>
+          {/* Swipeable Scroll Container on Mobile / Grid on Desktop */}
+          <div className="wrap max-w-7xl mx-auto mt-4">
+            <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 overflow-x-auto sm:overflow-x-visible pb-4 pt-2 snap-x snap-mandatory scrollbar-none">
+              {popularAreas.map((area) => (
+                <Link
+                  key={area.name}
+                  href={`/rentals?location=${encodeURIComponent(area.name)}`}
+                  className={`snap-start shrink-0 w-[200px] sm:w-auto p-4 rounded-2xl bg-gradient-to-br ${area.grad} border border-white/15 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-black/30 block`}
+                >
+                  <div className="flex items-center gap-2 text-white/90 text-xs font-semibold mb-1">
+                    <MapPin size={13} className="shrink-0" /> Kanpur
                   </div>
-                </div>
+                  <h3 className="text-white font-extrabold text-base sm:text-lg leading-tight truncate">
+                    {area.name}
+                  </h3>
+                  <p className="text-white/80 text-xs mt-2 font-medium">
+                    {area.count}
+                  </p>
+                </Link>
               ))}
             </div>
           </div>
