@@ -85,9 +85,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
+          {/* Sidebar / Mobile Nav Tabs */}
           <aside className="lg:col-span-1">
-            <div className="rounded-2xl border border-white/10 bg-[#0E0B1F] p-3 space-y-1 sticky top-28">
+            <div className="rounded-2xl border border-white/10 bg-[#0E0B1F] p-2 sm:p-3 flex overflow-x-auto no-scrollbar lg:flex-col gap-1.5 lg:gap-1 lg:sticky lg:top-28">
               {navItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
@@ -96,19 +96,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    className={`flex items-center gap-2 sm:gap-3 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all shrink-0 ${
                       isActive
                         ? 'bg-gradient-to-r from-primary to-purple-600 text-white shadow-md'
                         : 'text-text-secondary hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <Icon size={18} className={isActive ? 'text-white' : 'text-text-muted'} />
+                    <Icon size={16} className={isActive ? 'text-white' : 'text-text-muted'} />
                     <span>{item.name}</span>
                   </Link>
                 )
               })}
 
-              <div className="pt-3 mt-3 border-t border-white/10">
+              <div className="hidden lg:block pt-3 mt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => signOut()}

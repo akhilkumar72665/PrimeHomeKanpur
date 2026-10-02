@@ -43,33 +43,33 @@ export default function AgentCard({ agent }: AgentCardProps) {
         <div className="grid grid-cols-3 gap-2">
           <a
             href={`tel:${phone}`}
-            className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/5 text-[#EC4899] text-[11px] font-semibold transition-all hover:scale-102"
+            className="flex flex-col items-center justify-center min-h-[44px] py-2 px-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/5 text-[#EC4899] text-[11px] font-semibold transition-all hover:scale-102"
             title="Call"
             aria-label={`Call ${agent.name}`}
           >
-            <Phone size={14} className="mb-0.5" />
+            <Phone size={15} className="mb-0.5" />
             <span>Call</span>
           </a>
 
           <a
             href={`mailto:${email}`}
-            className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/5 text-text-secondary hover:text-white text-[11px] font-semibold transition-all hover:scale-102"
+            className="flex flex-col items-center justify-center min-h-[44px] py-2 px-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/5 text-text-secondary hover:text-white text-[11px] font-semibold transition-all hover:scale-102"
             title="Email"
             aria-label={`Email ${agent.name}`}
           >
-            <Mail size={14} className="mb-0.5" />
-            <span>Message</span>
+            <Mail size={15} className="mb-0.5" />
+            <span>Email</span>
           </a>
 
           <a
             href={`https://wa.me/${rawPhone.startsWith('91') ? rawPhone : `91${rawPhone}`}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/5 text-[#25D366] text-[11px] font-semibold transition-all hover:scale-102"
+            className="flex flex-col items-center justify-center min-h-[44px] py-2 px-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/5 text-[#25D366] text-[11px] font-semibold transition-all hover:scale-102"
             title="WhatsApp"
             aria-label={`WhatsApp ${agent.name}`}
           >
-            <MessageSquare size={14} className="mb-0.5" />
+            <MessageSquare size={15} className="mb-0.5" />
             <span>WhatsApp</span>
           </a>
         </div>
