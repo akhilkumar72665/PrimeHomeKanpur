@@ -1,60 +1,47 @@
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import Button from '@/components/ui/Button'
-import SectionHeading from '@/components/sections/SectionHeading'
 import { Check, Target, Eye, Heart, Users, ArrowRight } from 'lucide-react'
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-bg text-text">
       <Header />
-      
-      <main>
-        {/* Hero */}
-        <section className="relative bg-bg purple-glow diagonal-pattern py-20 md:py-28">
-          <div className="container-custom">
-            <div className="max-w-4xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-deep border border-violet mb-6">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <span className="text-primary text-xs font-semibold uppercase tracking-wider">
-                  About Us
-                </span>
-              </div>
-              
-              <h1 className="text-4xl md:text-5xl lg:text-[4rem] font-bold text-white leading-[0.98] tracking-[-0.04em] mb-6">
-                Connecting Kanpur families & professionals with <span className="text-primary">their perfect home</span>
-              </h1>
-              
-              <p className="text-text-secondary text-lg mb-8 max-w-2xl">
-                Since 2012, PrimeHomeKanpur has been Kanpur&apos;s most trusted rental marketplace. With deep local knowledge and a client-first approach, we make renting simple, transparent, and stress-free.
-              </p>
 
-              <div className="flex items-center gap-2 text-text-muted text-sm">
-                <span className="text-primary cursor-pointer hover:underline">Home</span>
-                <span>/</span>
-                <span>About Us</span>
-              </div>
+      <main>
+        {/* 1. Page Hero */}
+        <section className="page-hero">
+          <div className="wrap">
+            <div className="breadcrumbs">
+              <Link href="/">Home</Link>
+              <span>/</span>
+              <span>About Us</span>
             </div>
+
+            <span className="pill mb-4"><span className="dot" />About Us</span>
+            <h1 className="max-w-4xl text-4xl md:text-5xl lg:text-[4rem] font-extrabold text-white leading-[1.05] tracking-[-0.03em] mb-6">
+              Connecting Kanpur families & professionals with <span className="hl">their perfect home</span>
+            </h1>
+
+            <p className="text-text-secondary text-lg mb-4 max-w-2xl leading-relaxed">
+              Since 2012, PrimeHomeKanpur has been Kanpur&apos;s most trusted rental marketplace. With deep local knowledge and a client-first approach, we make renting simple, transparent, and stress-free.
+            </p>
           </div>
         </section>
 
-        {/* Story */}
-        <section className="bg-bg py-20">
-          <div className="container-custom">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Visual */}
-              <div className="aspect-[4/3] rounded-3xl bg-gradient-to-br from-[#3b0764] via-[#581c87] to-[#7c3aed] border-2 border-violet/30 shadow-[0_20px_50px_rgba(124,58,237,0.3)] diagonal-pattern"></div>
+        {/* 2. Story Section */}
+        <section className="sect bg-bg">
+          <div className="wrap">
+            <div className="about items-center gap-12">
+              {/* Visual Block with diagonal pattern */}
+              <div className="art violet" />
 
-              {/* Content */}
+              {/* Story Content */}
               <div>
-                <SectionHeading
-                  pill="Our Story"
-                  title="Building Kanpur's most trusted"
-                  highlight="rental platform"
-                />
+                <span className="pill mb-4"><span className="dot" />Our Story</span>
+                <h2 className="mb-6">Building Kanpur&apos;s most trusted <span className="hl">rental platform</span></h2>
 
-                <div className="space-y-6 text-text-secondary">
+                <div className="space-y-6 text-text-secondary leading-relaxed">
                   <p>
                     PrimeHomeKanpur started as a small family-run real estate consultancy in Awadhpuri in 2012. Back then, most rental transactions happened through word of mouth and shady brokers — tenants were often scammed, and landlords struggled to find reliable occupants.
                   </p>
@@ -70,72 +57,80 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Stats */}
-        <section className="bg-bg-purple border-y border-border">
-          <div className="container-custom">
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
-              <StatItem number="14+" label="Years of Experience" />
-              <StatItem number="500+" label="Families Helped" />
-              <StatItem number="67+" label="Active Listings" />
-              <StatItem number="98%" label="Satisfaction Rate" />
+        {/* 3. Stats Strip */}
+        <section className="statsbar">
+          <div className="wrap">
+            <div className="cell">
+              <b>14+</b>
+              <span>Years of Experience</span>
+            </div>
+            <div className="cell">
+              <b>500+</b>
+              <span>Families Helped</span>
+            </div>
+            <div className="cell">
+              <b>67+</b>
+              <span>Active Listings</span>
+            </div>
+            <div className="cell">
+              <b>98%</b>
+              <span>Satisfaction Rate</span>
             </div>
           </div>
         </section>
 
-        {/* Mission & Values */}
-        <section className="bg-bg py-20">
-          <div className="container-custom">
-            <SectionHeading
-              pill="Our Core Values"
-              title="What drives us every"
-              highlight="single day"
-            />
+        {/* 4. Core Values (4 Cards) */}
+        <section className="sect bg-bg">
+          <div className="wrap">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="pill mx-auto mb-4"><span className="dot" />Our Core Values</span>
+              <h2 className="mx-auto">What drives us every <span className="hl">single day</span></h2>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="feat-grid">
               {[
                 {
-                  icon: <Target className="w-8 h-8" />,
+                  icon: <Target className="w-6 h-6 text-primary" />,
                   title: 'Our Mission',
-                  description: 'To make renting in Kanpur fair, transparent, and hassle-free — for both tenants and landlords.',
+                  desc: 'To make renting in Kanpur fair, transparent, and hassle-free — for both tenants and landlords.',
                 },
                 {
-                  icon: <Eye className="w-8 h-8" />,
+                  icon: <Eye className="w-6 h-6 text-primary" />,
                   title: 'Our Vision',
-                  description: 'To become Kanpur\'s #1 rental marketplace by 2028, powered by technology and trusted relationships.',
+                  desc: 'To become Kanpur\'s #1 rental marketplace by 2028, powered by technology and trusted relationships.',
                 },
                 {
-                  icon: <Heart className="w-8 h-8" />,
+                  icon: <Heart className="w-6 h-6 text-primary" />,
                   title: 'Integrity First',
-                  description: 'Honest advice, no hidden fees, and listings that always match reality. That\'s our promise to you.',
+                  desc: 'Honest advice, no hidden fees, and listings that always match reality. That\'s our promise to you.',
                 },
                 {
-                  icon: <Users className="w-8 h-8" />,
+                  icon: <Users className="w-6 h-6 text-primary" />,
                   title: 'Client First',
-                  description: 'We don\'t close deals — we build relationships. 60% of our clients come from referrals.',
+                  desc: 'We don\'t close deals — we build relationships. 60% of our clients come from referrals.',
                 },
               ].map((item) => (
-                <div key={item.title} className="feature-card bg-surface border border-border rounded-2xl p-6 text-center">
-                  <div className="icon-shell w-16 h-16 mx-auto mb-4 text-primary">
+                <div key={item.title} className="feat text-center">
+                  <div className="w-12 h-12 rounded-xl bg-[#2A1566] border border-[#7C3AED]/40 flex items-center justify-center mx-auto mb-4">
                     {item.icon}
                   </div>
                   <h3 className="text-white font-bold text-lg mb-2">{item.title}</h3>
-                  <p className="text-text-secondary text-sm">{item.description}</p>
+                  <p className="text-text-secondary text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Leadership */}
-        <section className="bg-bg py-20">
-          <div className="container-custom">
-            <SectionHeading
-              pill="Leadership"
-              title="Meet the people behind"
-              highlight="PrimeHomeKanpur"
-            />
+        {/* 5. Leadership */}
+        <section className="sect gray">
+          <div className="wrap">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="pill mx-auto mb-4"><span className="dot" />Leadership</span>
+              <h2 className="mx-auto">Meet the people behind <span className="hl">PrimeHomeKanpur</span></h2>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="team-grid mb-10">
               {[
                 {
                   initials: 'RP',
@@ -165,39 +160,33 @@ export default function AboutPage() {
                   role: 'Senior Agent · West Kanpur',
                   bio: 'Expert in Vikas Nagar, Kakadeo, and Vijay Nagar markets. 180+ deals closed.',
                 },
-              ].map((person) => (
-                <div key={person.name} className="bg-surface border border-border rounded-2xl p-6 text-center hover:border-violet/60 transition-all duration-200 hover:-translate-y-1">
-                  <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${person.gradient} flex items-center justify-center mx-auto mb-4 text-white font-bold text-2xl shadow-lg border-2 border-white/10`}>
-                    {person.initials}
+              ].map((p) => (
+                <div key={p.name} className="agent-card">
+                  <div className={`agent-avatar ${p.gradient}`}>
+                    {p.initials}
                   </div>
-                  <h3 className="text-white font-bold text-lg mb-1">{person.name}</h3>
-                  <p className="text-primary text-xs uppercase tracking-wider font-semibold mb-3">{person.role}</p>
-                  <p className="text-text-secondary text-sm leading-relaxed">{person.bio}</p>
+                  <h3 className="agent-name">{p.name}</h3>
+                  <p className="agent-role">{p.role}</p>
+                  <p className="agent-bio">{p.bio}</p>
                 </div>
               ))}
             </div>
 
             <div className="text-center">
-              <Link href="/agents">
-                <Button variant="primary" size="md">
-                  Meet Our Full Team <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+              <Link href="/agents" className="btn orange">
+                Meet Our Full Team <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Why Choose Us */}
-        <section className="bg-bg-purple py-20 border-t border-border/40">
-          <div className="container-custom">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Content */}
+        {/* 6. Why Choose Us (Partners for Life) */}
+        <section className="sect bg-bg">
+          <div className="wrap">
+            <div className="why-grid items-center gap-12">
               <div>
-                <SectionHeading
-                  pill="Why Choose Us"
-                  title="Not just brokers — your"
-                  highlight="rental partners for life"
-                />
+                <span className="pill mb-4"><span className="dot" />Why Choose Us</span>
+                <h2 className="mb-6">Not just brokers — your <span className="hl">rental partners for life</span></h2>
 
                 <ul className="space-y-4 mb-8">
                   {[
@@ -208,40 +197,34 @@ export default function AboutPage() {
                     '98% of our clients would recommend us to a friend. That\'s the trust we\'ve built since 2012.',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-text-secondary">{item}</span>
+                      <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-text-secondary text-sm leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/rentals">
-                    <Button variant="primary" size="md">
-                      Browse Our Listings
-                    </Button>
+                  <Link href="/rentals" className="btn orange">
+                    Browse Our Listings
                   </Link>
-                  <Link href="/contact">
-                    <Button variant="secondary" size="md">
-                      Talk to Founder
-                    </Button>
+                  <Link href="/contact" className="btn dark">
+                    Talk to Founder
                   </Link>
                 </div>
               </div>
 
-              {/* Visual */}
-              <div className="aspect-[4/3] rounded-3xl bg-gradient-to-br from-[#0f766e] via-[#0d9488] to-[#00c2d9] border-2 border-primary/30 shadow-[0_20px_50px_rgba(0,194,217,0.25)] grid-pattern"></div>
+              <div className="art cyan" />
             </div>
           </div>
         </section>
 
-        {/* Client Love */}
-        <section className="bg-bg py-20">
-          <div className="container-custom">
-            <SectionHeading
-              pill="Client Love"
-              title="What our"
-              highlight="clients say"
-            />
+        {/* 7. Client Love Testimonials */}
+        <section className="sect gray">
+          <div className="wrap">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="pill mx-auto mb-4"><span className="dot" />Client Love</span>
+              <h2 className="mx-auto">What our <span className="hl">clients say</span> about us</h2>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
@@ -249,13 +232,13 @@ export default function AboutPage() {
                   initials: 'VG',
                   name: 'Vinod Gupta',
                   role: 'Family · Vijay Nagar',
-                  quote: 'Rajesh ji helped us find a 3BHK in Vijay Nagar within 5 days. We are a family of 5 with specific needs — he patiently showed us 8 properties and negotiated the rent down by ₹4,000. Truly professional service!',
+                  quote: 'Rajesh ji helped us find a 3BHK in Vijay Nagar within 5 days. We\'re a family of 5 with specific needs — he patiently showed us 8 properties and negotiated the rent down by ₹4,000. Truly professional service!',
                 },
                 {
                   initials: 'RS',
                   name: 'Rohan Singh',
                   role: 'Software Engineer · Kakadeo',
-                  quote: 'As a bachelor moving to Kanpur from Delhi, I was worried about getting scammed. PrimeHomeKanpur verified listings gave me confidence. I signed my Kakadeo flat within 48 hours and everything matched the photos exactly.',
+                  quote: 'As a bachelor moving to Kanpur from Delhi, I was worried about getting scammed. PrimeHomeKanpur\'s verified listings gave me confidence. I signed my Kakadeo flat within 48 hours and everything matched the photos exactly.',
                 },
                 {
                   initials: 'MT',
@@ -263,18 +246,18 @@ export default function AboutPage() {
                   role: 'Property Owner · 4 Properties',
                   quote: 'I own 4 properties in Awadhpuri and Swaroop Nagar. Earlier I was managing everything myself — bad tenants, delayed rent, constant calls. Since handing everything to PrimeHomeKanpur 3 years ago, I haven\'t had a single vacancy for more than 2 weeks. Worth every rupee.',
                 },
-              ].map((testimonial) => (
-                <div key={testimonial.name} className="bg-surface border border-border rounded-xl p-6">
-                  <p className="text-text-secondary text-sm mb-4 leading-relaxed">
-                    {testimonial.quote}
+              ].map((item) => (
+                <div key={item.name} className="feat flex flex-col justify-between">
+                  <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                    &ldquo;{item.quote}&rdquo;
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet to-violet-dark flex items-center justify-center text-white font-bold text-sm">
-                      {testimonial.initials}
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#4C1D95] flex items-center justify-center text-white font-bold text-sm shadow">
+                      {item.initials}
                     </div>
                     <div>
-                      <p className="text-white font-semibold text-sm">{testimonial.name}</p>
-                      <p className="text-text-muted text-xs">{testimonial.role}</p>
+                      <p className="text-white font-semibold text-sm">{item.name}</p>
+                      <p className="text-text-muted text-xs">{item.role}</p>
                     </div>
                   </div>
                 </div>
@@ -283,23 +266,23 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="bg-bg py-20">
-          <div className="container-custom">
-            <div className="bg-surface-elevated border border-border rounded-2xl p-8 md:p-12 text-center">
-              <h2 className="text-4xl font-bold text-white mb-4">
-                Ready to start your <span className="text-primary">rental journey?</span>
+        {/* 8. Final CTA */}
+        <section className="sect pt-0">
+          <div className="wrap">
+            <div className="cta-section">
+              <h2>
+                Ready to start your <span className="hl">rental journey?</span>
               </h2>
-              <p className="text-text-secondary text-lg mb-8 max-w-2xl mx-auto">
-                Whether you're looking for a home or need help renting out your property, our team is ready to help you every step of the way.
+              <p>
+                Whether you&apos;re looking for a home or need help renting out your property, our team is ready to help you every step of the way.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="primary" size="lg">
+              <div className="cta-btns">
+                <Link href="/rentals" className="btn orange">
                   Browse Rentals
-                </Button>
-                <Button variant="secondary" size="lg">
+                </Link>
+                <Link href="/contact" className="btn dark">
                   Get in Touch
-                </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -307,15 +290,6 @@ export default function AboutPage() {
       </main>
 
       <Footer />
-    </div>
-  )
-}
-
-function StatItem({ number, label }: { number: string; label: string }) {
-  return (
-    <div className="text-center py-8">
-      <div className="text-4xl md:text-5xl font-bold text-primary mb-2">{number}</div>
-      <div className="text-text-muted text-sm uppercase tracking-wider">{label}</div>
     </div>
   )
 }

@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Phone } from 'lucide-react'
-import Button from '@/components/ui/Button'
+import { Phone } from 'lucide-react'
 
 const navItems = [
   { name: 'Home', href: '/' },
@@ -16,120 +15,103 @@ const navItems = [
   { name: 'Contact', href: '/contact' },
 ]
 
-const ctaTextByPath: Record<string, string> = {
-  '/': 'Explore Rentals',
-  '/about': 'Contact Us',
-  '/rentals': 'List Property',
-  '/agents': 'Talk to Agent',
-  '/services': 'Get Service',
-  '/faq': 'Ask a Question',
-  '/contact': 'Call Now',
-}
-
 export default function Header() {
-  const pathname = usePathname()
+  const pathname = usePathname() || '/'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const ctaText = ctaTextByPath[pathname] || 'Explore Rentals'
+
+  // Determine CTA text based on pathname
+  let ctaText = 'Explore Rentals'
+  let ctaHref = '/rentals'
+
+  if (pathname === '/') {
+    ctaText = 'Explore Rentals'
+    ctaHref = '/rentals'
+  } else if (pathname === '/about') {
+    ctaText = 'Contact Us'
+    ctaHref = '/contact'
+  } else if (pathname === '/rentals') {
+    ctaText = 'List Property'
+    ctaHref = '/contact'
+  } else if (pathname.startsWith('/rentals/')) {
+    ctaText = 'Schedule Tour'
+    ctaHref = '#schedule-visit'
+  } else if (pathname === '/agents') {
+    ctaText = 'Talk to Agent'
+    ctaHref = '/contact'
+  } else if (pathname === '/services') {
+    ctaText = 'Get Service'
+    ctaHref = '/contact'
+  } else if (pathname === '/faq') {
+    ctaText = 'Ask a Question'
+    ctaHref = '/contact'
+  } else if (pathname === '/contact') {
+    ctaText = 'Call Now'
+    ctaHref = 'tel:+916398987290'
+  }
+
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 bg-bg/85 backdrop-blur-xl">
-      <div className="container-custom">
-        <div className="flex h-[74px] items-center justify-between gap-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#3b82f6,#8b5cf6)] shadow-[0_12px_30px_rgba(124,58,237,0.22)]">
-              <span className="text-lg font-bold text-white">P</span>
-            </div>
-            <span className="text-lg font-bold tracking-tight text-white md:text-[30px] md:leading-none">PrimeHomeKanpur</span>
+    <header className="site">
+      <nav aria-label="Primary Navigation">
+        {/* Brand */}
+        <Link href="/" className="brand">
+          <div className="logo-icon">P</div>
+          <span>PrimeHomeKanpur</span>
+        </Link>
+
+        {/* Center Desktop Navigation & Mobile Drawer */}
+        <div className={`navlinks ${mobileMenuOpen ? 'open' : ''}`}>
+          {navItems.map((item) => {
+            const isActive =
+              item.href === '/'
+                ? pathname === '/'
+                : pathname === item.href || (item.href === '/rentals' && pathname.startsWith('/rentals/'))
+
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={isActive ? 'active' : ''}
+                aria-current={isActive ? 'page' : undefined}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.name}
+              </Link>
+            )
+          })}
+
+          {/* Mobile-only CTA */}
+          <Link
+            href={ctaHref}
+            className="menu-cta btn dark"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {pathname === '/contact' && <Phone className="w-4 h-4 text-accent-pink" />}
+            {ctaText}
+          </Link>
+        </div>
+
+        {/* Right CTA & Mobile Toggle */}
+        <div className="nav-right">
+          <Link href={ctaHref} className="nav-cta btn dark">
+            {pathname === '/contact' && <Phone className="w-4 h-4 text-accent-pink" />}
+            {ctaText}
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1.5" aria-label="Primary">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    'nav-link inline-flex h-10 items-center rounded-full px-4 text-sm font-semibold',
-                    isActive && 'nav-link-active'
-                  )}
-                >
-                  {item.name}
-                </Link>
-              )
-            })}
-          </nav>
-
-          {/* CTA Button */}
-          <div className="hidden md:block">
-            {pathname === '/contact' ? (
-              <Button variant="secondary" size="md" className="rounded-full px-6">
-                <Phone className="w-4 h-4 mr-2 text-accent-pink" />
-                {ctaText}
-              </Button>
-            ) : (
-              <Button variant="secondary" size="md" className="rounded-full px-6">
-                {ctaText}
-              </Button>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
           <button
+            id="menuBtn"
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface text-white md:hidden"
-            aria-label="Toggle menu"
+            className="menu-btn"
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <span />
+            <span />
+            <span />
           </button>
         </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="border-t border-border bg-bg/95 md:hidden">
-          <nav className="container-custom py-4">
-            <div className="flex flex-col gap-2">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      'rounded-xl px-4 py-3 text-sm font-semibold transition-colors',
-                      isActive
-                        ? 'bg-primary text-[#07050F]'
-                        : 'text-text-secondary hover:bg-white/5 hover:text-white'
-                    )}
-                  >
-                    {item.name}
-                  </Link>
-                )
-              })}
-              <div className="pt-4">
-                {pathname === '/contact' ? (
-                  <Button variant="secondary" size="md" className="w-full rounded-full">
-                    <Phone className="w-4 h-4 mr-2 text-accent-pink" />
-                    {ctaText}
-                  </Button>
-                ) : (
-                  <Button variant="secondary" size="md" className="w-full rounded-full">
-                    {ctaText}
-                  </Button>
-                )}
-              </div>
-            </div>
-          </nav>
-        </div>
-      )}
+      </nav>
     </header>
   )
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ')
 }

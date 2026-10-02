@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { Phone, Mail, MessageSquare, Star } from 'lucide-react'
 import { Agent } from '@/types'
 
@@ -20,71 +19,72 @@ export default function AgentCard({ agent }: AgentCardProps) {
   const initials = agent.name === 'Amit Kumar' ? 'AK' : agent.name.split(' ').map(n => n[0]).join('').slice(0, 2)
 
   return (
-    <div className="agent-card bg-surface border border-border rounded-2xl p-6 text-center flex flex-col justify-between">
-      <div>
-        {/* Avatar */}
-        <div className={`w-20 h-20 rounded-full ${gradient} flex items-center justify-center mx-auto mb-4 text-white font-bold text-2xl shadow-lg border-2 border-white/10`}>
+    <div className="agent-card">
+      <div className="w-full">
+        {/* Avatar with initials */}
+        <div className={`agent-avatar mx-auto ${gradient}`}>
           {initials}
         </div>
 
-        {/* Name & Role */}
-        <h3 className="text-white font-bold text-lg mb-1">{agent.name}</h3>
-        <p className="text-primary text-xs font-semibold uppercase tracking-wider mb-3">{agent.role}</p>
+        {/* Name & Cyan Role */}
+        <h3 className="agent-name">{agent.name}</h3>
+        <p className="agent-role">{agent.role}</p>
 
-        {/* Description */}
-        <p className="text-text-secondary text-xs leading-relaxed mb-4 min-h-[48px] line-clamp-3">
+        {/* Bio */}
+        <p className="agent-bio">
           {agent.description}
         </p>
       </div>
 
-      <div>
-        {/* Stats */}
-        <div className="flex items-center justify-around py-3 border-y border-border/60 mb-4 text-center">
+      <div className="w-full">
+        {/* Stats Row */}
+        <div className="agent-stats">
           <div>
-            <span className="text-white font-bold text-sm block">{agent.deals_count}+</span>
-            <span className="text-text-muted text-[11px] uppercase tracking-wider">
+            <div className="agent-stat-val">{agent.deals_count}+</div>
+            <div className="agent-stat-lbl">
               {agent.name === 'Amit Kumar' ? 'Verified' : 'Deals'}
-            </span>
+            </div>
           </div>
-          <div className="h-5 w-px bg-border/60" />
           <div>
-            <span className="text-white font-bold text-sm flex items-center justify-center gap-1">
+            <div className="agent-stat-val flex items-center justify-center gap-1">
               {agent.rating}
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400 inline" />
-            </span>
-            <span className="text-text-muted text-[11px] uppercase tracking-wider">Rating</span>
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 inline" />
+            </div>
+            <div className="agent-stat-lbl">Rating</div>
           </div>
-          <div className="h-5 w-px bg-border/60" />
           <div>
-            <span className="text-white font-bold text-sm block">{agent.experience_years}</span>
-            <span className="text-text-muted text-[11px] uppercase tracking-wider">Yrs</span>
+            <div className="agent-stat-val">{agent.experience_years}</div>
+            <div className="agent-stat-lbl">Yrs</div>
           </div>
         </div>
 
-        {/* Contact Buttons (3 small rounded squares in a row) */}
-        <div className="flex items-center justify-center gap-3">
+        {/* Contact Action Buttons (Phone, Email, WhatsApp) */}
+        <div className="agent-actions">
           <a
             href={`tel:${agent.phone || '+916398987290'}`}
-            className="icon-button w-9 h-9 rounded-lg bg-surface-elevated border border-border flex items-center justify-center text-accent-pink hover:border-accent-pink hover:bg-accent-pink/10 transition-colors"
+            className="agent-act-btn text-[#EC4899]"
             title="Call"
+            aria-label={`Call ${agent.name}`}
           >
-            <Phone className="w-4 h-4" />
+            <Phone size={15} />
           </a>
           <a
             href={`mailto:${agent.email || 'pathak424448@gmail.com'}`}
-            className="icon-button w-9 h-9 rounded-lg bg-surface-elevated border border-border flex items-center justify-center text-text-secondary hover:border-violet hover:text-white transition-colors"
+            className="agent-act-btn text-text-secondary"
             title="Email"
+            aria-label={`Email ${agent.name}`}
           >
-            <Mail className="w-4 h-4" />
+            <Mail size={15} />
           </a>
           <a
             href={`https://wa.me/91${(agent.phone || '6398987290').replace(/\D/g, '')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="icon-button w-9 h-9 rounded-lg bg-surface-elevated border border-border flex items-center justify-center text-text-secondary hover:border-primary hover:text-primary transition-colors"
+            className="agent-act-btn text-[#25D366]"
             title="WhatsApp"
+            aria-label={`WhatsApp ${agent.name}`}
           >
-            <MessageSquare className="w-4 h-4" />
+            <MessageSquare size={15} />
           </a>
         </div>
       </div>

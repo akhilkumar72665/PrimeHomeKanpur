@@ -27,7 +27,7 @@ export default function CookiePolicyPage() {
             <ul className="list-disc list-inside text-text-secondary mb-4 space-y-2">
               <li>Remember your login details and preferences</li>
               <li>Analyze website traffic and usage patterns</li>
-              <li>Improve our website's functionality and user experience</li>
+              <li>Improve our website&apos;s functionality and user experience</li>
               <li>Provide personalized content and recommendations</li>
             </ul>
 

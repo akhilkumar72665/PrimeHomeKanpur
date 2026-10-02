@@ -51,12 +51,12 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
 
     if (error || !data) {
       // Fallback to mock data
-      return mockProperties.find(p => p.slug === slug) || null
+      return mockProperties.find(p => p.slug === slug || p.slug.startsWith(slug) || slug.startsWith(p.slug)) || null
     }
 
     return data
   } catch {
-    return mockProperties.find(p => p.slug === slug) || null
+    return mockProperties.find(p => p.slug === slug || p.slug.startsWith(slug) || slug.startsWith(p.slug)) || null
   }
 }
 
