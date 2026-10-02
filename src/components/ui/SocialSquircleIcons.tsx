@@ -1,14 +1,5 @@
 import React from 'react'
 
-export interface SocialLinkItem {
-  id: string
-  name: string
-  href: string
-  icon: React.ReactNode
-  ariaLabel: string
-  hoverClass: string
-}
-
 export function FacebookLogo({ className = 'w-4 h-4' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -23,14 +14,6 @@ export function InstagramLogo({ className = 'w-4 h-4' }: { className?: string })
       <rect width="20" height="20" x="2" y="2" rx="5.5" ry="5.5" />
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
       <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" strokeWidth="2.6" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-export function XLogo({ className = 'w-4 h-4' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   )
 }
@@ -52,65 +35,43 @@ export function WhatsAppLogo({ className = 'w-4 h-4' }: { className?: string }) 
   )
 }
 
-export function YouTubeLogo({ className = 'w-4 h-4' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-    </svg>
-  )
-}
-
 /**
- * SocialSquircleRow: Renders the 6 social media icons in compact squircle containers with brand-specific hover colors & glows
+ * SocialSquircleRow: Renders WhatsApp, Instagram, Facebook, LinkedIn with verified links & hover glows (YouTube & X removed)
  */
 export function SocialSquircleRow({ className = '' }: { className?: string }) {
   const socials = [
     {
-      name: 'Facebook',
-      href: 'https://facebook.com',
-      ariaLabel: 'Visit our Facebook page',
-      icon: <FacebookLogo className="w-[18px] h-[18px]" />,
-      hoverClass: 'hover:border-[#1877F2] hover:bg-[#1877F2]/15 hover:text-[#1877F2] hover:shadow-[0_0_20px_rgba(24,119,242,0.45)]',
+      name: 'WhatsApp',
+      href: 'https://wa.me/919151435647',
+      ariaLabel: 'Chat with PrimeHomeKanpur on WhatsApp',
+      icon: <WhatsAppLogo className="w-[19px] h-[19px]" />,
+      hoverClass: 'hover:border-[#25D366] hover:bg-[#25D366]/20 hover:text-[#25D366] hover:shadow-[0_0_22px_rgba(37,211,102,0.5)]',
     },
     {
       name: 'Instagram',
-      href: 'https://instagram.com',
-      ariaLabel: 'Visit our Instagram profile',
-      icon: <InstagramLogo className="w-[18px] h-[18px]" />,
-      hoverClass: 'hover:border-[#E1306C] hover:bg-[#E1306C]/15 hover:text-[#E1306C] hover:shadow-[0_0_20px_rgba(225,48,108,0.45)]',
+      href: 'https://instagram.com/primehomekanpur',
+      ariaLabel: 'Follow PrimeHomeKanpur on Instagram',
+      icon: <InstagramLogo className="w-[19px] h-[19px]" />,
+      hoverClass: 'hover:border-[#E1306C] hover:bg-[#E1306C]/20 hover:text-[#E1306C] hover:shadow-[0_0_22px_rgba(225,48,108,0.5)]',
     },
     {
-      name: 'X',
-      href: 'https://x.com',
-      ariaLabel: 'Follow us on X (Twitter)',
-      icon: <XLogo className="w-[16px] h-[16px]" />,
-      hoverClass: 'hover:border-white/80 hover:bg-white/15 hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.35)]',
+      name: 'Facebook',
+      href: 'https://facebook.com/primehomekanpur',
+      ariaLabel: 'Visit PrimeHomeKanpur on Facebook',
+      icon: <FacebookLogo className="w-[19px] h-[19px]" />,
+      hoverClass: 'hover:border-[#1877F2] hover:bg-[#1877F2]/20 hover:text-[#1877F2] hover:shadow-[0_0_22px_rgba(24,119,242,0.5)]',
     },
     {
       name: 'LinkedIn',
-      href: 'https://linkedin.com',
-      ariaLabel: 'Connect with us on LinkedIn',
-      icon: <LinkedInLogo className="w-[17px] h-[17px]" />,
-      hoverClass: 'hover:border-[#0A66C2] hover:bg-[#0A66C2]/15 hover:text-[#0A66C2] hover:shadow-[0_0_20px_rgba(10,102,194,0.45)]',
-    },
-    {
-      name: 'WhatsApp',
-      href: 'https://wa.me/919151435647',
-      ariaLabel: 'Chat with us on WhatsApp',
-      icon: <WhatsAppLogo className="w-[18px] h-[18px]" />,
-      hoverClass: 'hover:border-[#25D366] hover:bg-[#25D366]/15 hover:text-[#25D366] hover:shadow-[0_0_20px_rgba(37,211,102,0.45)]',
-    },
-    {
-      name: 'YouTube',
-      href: 'https://youtube.com',
-      ariaLabel: 'Watch our videos on YouTube',
-      icon: <YouTubeLogo className="w-[18px] h-[18px]" />,
-      hoverClass: 'hover:border-[#FF0000] hover:bg-[#FF0000]/15 hover:text-[#FF0000] hover:shadow-[0_0_20px_rgba(255,0,0,0.45)]',
+      href: 'https://linkedin.com/company/primehomekanpur',
+      ariaLabel: 'Connect with PrimeHomeKanpur on LinkedIn',
+      icon: <LinkedInLogo className="w-[18px] h-[18px]" />,
+      hoverClass: 'hover:border-[#0A66C2] hover:bg-[#0A66C2]/20 hover:text-[#0A66C2] hover:shadow-[0_0_22px_rgba(10,102,194,0.5)]',
     },
   ]
 
   return (
-    <div className={`flex flex-wrap items-center gap-2.5 sm:gap-3 ${className}`}>
+    <div className={`flex flex-wrap items-center gap-3 ${className}`}>
       {socials.map((item) => (
         <a
           key={item.name}
@@ -118,7 +79,7 @@ export function SocialSquircleRow({ className = '' }: { className?: string }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={item.ariaLabel}
-          className={`group relative flex h-[44px] w-[44px] sm:h-[46px] sm:w-[46px] items-center justify-center rounded-[14px] border border-[#382860]/80 bg-[#160f33]/90 text-[#b8b0db] shadow-[0_4px_14px_rgba(0,0,0,0.3)] transition-all duration-300 ease-out hover:-translate-y-1 ${item.hoverClass}`}
+          className={`group relative flex h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-[#382860]/80 bg-[#160f33]/90 text-[#b8b0db] shadow-[0_4px_14px_rgba(0,0,0,0.3)] transition-all duration-300 ease-out hover:-translate-y-1 ${item.hoverClass}`}
         >
           {item.icon}
         </a>
