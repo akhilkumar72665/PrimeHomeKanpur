@@ -4,7 +4,8 @@ import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/cards/PropertyCard'
 import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter'
 import { getFeaturedProperties } from '@/lib/data/properties'
-import { Star, Search, Shield, Clock, Award, Check, ArrowRight, Building, Sparkles } from 'lucide-react'
+import { Star, Search, Shield, Clock, Award, Check, ArrowRight } from 'lucide-react'
+import { OurServicesPill, FindRentalIcon, ListRentalHouseIcon, RenewalsDocIcon } from '@/components/ui/Service3DIcons'
 
 export default async function HomePage() {
   const featuredProperties = await getFeaturedProperties(6)
@@ -351,76 +352,119 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 7. Our Rental Services */}
-        <section className="sect bg-bg">
+        {/* 7. Our Rental Services (Matching Image 1) */}
+        <section className="sect bg-bg py-16" id="services">
           <div className="wrap">
-            <div className="sect-head row">
-              <div>
-                <span className="pill"><span className="dot" />Our Services</span>
-                <h2 className="mt-4">We offer a complete spectrum of <span className="hl">rental services</span></h2>
-              </div>
-              <p className="text-text-secondary text-sm max-w-md hidden md:block">
-                Focused on Kanpur rentals — helping tenants discover verified homes and landlords rent hassle-free.
+            {/* Header matching Image 1 */}
+            <div className="text-center max-w-3xl mx-auto mb-14">
+              <OurServicesPill text="Our Services" />
+              <h2 className="text-3xl md:text-5xl lg:text-[2.75rem] font-extrabold text-white tracking-[-0.03em] leading-tight mb-4">
+                We offer a complete spectrum of rental services for your needs
+              </h2>
+              <p className="text-text-secondary text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+                We currently focus only on rentals — helping tenants and landlords rent hassle free, backed by unparalleled results and expertise.
               </p>
             </div>
 
-            <div className="services mt-8">
-              {[
-                {
-                  title: 'Find a Rental',
-                  description: 'Discover verified homes with physical on-site visits.',
-                  bullets: ['15 days brokerage on deal', '₹300 visit charge', 'Free call consultation'],
-                  featured: false,
-                },
-                {
-                  title: 'List Your Rental',
-                  description: 'Professional listing and tenant screening for landlords.',
-                  bullets: ['Rent > ₹10k: ₹2,000 listing charge', 'Rent < ₹10k: ₹1,000 listing charge', '15 days brokerage after deal'],
-                  featured: true,
-                },
-                {
-                  title: 'Lease & Documentation',
-                  description: 'Complete legal lease drafting and verification support.',
-                  bullets: ['Police verification support', 'Standard lease agreements', 'Move-in assistance'],
-                  featured: false,
-                },
-              ].map((service) => (
-                <div
-                  key={service.title}
-                  className={`svc flex flex-col justify-between ${service.featured ? 'border-primary shadow-[0_20px_50px_rgba(124,58,237,0.25)]' : ''}`}
-                >
-                  {service.featured && (
-                    <div className="absolute top-3 right-3 bg-[#EF4444] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                      Landlord Choice
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="w-12 h-12 rounded-xl bg-[#2A1566] border border-[#7C3AED]/40 flex items-center justify-center mb-6 text-primary">
-                      <Building className="w-6 h-6" />
-                    </div>
-
-                    <h3 className="text-white font-bold text-xl mb-2">{service.title}</h3>
-                    <p className="text-text-secondary text-sm mb-6 leading-relaxed">{service.description}</p>
-
-                    <ul className="space-y-3 mb-8">
-                      {service.bullets.map((b) => (
-                        <li key={b} className="flex items-center gap-2.5 text-text-secondary text-sm">
-                          <Check className="w-4 h-4 text-primary shrink-0" />
-                          <span>{b}</span>
+            {/* 3 Services Cards matching Image 1 */}
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Card 1: Find a rental */}
+              <div className="relative flex flex-col justify-between rounded-[26px] border border-white/10 bg-[#120c29] p-7 md:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-[#00C2D9]/40 hover:shadow-[0_16px_50px_rgba(0,194,217,0.12)]">
+                <div>
+                  <FindRentalIcon className="w-[60px] h-[60px] mb-6" />
+                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Find a rental</h3>
+                  <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                    Browse verified rentals matched to your budget and move-in date.
+                  </p>
+                  <div className="border-t border-white/5 pt-5 mb-8">
+                    <ul className="space-y-3.5">
+                      {[
+                        'Neighborhood matching',
+                        'Move-in date filtering',
+                        'Verified listings only',
+                      ].map((item) => (
+                        <li key={item} className="flex items-center gap-2.5 text-sm text-[#E2E8F0] font-medium">
+                          <Check className="w-4 h-4 text-[#00C2D9] shrink-0" strokeWidth={3} />
+                          <span>{item}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-
-                  <Link
-                    href="/services"
-                    className={`btn w-full ${service.featured ? 'orange' : 'outline'}`}
-                  >
-                    Read Details
-                  </Link>
                 </div>
-              ))}
+                <Link
+                  href="/rentals"
+                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-[#170f36] px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[#20154a] hover:border-white/20"
+                >
+                  Read more
+                </Link>
+              </div>
+
+              {/* Card 2: List your rental (Most Requested) */}
+              <div className="relative flex flex-col justify-between rounded-[26px] border border-white/10 bg-[#120c29] p-7 md:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-[#F97316]/40 hover:shadow-[0_16px_50px_rgba(249,115,22,0.12)]">
+                {/* Most requested badge */}
+                <div className="absolute right-6 top-6 rounded-full bg-[#EA580C] px-3.5 py-1 text-[11px] font-bold text-white shadow-[0_4px_12px_rgba(234,88,12,0.4)]">
+                  Most requested
+                </div>
+
+                <div>
+                  <ListRentalHouseIcon className="w-[60px] h-[60px] mb-6" />
+                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">List your rental</h3>
+                  <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                    Get your property listed, screened, and rented out fast.
+                  </p>
+                  <div className="border-t border-white/5 pt-5 mb-8">
+                    <ul className="space-y-3.5">
+                      {[
+                        'Free listing photos',
+                        'Tenant screening',
+                        'Lease drafting',
+                      ].map((item) => (
+                        <li key={item} className="flex items-center gap-2.5 text-sm text-[#E2E8F0] font-medium">
+                          <Check className="w-4 h-4 text-[#00C2D9] shrink-0" strokeWidth={3} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <Link
+                  href="/contact"
+                  className="inline-flex w-full items-center justify-center rounded-2xl bg-[#00C2D9] px-5 py-3.5 text-center text-sm font-bold text-[#051824] shadow-[0_6px_20px_rgba(0,194,217,0.35)] transition hover:bg-[#22D3EE] hover:shadow-[0_8px_24px_rgba(34,211,238,0.45)]"
+                >
+                  Read more
+                </Link>
+              </div>
+
+              {/* Card 3: Renewals & appraisal */}
+              <div className="relative flex flex-col justify-between rounded-[26px] border border-white/10 bg-[#120c29] p-7 md:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-[#8B5CF6]/40 hover:shadow-[0_16px_50px_rgba(139,92,246,0.12)]">
+                <div>
+                  <RenewalsDocIcon className="w-[60px] h-[60px] mb-6" />
+                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Renewals &amp; appraisal</h3>
+                  <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                    Get a free rent appraisal so pricing and renewals are always fair.
+                  </p>
+                  <div className="border-t border-white/5 pt-5 mb-8">
+                    <ul className="space-y-3.5">
+                      {[
+                        'Market rent appraisal',
+                        'Lease renewal support',
+                        'Deposit handling',
+                      ].map((item) => (
+                        <li key={item} className="flex items-center gap-2.5 text-sm text-[#E2E8F0] font-medium">
+                          <Check className="w-4 h-4 text-[#00C2D9] shrink-0" strokeWidth={3} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <Link
+                  href="/services"
+                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-[#170f36] px-5 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[#20154a] hover:border-white/20"
+                >
+                  Read more
+                </Link>
+              </div>
             </div>
           </div>
         </section>

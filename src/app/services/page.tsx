@@ -2,9 +2,6 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import {
-  Search,
-  UploadCloud,
-  TrendingUp,
   ShieldCheck,
   FileCheck,
   Building2,
@@ -12,6 +9,7 @@ import {
   Phone,
   ArrowRight
 } from 'lucide-react'
+import { OurServicesPill, FindRentalIcon, ListRentalHouseIcon, RenewalsDocIcon } from '@/components/ui/Service3DIcons'
 
 export default function ServicesPage() {
   return (
@@ -28,7 +26,7 @@ export default function ServicesPage() {
               <span>Services</span>
             </div>
 
-            <span className="pill mb-4"><span className="dot" />Our Services</span>
+            <OurServicesPill text="Our Services" />
             <h1 className="max-w-4xl text-4xl md:text-5xl lg:text-[4rem] font-extrabold text-white leading-[1.05] tracking-[-0.03em] mb-6">
               Transparent rental solutions for <span className="hl">tenants &amp; landlords</span>
             </h1>
@@ -43,7 +41,7 @@ export default function ServicesPage() {
         <section className="sect bg-bg">
           <div className="wrap">
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <span className="pill mx-auto mb-4"><span className="dot" />Core Services</span>
+              <OurServicesPill text="Core Services" />
               <h2 className="mx-auto">What we offer to make <span className="hl">renting effortless</span></h2>
               <p className="text-text-secondary text-sm md:text-base mt-4">
                 From search to move-in across 40+ Kanpur neighborhoods.
@@ -54,9 +52,7 @@ export default function ServicesPage() {
               {/* Service 1 */}
               <div className="svc flex flex-col justify-between">
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#2A1566] border border-[#7C3AED]/40 flex items-center justify-center mb-6 text-primary">
-                    <Search className="w-6 h-6" />
-                  </div>
+                  <FindRentalIcon className="w-14 h-14 mb-6" />
                   <h3 className="text-white font-bold text-xl mb-2">Tenant Home Discovery</h3>
                   <p className="text-text-secondary text-sm mb-6 leading-relaxed">
                     Browse verified rentals matched to your budget, preferred area, and move-in date with scheduled physical visits.
@@ -84,13 +80,11 @@ export default function ServicesPage() {
 
               {/* Service 2 */}
               <div className="svc flex flex-col justify-between border-primary shadow-[0_20px_50px_rgba(124,58,237,0.25)]">
-                <div className="absolute top-3 right-3 bg-[#EF4444] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                  Landlords
+                <div className="absolute top-3 right-3 bg-[#EA580C] text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  Most Requested
                 </div>
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#2A1566] border border-[#7C3AED]/40 flex items-center justify-center mb-6 text-primary">
-                    <UploadCloud className="w-6 h-6" />
-                  </div>
+                  <ListRentalHouseIcon className="w-14 h-14 mb-6" />
                   <h3 className="text-white font-bold text-xl mb-2">List Your Property</h3>
                   <p className="text-text-secondary text-sm mb-6 leading-relaxed">
                     Get your property cataloged, photographed by our team, screened, and rented out to verified tenants.
@@ -119,9 +113,7 @@ export default function ServicesPage() {
               {/* Service 3 */}
               <div className="svc flex flex-col justify-between">
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#2A1566] border border-[#7C3AED]/40 flex items-center justify-center mb-6 text-primary">
-                    <TrendingUp className="w-6 h-6" />
-                  </div>
+                  <RenewalsDocIcon className="w-14 h-14 mb-6" />
                   <h3 className="text-white font-bold text-xl mb-2">Market Rent Appraisal</h3>
                   <p className="text-text-secondary text-sm mb-6 leading-relaxed">
                     Get realistic Kanpur rent estimates based on active demand in Kakadeo, Civil Lines, Swaroop Nagar, and surrounding areas.

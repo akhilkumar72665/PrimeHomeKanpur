@@ -861,28 +861,40 @@
 
   .socials {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 14px;
+    margin-top: 24px;
+    flex-wrap: wrap;
   }
 
   .social {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
     display: grid;
     place-items: center;
-    border: 1px solid var(--line);
-    background: rgba(14, 10, 32, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(18, 14, 34, 0.72);
     color: var(--text-secondary);
-    transition: transform .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease), color .2s var(--ease);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02), 0 8px 18px rgba(12, 8, 24, 0.2);
+    transition: transform .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease), color .2s var(--ease), box-shadow .2s var(--ease);
     text-decoration: none;
+  }
+
+  .social svg {
+    width: 22px;
+    height: 22px;
   }
 
   .social:hover {
     transform: translateY(-2px);
-    border-color: var(--orange);
-    color: var(--orange);
-    background: rgba(0, 194, 217, 0.1);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: #fff;
+    background: rgba(34, 25, 57, 0.9);
+    box-shadow: 0 12px 24px rgba(17, 11, 36, 0.36);
+  }
+
+  .social-outline {
+    border-color: rgba(255, 255, 255, 0.16);
   }
 
   /* FAQ STYLES */
