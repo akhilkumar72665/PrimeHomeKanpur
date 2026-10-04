@@ -15,12 +15,12 @@ import {
   Clock,
   Send,
   ExternalLink,
-  MessageCircle,
   Search,
   Filter,
   CheckCircle2,
   X
 } from 'lucide-react'
+import { WhatsAppLogo } from '@/components/ui/SocialSquircleIcons'
 
 const STATUS_OPTIONS: { value: InquiryStatus; label: string }[] = [
   { value: 'NEW', label: 'New' },
@@ -310,7 +310,7 @@ export default function AdminInquiriesPage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors shadow-sm"
                       >
-                        <MessageCircle size={14} />
+                        <WhatsAppLogo className="h-3.5 w-3.5" />
                         <span>WhatsApp</span>
                       </a>
                     )}

@@ -169,11 +169,11 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
                   Showing {properties.length} rentals across Kanpur
                 </p>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                <Link href="/dashboard/wishlist" className="btn dark text-xs sm:text-sm py-2 px-3 sm:px-4">
+              <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-3">
+                <Link href="/dashboard/wishlist" className="btn dark flex w-full justify-center text-xs sm:w-auto sm:text-sm py-2 px-3 sm:px-4">
                   <Heart className="w-4 h-4 mr-1.5 text-accent-pink" /> Shortlist
                 </Link>
-                <Link href="/contact" className="btn orange text-xs sm:text-sm py-2 px-3 sm:px-4 btn-loop-shine">
+                <Link href="/contact" className="btn orange flex w-full justify-center text-xs sm:w-auto sm:text-sm py-2 px-3 sm:px-4 btn-loop-shine">
                   <Phone className="w-4 h-4 mr-1.5" /> Get Assistance
                 </Link>
               </div>

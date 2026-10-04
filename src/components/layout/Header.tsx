@@ -100,9 +100,9 @@ export default function Header() {
             })}
           </div>
 
-          {/* 2. Mobile Drawer Navigation Links (About, Rentals, Agents, Services, FAQ, Contact) */}
+          {/* 2. Mobile Drawer Navigation Links */}
           <div className="md:hidden flex flex-col gap-1 w-full">
-            {navItems.filter((i) => i.name !== 'Home').map((item) => {
+            {navItems.map((item) => {
               const isActive =
                 item.href === '/'
                   ? pathname === '/'
@@ -191,7 +191,7 @@ export default function Header() {
             {/* Explore Rentals Button */}
             <Link
               href="/rentals"
-              className="w-full h-12 min-h-[48px] rounded-xl bg-gradient-to-r from-[#00C2D9] to-[#22D3EE] text-[#04121a] font-extrabold flex items-center justify-center gap-2 text-sm shadow-lg shadow-cyan-950/50 active:scale-[0.98] transition-all btn-loop-shine"
+              className="mobile-explore-link w-full h-12 min-h-[48px] rounded-xl bg-gradient-to-r from-[#00C2D9] to-[#22D3EE] text-[#04121a] font-extrabold flex items-center justify-center gap-2 text-sm shadow-lg shadow-cyan-950/50 active:scale-[0.98] transition-all btn-loop-shine"
               onClick={() => setMobileMenuOpen(false)}
             >
               <Building2 size={18} className="text-[#04121a]" />

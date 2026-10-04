@@ -10,7 +10,7 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body {
@@ -20,7 +20,7 @@
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    overflow-x: clip;
     min-height: 100dvh;
     padding-bottom: calc(var(--mobile-bar-height) + var(--safe-bottom));
   }
@@ -144,7 +144,7 @@
   }
 
   header.site.scrolled {
-    background: rgba(8, 6, 18, 0.92);
+    background: rgba(8, 6, 18, 0.98);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border-bottom: 1px solid rgba(139, 92, 246, 0.25);
@@ -512,9 +512,9 @@
   }
 
   .field select,
-  .field input,
+  .field input:not([type="checkbox"]):not([type="radio"]),
   .field textarea,
-  input,
+  input:not([type="checkbox"]):not([type="radio"]),
   select,
   textarea {
     width: 100%;
@@ -527,6 +527,17 @@
     font-size: 0.9rem;
     transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
     box-sizing: border-box;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1rem;
+    min-width: 1rem;
+    height: 1rem;
+    padding: 0;
+    margin: 0;
+    flex: 0 0 1rem;
+    accent-color: var(--orange);
   }
 
   .field select:focus,
@@ -745,7 +756,7 @@
   .result-info {
     color: var(--text-muted);
     font-size: 0.9rem;
-    margin-top: -12px;
+    margin-top: 4px;
   }
 
   /* GRIDS */
@@ -869,9 +880,8 @@
 
   /* FOOTER */
   footer {
-    padding: 0 0 28px;
+    padding: 0 0 40px;
     position: relative;
-    overflow: hidden;
   }
 
   .foot-card,
@@ -891,8 +901,7 @@
 
   .foot-grid {
     grid-template-columns: 1.3fr 1fr 1fr 1fr;
-    padding: 40px 0;
-    border-bottom: 1px solid var(--line);
+    padding: 24px 0 0;
   }
 
   .foot-title {
@@ -940,6 +949,28 @@
 
   .social-outline {
     border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  .foot-bottom {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center;
+    width: 100%;
+    margin-top: 32px;
+    padding-top: 24px;
+    padding-bottom: 36px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .foot-bottom {
+      flex-direction: row !important;
+      justify-content: space-between !important;
+      text-align: left;
+    }
   }
 
   /* FAQ STYLES */
@@ -1013,46 +1044,6 @@
   @keyframes marquee {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
-  }
-
-  .area-card {
-    position: relative;
-    width: 220px;
-    aspect-ratio: 4 / 3;
-    border-radius: 16px;
-    overflow: hidden;
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-    transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
-    flex-shrink: 0;
-  }
-
-  .area-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    border-color: rgba(0, 194, 217, 0.45);
-    box-shadow: 0 20px 40px rgba(0, 194, 217, 0.25);
-  }
-
-  .area-card .area-content {
-    position: absolute;
-    bottom: 14px;
-    left: 14px;
-    z-index: 2;
-  }
-
-  .area-card h3 {
-    color: #fff;
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.2;
-    margin: 0;
-  }
-
-  .area-card p {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.75rem;
-    margin: 2px 0 0 0;
   }
 
   /* FLOATING AVATARS IN TESTIMONIALS */
@@ -1191,6 +1182,19 @@
       box-shadow: none !important;
     }
 
+    header.site .navlinks .mobile-explore-link,
+    header.site .navlinks .mobile-explore-link:hover,
+    header.site .navlinks .mobile-explore-link:active {
+      background: linear-gradient(90deg, #00C2D9, #22D3EE) !important;
+      color: #04121a !important;
+      border: 1px solid rgba(0, 194, 217, 0.6);
+      box-shadow: 0 8px 22px rgba(0, 194, 217, 0.2);
+    }
+
+    header.site .navlinks .mobile-explore-link svg {
+      color: #04121a;
+    }
+
     header.site .navlinks .menu-cta {
       display: none;
     }
@@ -1213,11 +1217,26 @@
     .testi-grid,
     .card-s,
     .foot-card,
-    .foot-grid,
     .form-grid.two,
     .amen-grid,
     .fact-grid {
       grid-template-columns: 1fr;
+    }
+
+    .foot-card {
+      gap: 24px;
+      padding: 24px;
+    }
+
+    .foot-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding-top: 24px;
+    }
+
+    .sect-head.row {
+      align-items: stretch;
+      margin-bottom: 24px;
     }
 
     header.site {

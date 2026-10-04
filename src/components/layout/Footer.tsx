@@ -5,7 +5,7 @@ import { SocialSquircleRow, WhatsAppLogo } from '@/components/ui/SocialSquircleI
 
 export default function Footer() {
   return (
-    <footer className="mt-24">
+    <footer className="mt-20 sm:mt-24 pb-10 sm:pb-12 relative">
       <div className="wrap">
         {/* Top Elevated Card */}
         <div className="foot-card">
@@ -27,7 +27,7 @@ export default function Footer() {
 
           {/* Middle Column: Address */}
           <div>
-            <div className="foot-title font-bold text-white mb-4">Address</div>
+            <div className="foot-title">Address</div>
             <div className="space-y-4 text-text-secondary">
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-accent-cyan shrink-0 mt-0.5" />
@@ -48,7 +48,7 @@ export default function Footer() {
 
           {/* Right Column: Contact */}
           <div>
-            <div className="foot-title font-bold text-white mb-4">Contact</div>
+            <div className="foot-title">Contact</div>
             <div className="space-y-3 text-text-secondary">
               <div className="flex items-center gap-3">
                 <AtSign className="w-4 h-4 text-accent-cyan shrink-0" />
@@ -77,10 +77,10 @@ export default function Footer() {
         </div>
 
         {/* 4 Columns Lower Section */}
-        <div className="foot-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="foot-grid">
           {/* Newsletter */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <div className="foot-title font-bold text-white mb-3 text-base">Subscribe to our newsletter</div>
+          <div>
+            <div className="foot-title font-bold text-white mb-3 text-sm uppercase tracking-wider">Subscribe to our newsletter</div>
             <p className="text-text-muted text-xs sm:text-sm mb-4 leading-relaxed">
               Get the latest rental listings and market updates in Kanpur delivered straight to your inbox.
             </p>
@@ -92,21 +92,21 @@ export default function Footer() {
                 required
                 aria-label="Email address for newsletter"
                 placeholder="Enter your email"
-                className="h-12 flex-1 rounded-xl border border-white/15 bg-[#0A0719] px-4 text-sm text-white placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+                className="h-11 flex-1 rounded-xl border border-white/15 bg-[#0A0719] px-4 text-sm text-white placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
               />
               <button
                 type="submit"
-                className="btn btn-primary h-12 px-5 text-sm font-bold rounded-xl whitespace-nowrap active:scale-95"
+                className="btn btn-primary h-11 px-5 text-sm font-bold rounded-xl whitespace-nowrap active:scale-95"
               >
-                Subscribe
+                Submit
               </button>
             </form>
           </div>
 
           {/* Navigation */}
           <div>
-            <div className="foot-title font-bold text-white mb-3 text-sm uppercase tracking-wider">Navigation</div>
-            <ul className="space-y-2.5">
+            <div className="foot-title">Navigation</div>
+            <ul className="space-y-1.5">
               {[
                 { label: 'Home', href: '/' },
                 { label: 'About', href: '/about' },
@@ -116,7 +116,7 @@ export default function Footer() {
                 { label: 'Contact', href: '/contact' },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-1 inline-block">
+                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-0.5 inline-block">
                     {link.label}
                   </Link>
                 </li>
@@ -126,8 +126,8 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <div className="foot-title font-bold text-white mb-3 text-sm uppercase tracking-wider">Company</div>
-            <ul className="space-y-2.5">
+            <div className="foot-title">Company</div>
+            <ul className="space-y-1.5">
               {[
                 { label: 'About Us', href: '/about' },
                 { label: 'Our Team', href: '/agents' },
@@ -136,7 +136,7 @@ export default function Footer() {
                 { label: 'Sign In', href: '/signin' },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-1 inline-block">
+                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-0.5 inline-block">
                     {link.label}
                   </Link>
                 </li>
@@ -146,15 +146,15 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <div className="foot-title font-bold text-white mb-3 text-sm uppercase tracking-wider">Legal</div>
-            <ul className="space-y-2.5">
+            <div className="foot-title">Legal</div>
+            <ul className="space-y-1.5">
               {[
                 { label: 'Privacy Policy', href: '/privacy-policy' },
                 { label: 'Terms & Conditions', href: '/terms' },
                 { label: 'Cookie Policy', href: '/cookie-policy' },
               ].map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-1 inline-block">
+                  <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-0.5 inline-block">
                     {link.label}
                   </Link>
                 </li>
@@ -163,19 +163,21 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 text-xs text-text-muted border-t border-white/5">
-          <div className="text-center sm:text-left">
+        {/* Bottom Bar: Copyright & Legal Links */}
+        <div className="foot-bottom mt-8 sm:mt-12 pt-6 pb-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-text-secondary w-full">
+          <p className="text-center sm:text-left text-[#94A3B8] font-medium m-0">
             &copy; 2026 PrimeHomeKanpur. All rights reserved.
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            <Link href="/terms" className="hover:text-white transition-colors py-1">
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[#94A3B8]">
+            <Link href="/terms" className="hover:text-white font-medium transition-colors py-1 px-1">
               Terms of Use
             </Link>
-            <Link href="/privacy-policy" className="hover:text-white transition-colors py-1">
+            <span className="text-white/20 select-none">•</span>
+            <Link href="/privacy-policy" className="hover:text-white font-medium transition-colors py-1 px-1">
               Privacy Policy
             </Link>
-            <Link href="/cookie-policy" className="hover:text-white transition-colors py-1">
+            <span className="text-white/20 select-none">•</span>
+            <Link href="/cookie-policy" className="hover:text-white font-medium transition-colors py-1 px-1">
               Cookie Policy
             </Link>
           </div>

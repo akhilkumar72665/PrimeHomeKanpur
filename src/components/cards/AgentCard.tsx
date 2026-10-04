@@ -1,4 +1,5 @@
-import { Phone, Mail, MessageSquare, Star } from 'lucide-react'
+import { Phone, Mail } from 'lucide-react'
+import { WhatsAppLogo } from '@/components/ui/SocialSquircleIcons'
 import { Agent } from '@/types'
 
 interface AgentCardProps {
@@ -69,7 +70,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
             title="WhatsApp"
             aria-label={`WhatsApp ${agent.name}`}
           >
-            <MessageSquare size={15} className="mb-0.5" />
+            <WhatsAppLogo className="mb-0.5 h-[15px] w-[15px]" />
             <span>WhatsApp</span>
           </a>
         </div>

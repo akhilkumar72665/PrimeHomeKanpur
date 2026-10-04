@@ -12,7 +12,6 @@ import {
   MapPin,
   Phone,
   Mail,
-  MessageSquare,
   Building,
   Check,
   ArrowRight,
@@ -25,6 +24,7 @@ import {
   Share2,
   Film
 } from 'lucide-react'
+import { WhatsAppLogo } from '@/components/ui/SocialSquircleIcons'
 
 interface PropertyDetailClientProps {
   property: Property
@@ -238,7 +238,7 @@ export default function PropertyDetailClient({
                     rel="noopener noreferrer"
                     className="btn outline w-full text-xs font-semibold py-2.5"
                   >
-                    <MessageSquare className="w-4 h-4 mr-1 text-[#25D366]" /> Chat on WhatsApp
+                    <WhatsAppLogo className="w-4 h-4 mr-1 text-[#25D366]" /> Chat on WhatsApp
                   </a>
                   <a href="mailto:primehomekanpur@gmail.com" className="btn dark w-full text-xs font-semibold py-2.5">
                     <Mail className="w-4 h-4 mr-1" /> Email PrimeHome

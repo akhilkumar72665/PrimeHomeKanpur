@@ -20,6 +20,7 @@ import {
   History,
 } from 'lucide-react'
 import { StatusBadge } from '@/components/admin/StatusBadge'
+import { WhatsAppLogo } from '@/components/ui/SocialSquircleIcons'
 import { AdminReview, AdminInquiry, ActivityLogItem } from '@/types/admin'
 
 export default function AdminDashboardPage() {
@@ -351,7 +352,7 @@ export default function AdminDashboardPage() {
                             className="w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 flex items-center justify-center transition-colors"
                             title="Chat on WhatsApp"
                           >
-                            <MessageSquare size={14} />
+                            <WhatsAppLogo className="h-3.5 w-3.5" />
                           </a>
                         </>
                       )}

@@ -2,30 +2,19 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/cards/PropertyCard'
+import LocationAreaCard from '@/components/cards/LocationAreaCard'
 import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter'
 import HomeSearchSection from '@/components/home/HomeSearchSection'
 import { getFeaturedProperties } from '@/lib/data/properties'
-import { Star, Shield, Clock, Award, Check, ArrowRight, MapPin, Search } from 'lucide-react'
+import { popularAreas } from '@/lib/data/areas'
+import { Star, Shield, Clock, Award, Check, ArrowRight, Search } from 'lucide-react'
 import { OurServicesPill, FindRentalIcon, ListRentalHouseIcon, RenewalsDocIcon } from '@/components/ui/Service3DIcons'
 
 export default async function HomePage() {
   const featuredProperties = await getFeaturedProperties(6)
 
-  const popularAreas = [
-    { name: 'Gurudev Chauraha', count: '14+ Listings', grad: 'from-[#0F766E] to-[#00C2D9]' },
-    { name: 'Kakadeo', count: '22+ Listings', grad: 'from-[#831843] to-[#EC4899]' },
-    { name: 'Vijay Nagar', count: '10+ Listings', grad: 'from-[#1E3A8A] to-[#3B82F6]' },
-    { name: 'Swaroop Nagar', count: '18+ Listings', grad: 'from-[#4C1D95] to-[#7C3AED]' },
-    { name: 'Civil Lines', count: '12+ Listings', grad: 'from-[#166534] to-[#22C55E]' },
-    { name: 'Awas Vikas', count: '15+ Listings', grad: 'from-[#92400E] to-[#EAB308]' },
-    { name: 'Vikas Nagar', count: '9+ Listings', grad: 'from-[#134E4A] to-[#2DD4BF]' },
-    { name: 'Barra', count: '16+ Listings', grad: 'from-[#7F1D1D] to-[#EF4444]' },
-    { name: 'Kalyanpur', count: '19+ Listings', grad: 'from-[#5B21B6] to-[#8B5CF6]' },
-    { name: 'Kidwai Nagar', count: '11+ Listings', grad: 'from-[#0891B2] to-[#22D3EE]' },
-  ]
-
   return (
-    <div className="min-h-screen flex flex-col bg-bg text-text overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-bg text-text overflow-x-clip">
       <Header />
 
       <main className="flex-1">
@@ -131,22 +120,7 @@ export default async function HomePage() {
           <div className="relative w-full overflow-hidden marquee py-2">
             <div className="marquee-track flex gap-4 w-max hover:[animation-play-state:paused]">
               {[...popularAreas, ...popularAreas].map((area, idx) => (
-                <Link
-                  key={`${area.name}-${idx}`}
-                  href={`/rentals?location=${encodeURIComponent(area.name)}`}
-                  className={`shrink-0 w-[210px] sm:w-[240px] p-4 sm:p-5 rounded-2xl bg-gradient-to-br ${area.grad} border border-white/15 hover:scale-[1.04] active:scale-95 transition-all shadow-lg shadow-black/40 block group`}
-                >
-                  <div className="flex items-center gap-2 text-white/90 text-xs font-semibold mb-1.5">
-                    <MapPin size={13} className="shrink-0" /> Kanpur
-                  </div>
-                  <h3 className="text-white font-extrabold text-base sm:text-lg leading-tight truncate">
-                    {area.name}
-                  </h3>
-                  <p className="text-white/80 text-xs mt-2 font-medium flex items-center justify-between">
-                    <span>{area.count}</span>
-                    <ArrowRight size={13} className="opacity-0 group-hover:opacity-100 transition-opacity transform -translate-x-1 group-hover:translate-x-0" />
-                  </p>
-                </Link>
+                <LocationAreaCard key={`${area.name}-${idx}`} area={area} />
               ))}
             </div>
           </div>

@@ -865,9 +865,8 @@
 
   /* FOOTER */
   footer {
-    padding: 0 0 28px;
+    padding: 0 0 40px;
     position: relative;
-    overflow: hidden;
   }
 
   .foot-card,
@@ -887,8 +886,7 @@
 
   .foot-grid {
     grid-template-columns: 1.3fr 1fr 1fr 1fr;
-    padding: 40px 0;
-    border-bottom: 1px solid var(--line);
+    padding: 24px 0 0;
   }
 
   .foot-title {
@@ -936,6 +934,28 @@
 
   .social-outline {
     border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  .foot-bottom {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center;
+    width: 100%;
+    margin-top: 32px;
+    padding-top: 24px;
+    padding-bottom: 36px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .foot-bottom {
+      flex-direction: row !important;
+      justify-content: space-between !important;
+      text-align: left;
+    }
   }
 
   /* FAQ STYLES */

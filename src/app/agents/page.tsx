@@ -2,27 +2,16 @@ import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AgentCard from '@/components/cards/AgentCard'
+import LocationAreaCard from '@/components/cards/LocationAreaCard'
 import { getAgents } from '@/lib/data/agents'
+import { popularAreas } from '@/lib/data/areas'
 import { ShieldCheck, MapPin, Clock, Sparkles, Phone } from 'lucide-react'
 
 export default async function AgentsPage() {
   const agents = await getAgents()
 
-  const row1Areas = [
-    { name: 'Gurudev Chauraha', grad: 'p1' },
-    { name: 'Kakadeo', grad: 'p7' },
-    { name: 'Vijay Nagar', grad: 'p2' },
-    { name: 'Vikas Nagar', grad: 'p6' },
-    { name: 'Awas Vikas', grad: 'p8' },
-  ]
-
-  const row2Areas = [
-    { name: 'Civil Lines', grad: 'p4' },
-    { name: 'Swaroop Nagar', grad: 'p7' },
-    { name: 'Barra', grad: 'p2' },
-    { name: 'Govind Nagar', grad: 'p1' },
-    { name: 'Kidwai Nagar', grad: 'p8' },
-  ]
+  const row1Areas = popularAreas.slice(0, 5)
+  const row2Areas = popularAreas.slice(5)
 
   return (
     <div className="min-h-screen flex flex-col bg-bg text-text">
@@ -85,12 +74,7 @@ export default async function AgentsPage() {
             <div className="marquee">
               <div className="marquee-track">
                 {[...row1Areas, ...row1Areas, ...row1Areas, ...row1Areas].map((area, idx) => (
-                  <div key={`r1-${area.name}-${idx}`} className={`area-card ${area.grad}`}>
-                    <div className="area-content">
-                      <h3>{area.name}</h3>
-                      <p>Kanpur</p>
-                    </div>
-                  </div>
+                  <LocationAreaCard key={`r1-${area.name}-${idx}`} area={area} />
                 ))}
               </div>
             </div>
@@ -99,12 +83,7 @@ export default async function AgentsPage() {
             <div className="marquee">
               <div className="marquee-track" style={{ animationDirection: 'reverse' }}>
                 {[...row2Areas, ...row2Areas, ...row2Areas, ...row2Areas].map((area, idx) => (
-                  <div key={`r2-${area.name}-${idx}`} className={`area-card ${area.grad}`}>
-                    <div className="area-content">
-                      <h3>{area.name}</h3>
-                      <p>Kanpur</p>
-                    </div>
-                  </div>
+                  <LocationAreaCard key={`r2-${area.name}-${idx}`} area={area} />
                 ))}
               </div>
             </div>
