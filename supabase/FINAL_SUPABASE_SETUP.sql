@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS public.activity_logs (
 -- 2.14 FAQS TABLE
 CREATE TABLE IF NOT EXISTS public.faqs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  question TEXT NOT NULL,
+  question TEXT NOT NULL UNIQUE,
   answer TEXT NOT NULL,
   category TEXT DEFAULT 'general',
   display_order INT DEFAULT 0,
@@ -312,6 +312,7 @@ CREATE INDEX IF NOT EXISTS idx_reviews_property ON public.reviews(property_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_status ON public.reviews(status);
 CREATE INDEX IF NOT EXISTS idx_inquiries_status ON public.inquiries(status);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_created ON public.activity_logs(created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_faqs_question ON public.faqs(question);
 
 -- ==============================================================================
 -- 4. AUTHENTICATION & PROFILE AUTOMATION TRIGGERS
@@ -319,12 +320,15 @@ CREATE INDEX IF NOT EXISTS idx_activity_logs_created ON public.activity_logs(cre
 
 -- Trigger function: Creates or updates profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public, auth, pg_temp
+LANGUAGE plpgsql
+AS $$
 DECLARE
   assigned_role TEXT;
   tm_match RECORD;
 BEGIN
-  -- Check if email matches active team member
   SELECT team_role INTO tm_match
   FROM public.team_members
   WHERE LOWER(email) = LOWER(NEW.email) AND is_active = true
@@ -370,7 +374,7 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
@@ -397,7 +401,7 @@ BEGIN
 
   RETURN (user_role ILIKE 'admin%' OR user_role ILIKE 'super_admin%');
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, auth, pg_temp;
 
 -- Check team role
 CREATE OR REPLACE FUNCTION public.team_role()
@@ -417,7 +421,7 @@ BEGIN
 
   RETURN m_role;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, auth, pg_temp;
 
 -- Check specific permission
 CREATE OR REPLACE FUNCTION public.has_permission(perm TEXT)
@@ -450,7 +454,7 @@ BEGIN
 
   RETURN false;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, auth, pg_temp;
 
 -- Claim admin session
 CREATE OR REPLACE FUNCTION public.claim_team_access()
@@ -492,7 +496,7 @@ BEGIN
 
   RETURN NULL;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, auth, pg_temp;
 
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION public.team_role() TO authenticated, anon;
@@ -697,10 +701,6 @@ CREATE POLICY "Public can view active faqs" ON public.faqs
 CREATE POLICY "Admins can manage faqs" ON public.faqs
   FOR ALL USING (public.is_admin());
 
--- ==============================================================================
--- 8. SEED DATA (INITIAL PLATFORM SETUP)
--- ==============================================================================
-
 -- 8.1 Initial Team Owners
 -- Replace these example.invalid addresses before the listed owners sign in.
 INSERT INTO public.team_members (email, name, designation, team_role, is_active)
@@ -710,6 +710,12 @@ VALUES
   ('owner3@example.invalid', 'Team Owner 3', 'Technical Co-Founder', 'OWNER', true)
 ON CONFLICT (email) DO UPDATE
 SET team_role = 'OWNER', is_active = true, updated_at = NOW();
+
+-- Link team_members to their auth user_id
+UPDATE public.team_members tm
+SET user_id = u.id, updated_at = NOW()
+FROM auth.users u
+WHERE LOWER(tm.email) = LOWER(u.email);
 
 -- 8.2 Page Settings
 INSERT INTO public.page_settings (key, value)
@@ -788,7 +794,7 @@ VALUES
   ('Are there any brokerage charges for scheduling visits?', 'Booking and scheduling a physical walkthrough visit is completely free. You can choose your date and time slot directly on the property detail page.', 'Visits', 2, true),
   ('Can I list my property as a landlord?', 'Yes! You can contact our listing executives via WhatsApp or through our Contact page, and our team will schedule a physical inspection to verify and list your home.', 'Landlords', 3, true),
   ('What documents are required for rental agreements in Kanpur?', 'Typically, valid Aadhaar card, PAN card, permanent address proof, and passport-size photographs are required for police verification and rental agreements in Kanpur.', 'Legal', 4, true)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (question) DO NOTHING;
 
 -- ==============================================================================
 -- SETUP COMPLETE
