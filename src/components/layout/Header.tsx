@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import {
   Phone,
   User,
+  Building2,
   Heart,
   Calendar,
   Star,
@@ -63,6 +64,7 @@ export default function Header() {
   }, [])
 
   return (
+    <>
     <header className={`site ${scrolled ? 'scrolled' : ''}`}>
       <nav aria-label="Primary Navigation" className="flex items-center justify-between w-full">
         {/* Brand Logo */}
@@ -75,44 +77,71 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Center Desktop Navigation */}
-        <div className={`navlinks ${mobileMenuOpen ? 'open' : ''}`}>
-          {navItems.map((item) => {
-            const isActive =
-              item.href === '/'
-                ? pathname === '/'
-                : pathname === item.href || (item.href === '/rentals' && pathname.startsWith('/rentals/'))
+        {/* Center Desktop Navigation & Mobile Drawer Panel */}
+        <div id="primary-navigation" className={`navlinks ${mobileMenuOpen ? 'open' : ''}`}>
+          {/* 1. Desktop Nav Links */}
+          <div className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive =
+                item.href === '/'
+                  ? pathname === '/'
+                  : pathname === item.href || (item.href === '/rentals' && pathname.startsWith('/rentals/'))
 
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={isActive ? 'active' : ''}
-                aria-current={isActive ? 'page' : undefined}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
-            )
-          })}
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={isActive ? 'active' : ''}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
+          </div>
 
-          {/* Mobile-only Action Links */}
-          <div className="md:hidden pt-3 pb-2 border-t border-white/10 flex flex-col gap-2 w-full">
+          {/* 2. Mobile Drawer Navigation Links (About, Rentals, Agents, Services, FAQ, Contact) */}
+          <div className="md:hidden flex flex-col gap-1 w-full">
+            {navItems.filter((i) => i.name !== 'Home').map((item) => {
+              const isActive =
+                item.href === '/'
+                  ? pathname === '/'
+                  : pathname === item.href || (item.href === '/rentals' && pathname.startsWith('/rentals/'))
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={isActive ? 'active' : ''}
+                  aria-current={isActive ? 'page' : undefined}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* 3. Mobile Divider */}
+          <div className="md:hidden my-3.5 h-[1px] bg-white/10 w-full" />
+
+          {/* 4. Mobile Bottom CTAs */}
+          <div className="md:hidden flex flex-col gap-2.5 w-full">
             {!isAuthenticated ? (
               <Link
                 href="/signin"
-                className="btn btn-secondary w-full text-center py-2.5 text-sm font-semibold border border-white/15 flex items-center justify-center gap-2"
+                className="w-full h-12 min-h-[48px] rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white font-bold flex items-center justify-center gap-2 text-sm transition-all shadow-md active:scale-[0.98]"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <User size={16} className="text-[#00C2D9]" />
+                <User size={18} className="text-[#00C2D9]" />
                 <span>Sign In</span>
               </Link>
             ) : (
-              <div className="flex flex-col gap-1.5 pt-1">
+              <div className="flex flex-col gap-1.5 pb-1">
                 {isAdmin && (
                   <Link
                     href="/admin"
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-amber-400 bg-amber-400/10 hover:bg-amber-400/20"
+                    className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-amber-400 bg-amber-400/10 hover:bg-amber-400/20"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Shield size={16} /> Admin Dashboard
@@ -120,28 +149,28 @@ export default function Header() {
                 )}
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white hover:bg-white/5"
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-medium text-white hover:bg-white/5"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <LayoutDashboard size={16} /> Dashboard Overview
                 </Link>
                 <Link
                   href="/dashboard/wishlist"
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-text-secondary hover:text-white hover:bg-white/5"
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-white hover:bg-white/5"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Heart size={16} /> Wishlist
                 </Link>
                 <Link
                   href="/dashboard/visits"
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-text-secondary hover:text-white hover:bg-white/5"
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-white hover:bg-white/5"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Calendar size={16} /> My Visits
                 </Link>
                 <Link
                   href="/dashboard/reviews"
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-text-secondary hover:text-white hover:bg-white/5"
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:text-white hover:bg-white/5"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Star size={16} /> My Reviews
@@ -152,12 +181,22 @@ export default function Header() {
                     setMobileMenuOpen(false)
                     signOut()
                   }}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-rose-400 hover:bg-rose-500/10 text-left mt-1"
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 text-left mt-0.5"
                 >
                   <LogOut size={16} /> Sign Out
                 </button>
               </div>
             )}
+
+            {/* Explore Rentals Button */}
+            <Link
+              href="/rentals"
+              className="w-full h-12 min-h-[48px] rounded-xl bg-gradient-to-r from-[#00C2D9] to-[#22D3EE] text-[#04121a] font-extrabold flex items-center justify-center gap-2 text-sm shadow-lg shadow-cyan-950/50 active:scale-[0.98] transition-all btn-loop-shine"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Building2 size={18} className="text-[#04121a]" />
+              <span>Explore Rentals</span>
+            </Link>
           </div>
         </div>
 
@@ -293,6 +332,7 @@ export default function Header() {
             className="menu-btn"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
+            aria-controls="primary-navigation"
           >
             <span />
             <span />
@@ -301,5 +341,15 @@ export default function Header() {
         </div>
       </nav>
     </header>
+    {mobileMenuOpen && (
+      <button
+        type="button"
+        className="mobile-menu-backdrop"
+        aria-label="Close navigation menu"
+        style={{ backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+    )}
+    </>
   )
 }
