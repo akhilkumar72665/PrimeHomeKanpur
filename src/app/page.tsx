@@ -78,8 +78,8 @@ export default async function HomePage() {
         </section>
 
         {/* 2. Stats Strip with Large Animated Digits */}
-        <section className="statsbar py-8 sm:py-10 bg-[#0E0A24]/60 border-y border-white/5">
-          <div className="wrap grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <section className="statsbar py-6 sm:py-8 md:py-10 bg-[#0E0A24]/60 border-y border-white/5">
+          <div className="wrap max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 px-4">
             <AnimatedStatCounter value={83} suffix="+" label="Total Reviews" />
             <AnimatedStatCounter value={5} suffix="+" label="Years of Experience" />
             <AnimatedStatCounter value={67} suffix="+" label="Rentals Listed" />
@@ -111,10 +111,10 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 4. Popular Working Areas (Swipeable Carousel on Mobile) */}
-        <section className="sect gray overflow-hidden">
-          <div className="wrap max-w-7xl mx-auto">
-            <div className="sect-head row flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+        {/* 4. Popular Working Areas (Moving Loop Marquee) */}
+        <section className="sect gray overflow-hidden py-10 md:py-16">
+          <div className="wrap max-w-7xl mx-auto mb-6">
+            <div className="sect-head row flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
                 <span className="pill"><span className="dot" />Popular Areas</span>
                 <h2 className="mt-3 text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
@@ -127,23 +127,24 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Swipeable Scroll Container on Mobile / Grid on Desktop */}
-          <div className="wrap max-w-7xl mx-auto mt-4">
-            <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 overflow-x-auto sm:overflow-x-visible pb-4 pt-2 snap-x snap-mandatory scrollbar-none">
-              {popularAreas.map((area) => (
+          {/* Continuous Moving Loop Marquee of Location Cards */}
+          <div className="relative w-full overflow-hidden marquee py-2">
+            <div className="marquee-track flex gap-4 w-max hover:[animation-play-state:paused]">
+              {[...popularAreas, ...popularAreas].map((area, idx) => (
                 <Link
-                  key={area.name}
+                  key={`${area.name}-${idx}`}
                   href={`/rentals?location=${encodeURIComponent(area.name)}`}
-                  className={`snap-start shrink-0 w-[200px] sm:w-auto p-4 rounded-2xl bg-gradient-to-br ${area.grad} border border-white/15 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-black/30 block`}
+                  className={`shrink-0 w-[210px] sm:w-[240px] p-4 sm:p-5 rounded-2xl bg-gradient-to-br ${area.grad} border border-white/15 hover:scale-[1.04] active:scale-95 transition-all shadow-lg shadow-black/40 block group`}
                 >
-                  <div className="flex items-center gap-2 text-white/90 text-xs font-semibold mb-1">
+                  <div className="flex items-center gap-2 text-white/90 text-xs font-semibold mb-1.5">
                     <MapPin size={13} className="shrink-0" /> Kanpur
                   </div>
                   <h3 className="text-white font-extrabold text-base sm:text-lg leading-tight truncate">
                     {area.name}
                   </h3>
-                  <p className="text-white/80 text-xs mt-2 font-medium">
-                    {area.count}
+                  <p className="text-white/80 text-xs mt-2 font-medium flex items-center justify-between">
+                    <span>{area.count}</span>
+                    <ArrowRight size={13} className="opacity-0 group-hover:opacity-100 transition-opacity transform -translate-x-1 group-hover:translate-x-0" />
                   </p>
                 </Link>
               ))}

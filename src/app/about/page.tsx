@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter'
 import { Check, Target, Eye, Heart, Users, ArrowRight } from 'lucide-react'
 
 export default function AboutPage() {
@@ -57,25 +58,13 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* 3. Stats Strip */}
-        <section className="statsbar">
-          <div className="wrap">
-            <div className="cell">
-              <b>14+</b>
-              <span>Years of Experience</span>
-            </div>
-            <div className="cell">
-              <b>83+</b>
-              <span>Verified Reviews</span>
-            </div>
-            <div className="cell">
-              <b>67+</b>
-              <span>Active Rentals</span>
-            </div>
-            <div className="cell">
-              <b>98%</b>
-              <span>Satisfaction Rate</span>
-            </div>
+        {/* 3. Stats Strip with Animated Counters */}
+        <section className="statsbar py-6 sm:py-8 md:py-10 bg-[#0E0A24]/60 border-y border-white/5">
+          <div className="wrap max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 px-4">
+            <AnimatedStatCounter value={83} suffix="+" label="Total Reviews" />
+            <AnimatedStatCounter value={5} suffix="+" label="Years of Experience" />
+            <AnimatedStatCounter value={67} suffix="+" label="Rentals Listed" />
+            <AnimatedStatCounter value={98} suffix="%" label="Satisfaction Rate" />
           </div>
         </section>
 

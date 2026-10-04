@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/components/providers/ClientProviders";
-import MobileBottomBar from "@/components/layout/MobileBottomBar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -84,7 +83,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-full flex flex-col">
         <ClientProviders>{children}</ClientProviders>
-        <MobileBottomBar />
       </body>
     </html>
   );

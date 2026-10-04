@@ -64,11 +64,15 @@ export default function Header() {
 
   return (
     <header className={`site ${scrolled ? 'scrolled' : ''}`}>
-      <nav aria-label="Primary Navigation">
+      <nav aria-label="Primary Navigation" className="flex items-center justify-between w-full">
         {/* Brand Logo */}
-        <Link href="/" className="brand">
-          <div className="logo-icon">P</div>
-          <span>PrimeHomeKanpur</span>
+        <Link href="/" className="brand flex items-center gap-2.5 min-w-0" onClick={() => setMobileMenuOpen(false)}>
+          <div className="logo-icon w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-[#3B82F6] to-[#8B5CF6] flex items-center justify-center font-black text-sm sm:text-base text-white shadow-lg shrink-0">
+            P
+          </div>
+          <span className="font-extrabold text-base sm:text-lg md:text-xl text-white tracking-tight truncate">
+            PrimeHomeKanpur
+          </span>
         </Link>
 
         {/* Center Desktop Navigation */}
@@ -93,25 +97,18 @@ export default function Header() {
           })}
 
           {/* Mobile-only Action Links */}
-          <div className="md:hidden pt-4 pb-2 border-t border-white/10 flex flex-col gap-2 w-full">
-            <Link
-              href="/rentals"
-              className="btn btn-primary btn-loop-shine w-full text-center py-2.5 text-sm font-bold"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Explore Rentals
-            </Link>
-
+          <div className="md:hidden pt-3 pb-2 border-t border-white/10 flex flex-col gap-2 w-full">
             {!isAuthenticated ? (
               <Link
                 href="/signin"
-                className="btn btn-secondary w-full text-center py-2.5 text-sm font-semibold"
+                className="btn btn-secondary w-full text-center py-2.5 text-sm font-semibold border border-white/15 flex items-center justify-center gap-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sign In
+                <User size={16} className="text-[#00C2D9]" />
+                <span>Sign In</span>
               </Link>
             ) : (
-              <div className="flex flex-col gap-1.5 pt-2">
+              <div className="flex flex-col gap-1.5 pt-1">
                 {isAdmin && (
                   <Link
                     href="/admin"
@@ -165,36 +162,49 @@ export default function Header() {
         </div>
 
         {/* Right Desktop CTA + Sign In / User Menu */}
-        <div className="nav-right">
-          {/* Explore Rentals with 3-second continuous glass shine */}
+        <div className="nav-right flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Explore Rentals (Desktop only: md:inline-flex) */}
           <Link
             href="/rentals"
-            className="nav-cta btn btn-primary btn-loop-shine font-bold tracking-tight shadow-md flex items-center gap-1.5"
+            className="nav-cta btn btn-primary btn-loop-shine font-bold tracking-tight shadow-md hidden md:inline-flex items-center gap-1.5 text-xs sm:text-sm py-2 px-4"
           >
             <span>Explore Rentals</span>
           </Link>
 
-          {/* Unauthenticated: Sign In button */}
+          {/* Unauthenticated: Sign In */}
           {!isAuthenticated ? (
-            <Link
-              href="/signin"
-              className="btn btn-secondary py-2 px-4 text-xs font-semibold rounded-xl border border-white/10 hover:border-primary/50 text-white transition-all"
-            >
-              Sign In
-            </Link>
+            <>
+              {/* Desktop Sign In button (User icon + "Sign In" text) */}
+              <Link
+                href="/signin"
+                className="btn btn-secondary py-2 px-4 text-xs font-semibold rounded-xl border border-white/10 hover:border-primary/50 text-white transition-all hidden md:inline-flex items-center gap-2"
+              >
+                <User size={15} className="text-[#00C2D9]" />
+                <span>Sign In</span>
+              </Link>
+
+              {/* Mobile Sign In Icon Button - Matches exact reference image */}
+              <Link
+                href="/signin"
+                className="md:hidden w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl bg-[#18132F]/90 hover:bg-[#201A3D] active:scale-95 border border-white/15 flex items-center justify-center text-white transition-all shadow-md shadow-black/40"
+                aria-label="Sign In"
+              >
+                <User size={20} className="text-[#00C2D9] stroke-[2.2]" />
+              </Link>
+            </>
           ) : (
             /* Authenticated: Account Dropdown */
             <div className="relative" ref={dropdownRef}>
               <button
                 type="button"
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 py-1.5 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white text-xs font-semibold transition-all"
+                className="flex items-center gap-1.5 sm:gap-2 py-1.5 px-2.5 sm:px-3 rounded-2xl bg-[#18132F]/90 hover:bg-[#201A3D] border border-white/15 text-white text-xs font-semibold transition-all min-h-[44px]"
                 aria-expanded={userDropdownOpen}
               >
                 <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-primary to-accent-cyan flex items-center justify-center text-white text-xs font-bold">
                   {profile?.full_name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <span className="max-w-[100px] truncate hidden sm:inline-block">
+                <span className="max-w-[80px] sm:max-w-[100px] truncate hidden md:inline-block">
                   {profile?.full_name?.split(' ')[0] || 'Account'}
                 </span>
                 <ChevronDown size={14} className={`text-text-muted transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />

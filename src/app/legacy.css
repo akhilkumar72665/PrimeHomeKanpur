@@ -293,24 +293,37 @@
 
   header.site .menu-btn {
     display: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: rgba(20, 11, 54, 0.7);
-    border: 1px solid var(--line);
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 16px;
+    background: rgba(19, 14, 38, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 5px;
     cursor: pointer;
     padding: 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  }
+
+  header.site .menu-btn:hover {
+    background: rgba(28, 21, 56, 0.95);
+    border-color: rgba(139, 92, 246, 0.4);
+  }
+
+  header.site .menu-btn:active {
+    transform: scale(0.95);
   }
 
   header.site .menu-btn span {
     width: 20px;
     height: 2px;
     background: #fff;
-    border-radius: 2px;
+    border-radius: 999px;
     transition: all 0.25s var(--ease);
   }
 
@@ -1096,7 +1109,7 @@
     }
   }
 
-  @media (max-width: 860px) {
+  @media (max-width: 1024px) {
     header.site .navlinks {
       display: none;
       position: absolute;
@@ -1123,13 +1136,11 @@
     }
 
     header.site .navlinks .menu-cta {
-      display: inline-flex;
-      margin-top: 10px;
-      width: 100%;
+      display: none;
     }
 
     header.site .nav-cta {
-      display: none;
+      display: none !important;
     }
 
     header.site .menu-btn {
@@ -1144,7 +1155,6 @@
     .process,
     .feat-grid,
     .testi-grid,
-    .statsbar .wrap,
     .card-s,
     .foot-card,
     .foot-grid,

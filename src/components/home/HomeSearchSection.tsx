@@ -150,45 +150,75 @@ export default function HomeSearchSection() {
         </form>
       </div>
 
-      {/* 2. MOBILE COMPACT TRIGGER BAR */}
+      {/* 2. MOBILE ENHANCED SEARCH CARD */}
       <div className="md:hidden">
-        <div
-          onClick={() => setMobileSheetOpen(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') setMobileSheetOpen(true)
-          }}
-          className="w-full rounded-2xl border border-white/15 bg-gradient-to-b from-[#18113C]/95 to-[#0E0A24]/95 p-4 shadow-xl backdrop-blur-xl cursor-pointer active:scale-[0.99] transition-all"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shrink-0 border border-primary/30">
-                <Search size={18} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-white text-sm font-bold truncate">
-                  {location || 'Where in Kanpur?'}
-                </p>
-                <p className="text-text-muted text-xs truncate">
-                  {bhk ? `${bhk} BHK • ` : ''}
-                  {price ? `${price} • ` : ''}
-                  {activeCount > 0 ? `${activeCount} filter(s) active` : 'Location • BHK • Budget'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              {activeCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-primary text-black text-[10px] font-black flex items-center justify-center">
-                  {activeCount}
-                </span>
-              )}
-              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white">
-                <SlidersHorizontal size={15} />
-              </div>
+        <div className="w-full rounded-2xl border border-white/15 bg-gradient-to-b from-[#18113C]/95 via-[#130D33]/95 to-[#0E0A24]/95 p-4 shadow-2xl backdrop-blur-xl space-y-3.5">
+          {/* Location Selector */}
+          <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-white/[0.06] border border-white/10">
+            <MapPin size={18} className="text-[#00C2D9] shrink-0" />
+            <div className="flex-1 min-w-0">
+              <label htmlFor="mobile-hero-location" className="block text-[10px] font-bold text-text-muted uppercase tracking-wider">
+                Location in Kanpur
+              </label>
+              <select
+                id="mobile-hero-location"
+                aria-label="Select Kanpur Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full bg-transparent text-white text-sm font-bold focus:outline-none cursor-pointer truncate"
+              >
+                {KANPUR_LOCATIONS.map((loc) => (
+                  <option key={loc} value={loc === 'All Kanpur areas' ? '' : loc} className="bg-[#0E0A24] text-white">
+                    {loc}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
+
+          {/* Quick Filter Chips (BHK + More Filters Button) */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {BHK_OPTIONS.slice(1).map((b) => {
+              const isSelected = bhk === b.value
+              return (
+                <button
+                  type="button"
+                  key={b.label}
+                  onClick={() => setBhk(isSelected ? '' : b.value)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all border ${
+                    isSelected
+                      ? 'bg-[#00C2D9] text-black border-[#00C2D9] shadow-md shadow-cyan-950/50'
+                      : 'bg-white/[0.04] text-white/90 border-white/10 hover:bg-white/[0.08]'
+                  }`}
+                >
+                  {b.label}
+                </button>
+              )
+            })}
+
+            <button
+              type="button"
+              onClick={() => setMobileSheetOpen(true)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 border transition-all ${
+                activeCount > 0
+                  ? 'bg-[#7C3AED] text-white border-[#7C3AED]'
+                  : 'bg-white/[0.06] text-white/90 border-white/15'
+              }`}
+            >
+              <SlidersHorizontal size={13} />
+              <span>{activeCount > 0 ? `${activeCount} Filters` : 'More Filters'}</span>
+            </button>
+          </div>
+
+          {/* Search CTA */}
+          <button
+            type="button"
+            onClick={() => handleSearchSubmit()}
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-[#00C2D9] to-[#22D3EE] text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-900/40 active:scale-[0.98] transition-transform btn-loop-shine"
+          >
+            <Search size={17} />
+            <span>Search Kanpur Rentals</span>
+          </button>
         </div>
       </div>
 
