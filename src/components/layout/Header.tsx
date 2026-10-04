@@ -177,7 +177,7 @@ export default function Header() {
               {/* Desktop Sign In button (User icon + "Sign In" text) */}
               <Link
                 href="/signin"
-                className="btn btn-secondary py-2 px-4 text-xs font-semibold rounded-xl border border-white/10 hover:border-primary/50 text-white transition-all hidden md:inline-flex items-center gap-2"
+                className="desktop-signin-btn btn btn-secondary py-2 px-4 text-xs font-semibold rounded-xl border border-white/10 hover:border-primary/50 text-white transition-all hidden md:inline-flex items-center gap-2"
               >
                 <User size={15} className="text-[#00C2D9]" />
                 <span>Sign In</span>
@@ -186,7 +186,7 @@ export default function Header() {
               {/* Mobile Sign In Icon Button - Matches exact reference image */}
               <Link
                 href="/signin"
-                className="md:hidden w-11 h-11 min-w-[44px] min-h-[44px] rounded-2xl bg-[#18132F]/90 hover:bg-[#201A3D] active:scale-95 border border-white/15 flex items-center justify-center text-white transition-all shadow-md shadow-black/40"
+                className="mobile-signin-btn md:hidden w-14 h-14 min-w-[56px] min-h-[56px] rounded-2xl bg-[#1C1B21]/95 hover:bg-[#25242B] active:scale-95 border border-white/15 flex items-center justify-center text-white transition-all shadow-md shadow-black/40"
                 aria-label="Sign In"
               >
                 <User size={20} className="text-[#00C2D9] stroke-[2.2]" />
