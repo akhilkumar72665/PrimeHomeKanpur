@@ -7,6 +7,7 @@ export interface Profile {
   phone?: string | null
   role: 'ADMIN' | 'TENANT'
   avatar_url?: string | null
+  is_active?: boolean
   created_at: string
   updated_at?: string
 }
@@ -75,12 +76,14 @@ export interface AdminProperty {
 export interface Agent {
   id: string
   name: string
+  role?: string | null
   phone?: string | null
   email?: string | null
   photo_url?: string | null
   bio?: string | null
   is_active: boolean
   created_at: string
+  updated_at?: string
 }
 
 export type AdminAgent = Agent
@@ -95,8 +98,11 @@ export interface Inquiry {
   email?: string | null
   phone?: string | null
   message?: string | null
+  preferred_date?: string | null
+  preferred_time?: string | null
   status: InquiryStatus
   created_at: string
+  updated_at?: string
 }
 
 export type AdminInquiry = Inquiry

@@ -44,8 +44,9 @@ export async function middleware(request: NextRequest) {
   // Protected routes check in middleware (Layer 1)
   const isProtectedAdmin = request.nextUrl.pathname.startsWith('/admin')
   const isProtectedDashboard = request.nextUrl.pathname.startsWith('/dashboard')
+  const isProtectedLandlord = request.nextUrl.pathname.startsWith('/landlord')
 
-  if ((isProtectedAdmin || isProtectedDashboard) && !user) {
+  if ((isProtectedAdmin || isProtectedDashboard || isProtectedLandlord) && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/signin'
     url.searchParams.set('redirect', request.nextUrl.pathname)

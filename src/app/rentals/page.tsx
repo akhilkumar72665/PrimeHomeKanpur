@@ -15,6 +15,8 @@ interface RentalsPageProps {
     price?: string
     tenant?: string
     search?: string
+    type?: string
+    category?: string
   }>
 }
 
@@ -109,6 +111,7 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
       bhk: params.bhk,
       priceRange: params.price,
       tenantType: params.tenant,
+      propertyType: params.type || params.category,
     }),
   ])
 

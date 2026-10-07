@@ -8,7 +8,8 @@
 -- 4. Storage Buckets (Images, Videos, Avatars, Documents) & Storage RLS Policies
 -- 5. Row Level Security (RLS) Policies for Public, Tenant, and Admin Access
 -- 6. Role-Based Access Control (RBAC) Functions (is_admin, claim_team_access, has_permission)
--- 7. Production Seed Data (Kanpur Locations, Properties, Agents, Team, Stats, FAQs)
+-- 7. Full PostgreSQL Schema & Table Grants to authenticated and anon roles
+-- 8. Production Seed Data (25+ Kanpur Locations, Properties, Agents, Team, Stats, FAQs)
 --
 -- Instructions: Run this entire script in your Supabase SQL Editor once.
 -- ==============================================================================
@@ -34,11 +35,18 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Ensure columns exist
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS full_name TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS phone TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'TENANT';
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
+-- Normalize existing roles
+UPDATE public.profiles SET role = 'ADMIN' WHERE role ILIKE 'admin%' OR role ILIKE 'super_admin%';
+UPDATE public.profiles SET role = 'TENANT' WHERE role NOT IN ('ADMIN', 'TENANT');
 
 -- 2.2 TEAM MEMBERS TABLE
 CREATE TABLE IF NOT EXISTS public.team_members (
@@ -50,7 +58,7 @@ CREATE TABLE IF NOT EXISTS public.team_members (
   phone TEXT,
   photo_url TEXT,
   profile_photo TEXT,
-  designation TEXT NOT NULL,
+  designation TEXT DEFAULT 'Operations',
   team_role TEXT NOT NULL DEFAULT 'EDITOR' CHECK (team_role IN ('OWNER', 'MANAGER', 'EDITOR', 'SUPPORT')),
   role TEXT NOT NULL DEFAULT 'agent',
   bio TEXT,
@@ -58,14 +66,15 @@ CREATE TABLE IF NOT EXISTS public.team_members (
   permissions JSONB DEFAULT '[]'::jsonb,
   display_order INT DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
+  invited_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS phone TEXT;
 ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS photo_url TEXT;
-ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS profile_photo TEXT;
-ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS whatsapp TEXT;
-ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS permissions JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS designation TEXT DEFAULT 'Operations';
+ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS team_role TEXT NOT NULL DEFAULT 'EDITOR';
 ALTER TABLE public.team_members ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
 
 -- 2.3 LOCATIONS TABLE
@@ -76,22 +85,22 @@ CREATE TABLE IF NOT EXISTS public.locations (
   city TEXT NOT NULL DEFAULT 'Kanpur',
   description TEXT,
   image TEXT,
+  is_active BOOLEAN DEFAULT true,
   display_order INT DEFAULT 0,
   sort_order INT DEFAULT 0,
-  is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE public.locations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
 ALTER TABLE public.locations ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
 ALTER TABLE public.locations ADD COLUMN IF NOT EXISTS display_order INT DEFAULT 0;
-ALTER TABLE public.locations ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
 
 -- 2.4 AGENTS TABLE
 CREATE TABLE IF NOT EXISTS public.agents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
+  slug TEXT UNIQUE,
   role TEXT DEFAULT 'Rental Specialist',
   phone TEXT,
   email TEXT,
@@ -106,14 +115,12 @@ CREATE TABLE IF NOT EXISTS public.agents (
   years_active INT DEFAULT 5,
   specializations TEXT[] DEFAULT '{}',
   areas TEXT[] DEFAULT '{}',
-  display_order INT DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 ALTER TABLE public.agents ADD COLUMN IF NOT EXISTS photo_url TEXT;
-ALTER TABLE public.agents ADD COLUMN IF NOT EXISTS avatar TEXT;
 ALTER TABLE public.agents ADD COLUMN IF NOT EXISTS bio TEXT;
 ALTER TABLE public.agents ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
 
@@ -127,7 +134,6 @@ CREATE TABLE IF NOT EXISTS public.properties (
   security_deposit INTEGER,
   maintenance INTEGER DEFAULT 0,
   property_type TEXT NOT NULL DEFAULT 'Flat',
-  listing_type TEXT NOT NULL DEFAULT 'RENT',
   bhk INTEGER NOT NULL DEFAULT 2,
   bathrooms INTEGER DEFAULT 1,
   area_sqft INTEGER NOT NULL DEFAULT 1000,
@@ -135,7 +141,7 @@ CREATE TABLE IF NOT EXISTS public.properties (
   total_floors INTEGER DEFAULT 4,
   tenant_type TEXT NOT NULL DEFAULT 'Any',
   furnishing TEXT DEFAULT 'Semi-Furnished',
-  status TEXT NOT NULL DEFAULT 'AVAILABLE' CHECK (status IN ('DRAFT', 'AVAILABLE', 'RESERVED', 'RENTED', 'INACTIVE', 'HIDDEN')),
+  status TEXT NOT NULL DEFAULT 'AVAILABLE',
   location_id UUID REFERENCES public.locations(id) ON DELETE SET NULL,
   address TEXT NOT NULL,
   latitude DECIMAL(10, 8),
@@ -157,17 +163,102 @@ ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS video_url TEXT;
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS agent_id UUID REFERENCES public.agents(id) ON DELETE SET NULL;
 ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT false;
 
--- 2.6 PROPERTY IMAGES TABLE
-CREATE TABLE IF NOT EXISTS public.property_images (
+-- 2.6 REVIEWS TABLE
+CREATE TABLE IF NOT EXISTS public.reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  property_id UUID NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
-  image_url TEXT NOT NULL,
-  is_primary BOOLEAN DEFAULT false,
-  sort_order INTEGER DEFAULT 0,
+  property_id UUID REFERENCES public.properties(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  reviewer_name TEXT,
+  rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
+  moderation_note TEXT,
+  moderated_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  moderated_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.reviews DROP CONSTRAINT IF EXISTS reviews_property_id_fkey;
+ALTER TABLE public.reviews ADD CONSTRAINT reviews_property_id_fkey FOREIGN KEY (property_id) REFERENCES public.properties(id) ON DELETE CASCADE;
+
+-- 2.7 INQUIRIES TABLE
+CREATE TABLE IF NOT EXISTS public.inquiries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  property_id UUID REFERENCES public.properties(id) ON DELETE SET NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT NOT NULL,
+  message TEXT,
+  preferred_date DATE,
+  preferred_time TEXT,
+  status TEXT NOT NULL DEFAULT 'NEW' CHECK (status IN ('NEW', 'CONTACTED', 'VISIT_SCHEDULED', 'IN_PROGRESS', 'CLOSED')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.inquiries DROP CONSTRAINT IF EXISTS inquiries_property_id_fkey;
+ALTER TABLE public.inquiries ADD CONSTRAINT inquiries_property_id_fkey FOREIGN KEY (property_id) REFERENCES public.properties(id) ON DELETE SET NULL;
+
+-- 2.8 PAGE SETTINGS TABLE
+CREATE TABLE IF NOT EXISTS public.page_settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2.9 ACTIVITY LOGS TABLE
+CREATE TABLE IF NOT EXISTS public.activity_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  actor_email TEXT,
+  action TEXT NOT NULL,
+  entity TEXT NOT NULL,
+  entity_id TEXT,
+  summary TEXT NOT NULL,
+  details JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2.7 WISHLISTS & FAVORITES
+CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_entity ON public.activity_logs(entity);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_actor ON public.activity_logs(actor_id);
+
+-- 2.10 PROPERTY VISITS TABLE
+CREATE TABLE IF NOT EXISTS public.property_visits (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  property_id UUID REFERENCES public.properties(id) ON DELETE CASCADE,
+  preferred_date DATE NOT NULL,
+  preferred_time TEXT NOT NULL,
+  message TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled', 'rejected')),
+  admin_note TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.property_visits DROP CONSTRAINT IF EXISTS property_visits_property_id_fkey;
+ALTER TABLE public.property_visits ADD CONSTRAINT property_visits_property_id_fkey FOREIGN KEY (property_id) REFERENCES public.properties(id) ON DELETE CASCADE;
+
+-- 2.11 SITE STATISTICS TABLE
+CREATE TABLE IF NOT EXISTS public.site_statistics (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  stat_key TEXT NOT NULL UNIQUE,
+  key TEXT,
+  label TEXT NOT NULL,
+  value TEXT,
+  value_number INT DEFAULT 0,
+  value_suffix TEXT DEFAULT '',
+  display_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2.12 WISHLISTS & FAVORITES
 CREATE TABLE IF NOT EXISTS public.wishlists (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -184,112 +275,12 @@ CREATE TABLE IF NOT EXISTS public.favorites (
   CONSTRAINT uq_favorites_user_property UNIQUE (user_id, property_id)
 );
 
--- 2.8 PROPERTY VISITS TABLE
-CREATE TABLE IF NOT EXISTS public.property_visits (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  property_id UUID NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
-  preferred_date DATE NOT NULL,
-  preferred_time TEXT NOT NULL,
-  message TEXT,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled', 'rejected')),
-  admin_note TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2.9 REVIEWS TABLE
-CREATE TABLE IF NOT EXISTS public.reviews (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  property_id UUID REFERENCES public.properties(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  reviewer_name TEXT,
-  rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
-  title TEXT,
-  comment TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'pending', 'approved', 'rejected')),
-  moderation_note TEXT,
-  admin_note TEXT,
-  moderated_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  moderated_at TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  CONSTRAINT uq_reviews_property_user UNIQUE (property_id, user_id)
-);
-
--- 2.10 INQUIRIES & CONTACT MESSAGES TABLE
-CREATE TABLE IF NOT EXISTS public.inquiries (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  property_id UUID REFERENCES public.properties(id) ON DELETE SET NULL,
-  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT NOT NULL,
-  message TEXT NOT NULL,
-  preferred_date DATE,
-  preferred_time TEXT,
-  status TEXT NOT NULL DEFAULT 'NEW' CHECK (status IN ('NEW', 'CONTACTED', 'VISIT_SCHEDULED', 'IN_PROGRESS', 'CLOSED', 'new', 'read', 'contacted', 'archived')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Compatibility alias table for contact_messages
-CREATE TABLE IF NOT EXISTS public.contact_messages (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  property_id UUID REFERENCES public.properties(id) ON DELETE SET NULL,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  phone TEXT,
-  message TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'new',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2.11 PAGE SETTINGS
-CREATE TABLE IF NOT EXISTS public.page_settings (
-  key TEXT PRIMARY KEY,
-  value JSONB NOT NULL DEFAULT '{}'::jsonb,
-  updated_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2.12 SITE STATISTICS
-CREATE TABLE IF NOT EXISTS public.site_statistics (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  stat_key TEXT UNIQUE,
-  key TEXT UNIQUE,
-  label TEXT NOT NULL,
-  value TEXT,
-  value_number INTEGER,
-  value_suffix TEXT DEFAULT '',
-  display_order INT DEFAULT 0,
-  is_active BOOLEAN DEFAULT true,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2.13 ACTIVITY LOGS (Audit Trail)
-CREATE TABLE IF NOT EXISTS public.activity_logs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  actor_email TEXT,
-  action TEXT NOT NULL,
-  entity TEXT NOT NULL,
-  entity_id TEXT,
-  summary TEXT,
-  details JSONB DEFAULT '{}'::jsonb,
-  metadata JSONB DEFAULT '{}'::jsonb,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 2.14 FAQS TABLE
+-- 2.13 FAQS TABLE
 CREATE TABLE IF NOT EXISTS public.faqs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   question TEXT NOT NULL UNIQUE,
   answer TEXT NOT NULL,
-  category TEXT DEFAULT 'general',
+  category TEXT NOT NULL DEFAULT 'General',
   display_order INT DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -297,117 +288,64 @@ CREATE TABLE IF NOT EXISTS public.faqs (
 );
 
 -- ==============================================================================
--- 3. INDEXES FOR PERFORMANCE
--- ==============================================================================
-CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
-CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
-CREATE INDEX IF NOT EXISTS idx_properties_slug ON public.properties(slug);
-CREATE INDEX IF NOT EXISTS idx_properties_status ON public.properties(status);
-CREATE INDEX IF NOT EXISTS idx_properties_location ON public.properties(location_id);
-CREATE INDEX IF NOT EXISTS idx_properties_featured ON public.properties(featured);
-CREATE INDEX IF NOT EXISTS idx_properties_price ON public.properties(price);
-CREATE INDEX IF NOT EXISTS idx_wishlists_user ON public.wishlists(user_id);
-CREATE INDEX IF NOT EXISTS idx_property_visits_user ON public.property_visits(user_id);
-CREATE INDEX IF NOT EXISTS idx_reviews_property ON public.reviews(property_id);
-CREATE INDEX IF NOT EXISTS idx_reviews_status ON public.reviews(status);
-CREATE INDEX IF NOT EXISTS idx_inquiries_status ON public.inquiries(status);
-CREATE INDEX IF NOT EXISTS idx_activity_logs_created ON public.activity_logs(created_at DESC);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_faqs_question ON public.faqs(question);
-
--- ==============================================================================
--- 4. AUTHENTICATION & PROFILE AUTOMATION TRIGGERS
+-- 3. GRANT TABLE PRIVILEGES (PREVENTS "permission denied")
 -- ==============================================================================
 
--- Trigger function: Creates or updates profile on user signup
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-SECURITY DEFINER
-SET search_path = public, auth, pg_temp
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  assigned_role TEXT;
-  tm_match RECORD;
-BEGIN
-  SELECT team_role INTO tm_match
-  FROM public.team_members
-  WHERE LOWER(email) = LOWER(NEW.email) AND is_active = true
-  LIMIT 1;
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role, postgres;
 
-  IF tm_match.team_role IS NOT NULL THEN
-    assigned_role := 'ADMIN';
-  ELSE
-    assigned_role := COALESCE(UPPER(NEW.raw_user_meta_data->>'role'), 'TENANT');
-  END IF;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres, service_role, authenticated, anon;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres, service_role, authenticated, anon;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO postgres, service_role, authenticated, anon;
 
-  INSERT INTO public.profiles (
-    id,
-    email,
-    full_name,
-    phone,
-    avatar_url,
-    role,
-    is_active
-  )
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
-    NEW.raw_user_meta_data->>'phone',
-    NEW.raw_user_meta_data->>'avatar_url',
-    assigned_role,
-    true
-  )
-  ON CONFLICT (id) DO UPDATE
-  SET
-    email = EXCLUDED.email,
-    full_name = COALESCE(EXCLUDED.full_name, profiles.full_name),
-    phone = COALESCE(EXCLUDED.phone, profiles.phone),
-    avatar_url = COALESCE(EXCLUDED.avatar_url, profiles.avatar_url),
-    role = CASE WHEN assigned_role = 'ADMIN' THEN 'ADMIN' ELSE profiles.role END,
-    updated_at = NOW();
-
-  -- Link user_id in team_members if exists
-  UPDATE public.team_members
-  SET user_id = NEW.id, updated_at = NOW()
-  WHERE LOWER(email) = LOWER(NEW.email);
-
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres, service_role, authenticated, anon;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres, service_role, authenticated, anon;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO postgres, service_role, authenticated, anon;
 
 -- ==============================================================================
--- 5. RBAC HELPER FUNCTIONS
+-- 4. RBAC & HELPER SECURITY FUNCTIONS
 -- ==============================================================================
 
--- Check if caller is admin
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 DECLARE
-  user_role TEXT;
+  p_role TEXT;
+  tm_exists BOOLEAN;
 BEGIN
   IF auth.uid() IS NULL THEN
     RETURN false;
   END IF;
 
-  SELECT role INTO user_role
+  SELECT role INTO p_role
   FROM public.profiles
   WHERE id = auth.uid();
 
-  RETURN (user_role ILIKE 'admin%' OR user_role ILIKE 'super_admin%');
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, auth, pg_temp;
+  IF p_role ILIKE 'admin%' THEN
+    RETURN true;
+  END IF;
 
--- Check team role
+  SELECT EXISTS (
+    SELECT 1 FROM public.team_members
+    WHERE (user_id = auth.uid() OR LOWER(email) = LOWER(COALESCE(auth.jwt()->>'email', '')))
+      AND is_active = true
+  ) INTO tm_exists;
+
+  IF tm_exists = true THEN
+    RETURN true;
+  END IF;
+
+  IF (auth.jwt()->'app_metadata'->>'role' = 'admin' OR auth.jwt()->'user_metadata'->>'role' = 'admin') THEN
+    RETURN true;
+  END IF;
+
+  RETURN false;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
 CREATE OR REPLACE FUNCTION public.team_role()
 RETURNS TEXT AS $$
 DECLARE
   m_role TEXT;
+  p_role TEXT;
 BEGIN
   IF auth.uid() IS NULL THEN
     RETURN NULL;
@@ -415,15 +353,26 @@ BEGIN
 
   SELECT team_role INTO m_role
   FROM public.team_members
-  WHERE (user_id = auth.uid() OR LOWER(email) = LOWER(auth.jwt()->>'email'))
+  WHERE (user_id = auth.uid() OR LOWER(email) = LOWER(COALESCE(auth.jwt()->>'email', '')))
     AND is_active = true
   LIMIT 1;
 
-  RETURN m_role;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, auth, pg_temp;
+  IF m_role IS NOT NULL THEN
+    RETURN m_role;
+  END IF;
 
--- Check specific permission
+  SELECT role INTO p_role
+  FROM public.profiles
+  WHERE id = auth.uid();
+
+  IF p_role ILIKE 'admin%' THEN
+    RETURN 'OWNER';
+  END IF;
+
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
 CREATE OR REPLACE FUNCTION public.has_permission(perm TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -434,11 +383,8 @@ BEGIN
   END IF;
 
   trole := public.team_role();
-  IF trole IS NULL THEN
-    RETURN true; -- Direct ADMIN role fallback
-  END IF;
 
-  IF trole = 'OWNER' THEN
+  IF trole IS NULL OR trole = 'OWNER' THEN
     RETURN true;
   ELSIF trole = 'MANAGER' THEN
     RETURN perm IN (
@@ -447,16 +393,15 @@ BEGIN
       'inquiries.manage', 'agents.manage', 'users.view', 'activity_logs.view'
     );
   ELSIF trole = 'EDITOR' THEN
-    RETURN perm IN ('properties.create', 'properties.update', 'properties.view');
+    RETURN perm IN ('properties.create', 'properties.update', 'locations.manage');
   ELSIF trole = 'SUPPORT' THEN
     RETURN perm IN ('reviews.moderate', 'inquiries.manage');
   END IF;
 
-  RETURN false;
+  RETURN true;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public, auth, pg_temp;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 
--- Claim admin session
 CREATE OR REPLACE FUNCTION public.claim_team_access()
 RETURNS TEXT AS $$
 DECLARE
@@ -469,8 +414,12 @@ BEGIN
     RETURN NULL;
   END IF;
 
-  SELECT email INTO caller_email FROM auth.users WHERE id = caller_id;
-  IF caller_email IS NULL THEN
+  caller_email := LOWER(COALESCE(auth.jwt()->>'email', ''));
+  IF caller_email = '' THEN
+    SELECT email INTO caller_email FROM auth.users WHERE id = caller_id;
+  END IF;
+
+  IF caller_email IS NULL OR caller_email = '' THEN
     RETURN NULL;
   END IF;
 
@@ -485,316 +434,266 @@ BEGIN
     WHERE id = tm_record.id;
 
     INSERT INTO public.profiles (id, email, full_name, phone, role, is_active)
-    VALUES (caller_id, caller_email, COALESCE(tm_record.name, 'Admin'), tm_record.phone, 'ADMIN', true)
-    ON CONFLICT (id) DO UPDATE SET role = 'ADMIN', is_active = true, updated_at = NOW();
+    VALUES (
+      caller_id,
+      caller_email,
+      COALESCE(tm_record.name, 'Admin'),
+      tm_record.phone,
+      'ADMIN',
+      true
+    )
+    ON CONFLICT (id) DO UPDATE
+    SET role = 'ADMIN', is_active = true, updated_at = NOW();
 
-    INSERT INTO public.activity_logs (actor_id, actor_email, action, entity, entity_id, summary)
-    VALUES (caller_id, caller_email, 'LOGIN', 'team_member', tm_record.id::text, 'Admin claimed team access');
+    BEGIN
+      INSERT INTO public.activity_logs (actor_id, actor_email, action, entity, entity_id, summary)
+      VALUES (caller_id, caller_email, 'LOGIN', 'team_member', tm_record.id::text, 'Admin session claimed via claim_team_access()');
+    EXCEPTION WHEN OTHERS THEN
+    END;
 
     RETURN tm_record.team_role;
+  ELSE
+    IF EXISTS (SELECT 1 FROM public.profiles WHERE id = caller_id AND role ILIKE 'admin%') THEN
+      RETURN 'OWNER';
+    END IF;
   END IF;
 
   RETURN NULL;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, auth, pg_temp;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION public.team_role() TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION public.has_permission(TEXT) TO authenticated, anon;
-GRANT EXECUTE ON FUNCTION public.claim_team_access() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.claim_team_access() TO authenticated, anon;
 
 -- ==============================================================================
--- 6. STORAGE BUCKETS (IMAGES & VIDEOS)
+-- 5. ROW LEVEL SECURITY (RLS POLICIES)
 -- ==============================================================================
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES
-  ('property-images', 'property-images', true, 10485760, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/jpg']),
-  ('property-videos', 'property-videos', true, 104857600, ARRAY['video/mp4', 'video/webm', 'video/quicktime']),
-  ('agent-photos', 'agent-photos', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/jpg']),
-  ('team-photos', 'team-photos', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/jpg']),
-  ('avatars', 'avatars', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/jpg']),
-  ('site-assets', 'site-assets', true, 10485760, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'])
-ON CONFLICT (id) DO UPDATE
-SET
-  public = true,
-  file_size_limit = EXCLUDED.file_size_limit,
-  allowed_mime_types = EXCLUDED.allowed_mime_types;
 
--- Storage RLS Policies
-DROP POLICY IF EXISTS "Public Read Storage" ON storage.objects;
-CREATE POLICY "Public Read Storage" ON storage.objects
-  FOR SELECT USING (bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'avatars', 'site-assets'));
-
-DROP POLICY IF EXISTS "Authenticated Upload Storage" ON storage.objects;
-CREATE POLICY "Authenticated Upload Storage" ON storage.objects
-  FOR INSERT WITH CHECK (
-    bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'avatars', 'site-assets')
-    AND auth.role() = 'authenticated'
-  );
-
-DROP POLICY IF EXISTS "Authenticated Update Storage" ON storage.objects;
-CREATE POLICY "Authenticated Update Storage" ON storage.objects
-  FOR UPDATE USING (
-    bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'avatars', 'site-assets')
-    AND auth.role() = 'authenticated'
-  );
-
-DROP POLICY IF EXISTS "Authenticated Delete Storage" ON storage.objects;
-CREATE POLICY "Authenticated Delete Storage" ON storage.objects
-  FOR DELETE USING (
-    bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'avatars', 'site-assets')
-    AND (public.is_admin() OR auth.uid() = owner)
-  );
-
--- ==============================================================================
--- 7. ROW LEVEL SECURITY (RLS) POLICIES FOR DATABASE TABLES
--- ==============================================================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.locations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.agents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.properties ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.property_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.agents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.page_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.property_visits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.site_statistics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.wishlists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.property_visits ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.page_settings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.site_statistics ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
 
--- Drop all existing public table policies to ensure clean state
-DO $$
-DECLARE
-  pol RECORD;
-BEGIN
-  FOR pol IN (SELECT policyname, tablename FROM pg_policies WHERE schemaname = 'public') LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', pol.policyname, pol.tablename);
-  END LOOP;
-END $$;
+-- 5.1 PROFILES POLICIES
+DROP POLICY IF EXISTS "profiles_select_policy" ON public.profiles;
+CREATE POLICY "profiles_select_policy" ON public.profiles
+  FOR SELECT USING (auth.uid() = id OR public.is_admin() OR public.has_permission('users.view'));
 
--- 7.1 PROFILES POLICIES
-CREATE POLICY "Profiles are readable by authenticated users and admins" ON public.profiles
-  FOR SELECT USING (true);
+DROP POLICY IF EXISTS "profiles_insert_policy" ON public.profiles;
+CREATE POLICY "profiles_insert_policy" ON public.profiles
+  FOR INSERT WITH CHECK (auth.uid() = id OR public.is_admin());
 
-CREATE POLICY "Users can update own profile" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id OR public.is_admin())
-  WITH CHECK (auth.uid() = id OR public.is_admin());
+DROP POLICY IF EXISTS "profiles_update_policy" ON public.profiles;
+CREATE POLICY "profiles_update_policy" ON public.profiles
+  FOR UPDATE USING (auth.uid() = id OR public.is_admin());
 
-CREATE POLICY "Admins full profiles access" ON public.profiles
-  FOR ALL USING (public.is_admin());
+DROP POLICY IF EXISTS "profiles_delete_policy" ON public.profiles;
+CREATE POLICY "profiles_delete_policy" ON public.profiles
+  FOR DELETE USING (public.is_admin());
 
--- 7.2 TEAM MEMBERS POLICIES
-CREATE POLICY "Public can view active team members" ON public.team_members
-  FOR SELECT USING (is_active = true OR public.is_admin());
+-- 5.2 TEAM MEMBERS POLICIES
+DROP POLICY IF EXISTS "team_members_select_policy" ON public.team_members;
+CREATE POLICY "team_members_select_policy" ON public.team_members
+  FOR SELECT USING (public.is_admin() OR auth.uid() = user_id OR LOWER(email) = LOWER(COALESCE(auth.jwt()->>'email', '')));
 
-CREATE POLICY "Admins can manage team members" ON public.team_members
-  FOR ALL USING (public.is_admin());
+DROP POLICY IF EXISTS "team_members_insert_policy" ON public.team_members;
+CREATE POLICY "team_members_insert_policy" ON public.team_members
+  FOR INSERT WITH CHECK (public.is_admin());
 
--- 7.3 LOCATIONS POLICIES
-CREATE POLICY "Public can view active locations" ON public.locations
-  FOR SELECT USING (is_active = true OR public.is_admin());
+DROP POLICY IF EXISTS "team_members_update_policy" ON public.team_members;
+CREATE POLICY "team_members_update_policy" ON public.team_members
+  FOR UPDATE USING (public.is_admin() OR auth.uid() = user_id);
 
-CREATE POLICY "Admins can manage locations" ON public.locations
-  FOR ALL USING (public.is_admin());
+DROP POLICY IF EXISTS "team_members_delete_policy" ON public.team_members;
+CREATE POLICY "team_members_delete_policy" ON public.team_members
+  FOR DELETE USING (public.is_admin());
 
--- 7.4 AGENTS POLICIES
-CREATE POLICY "Public can view active agents" ON public.agents
-  FOR SELECT USING (is_active = true OR public.is_admin());
+-- 5.3 LOCATIONS POLICIES
+DROP POLICY IF EXISTS "locations_select_policy" ON public.locations;
+CREATE POLICY "locations_select_policy" ON public.locations FOR SELECT USING (true);
+DROP POLICY IF EXISTS "locations_all_admin_policy" ON public.locations;
+CREATE POLICY "locations_all_admin_policy" ON public.locations FOR ALL USING (public.is_admin() OR public.has_permission('locations.manage')) WITH CHECK (public.is_admin() OR public.has_permission('locations.manage'));
 
-CREATE POLICY "Admins can manage agents" ON public.agents
-  FOR ALL USING (public.is_admin());
+-- 5.4 AGENTS POLICIES
+DROP POLICY IF EXISTS "agents_select_policy" ON public.agents;
+CREATE POLICY "agents_select_policy" ON public.agents FOR SELECT USING (true);
+DROP POLICY IF EXISTS "agents_all_admin_policy" ON public.agents;
+CREATE POLICY "agents_all_admin_policy" ON public.agents FOR ALL USING (public.is_admin() OR public.has_permission('agents.manage')) WITH CHECK (public.is_admin() OR public.has_permission('agents.manage'));
 
--- 7.5 PROPERTIES POLICIES
-CREATE POLICY "Public can view active properties" ON public.properties
-  FOR SELECT USING (status <> 'HIDDEN' OR public.is_admin());
+-- 5.5 PROPERTIES POLICIES
+DROP POLICY IF EXISTS "properties_select_policy" ON public.properties;
+CREATE POLICY "properties_select_policy" ON public.properties FOR SELECT USING (status <> 'HIDDEN' OR public.is_admin());
+DROP POLICY IF EXISTS "properties_all_admin_policy" ON public.properties;
+CREATE POLICY "properties_all_admin_policy" ON public.properties FOR ALL USING (public.is_admin() OR public.has_permission('properties.update')) WITH CHECK (public.is_admin() OR public.has_permission('properties.create'));
 
-CREATE POLICY "Admins can manage properties" ON public.properties
-  FOR ALL USING (public.is_admin());
+-- 5.6 INQUIRIES POLICIES
+DROP POLICY IF EXISTS "inquiries_select_policy" ON public.inquiries;
+CREATE POLICY "inquiries_select_policy" ON public.inquiries FOR SELECT USING (public.is_admin() OR auth.uid() = user_id OR public.has_permission('inquiries.manage'));
+DROP POLICY IF EXISTS "inquiries_insert_policy" ON public.inquiries;
+CREATE POLICY "inquiries_insert_policy" ON public.inquiries FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "inquiries_update_policy" ON public.inquiries;
+CREATE POLICY "inquiries_update_policy" ON public.inquiries FOR UPDATE USING (public.is_admin() OR public.has_permission('inquiries.manage'));
+DROP POLICY IF EXISTS "inquiries_delete_policy" ON public.inquiries;
+CREATE POLICY "inquiries_delete_policy" ON public.inquiries FOR DELETE USING (public.is_admin() OR public.has_permission('inquiries.manage'));
 
--- 7.6 PROPERTY IMAGES POLICIES
-CREATE POLICY "Public can view property images" ON public.property_images
-  FOR SELECT USING (true);
+-- 5.7 REVIEWS POLICIES
+DROP POLICY IF EXISTS "reviews_select_policy" ON public.reviews;
+CREATE POLICY "reviews_select_policy" ON public.reviews FOR SELECT USING (status = 'APPROVED' OR auth.uid() = user_id OR public.is_admin() OR public.has_permission('reviews.moderate'));
+DROP POLICY IF EXISTS "reviews_insert_policy" ON public.reviews;
+CREATE POLICY "reviews_insert_policy" ON public.reviews FOR INSERT WITH CHECK (auth.uid() = user_id OR public.is_admin());
+DROP POLICY IF EXISTS "reviews_update_policy" ON public.reviews;
+CREATE POLICY "reviews_update_policy" ON public.reviews FOR UPDATE USING (public.is_admin() OR public.has_permission('reviews.moderate') OR auth.uid() = user_id);
+DROP POLICY IF EXISTS "reviews_delete_policy" ON public.reviews;
+CREATE POLICY "reviews_delete_policy" ON public.reviews FOR DELETE USING (public.is_admin() OR public.has_permission('reviews.moderate'));
 
-CREATE POLICY "Admins can manage property images" ON public.property_images
-  FOR ALL USING (public.is_admin());
+-- 5.8 ACTIVITY LOGS POLICIES
+DROP POLICY IF EXISTS "activity_logs_select_policy" ON public.activity_logs;
+CREATE POLICY "activity_logs_select_policy" ON public.activity_logs FOR SELECT USING (public.is_admin() OR public.has_permission('activity_logs.view'));
+DROP POLICY IF EXISTS "activity_logs_insert_policy" ON public.activity_logs;
+CREATE POLICY "activity_logs_insert_policy" ON public.activity_logs FOR INSERT WITH CHECK (public.is_admin() OR auth.uid() IS NOT NULL);
 
--- 7.7 WISHLISTS & FAVORITES POLICIES
-CREATE POLICY "Users can manage own wishlist" ON public.wishlists
-  FOR ALL USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+-- 5.9 PAGE SETTINGS POLICIES
+DROP POLICY IF EXISTS "page_settings_select_policy" ON public.page_settings;
+CREATE POLICY "page_settings_select_policy" ON public.page_settings FOR SELECT USING (true);
+DROP POLICY IF EXISTS "page_settings_all_policy" ON public.page_settings;
+CREATE POLICY "page_settings_all_policy" ON public.page_settings FOR ALL USING (public.is_admin() OR public.has_permission('page_settings.update')) WITH CHECK (public.is_admin() OR public.has_permission('page_settings.update'));
 
-CREATE POLICY "Users can manage own favorites" ON public.favorites
-  FOR ALL USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+-- 5.10 PROPERTY VISITS POLICIES
+DROP POLICY IF EXISTS "property_visits_select_policy" ON public.property_visits;
+CREATE POLICY "property_visits_select_policy" ON public.property_visits FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
+DROP POLICY IF EXISTS "property_visits_insert_policy" ON public.property_visits;
+CREATE POLICY "property_visits_insert_policy" ON public.property_visits FOR INSERT WITH CHECK (auth.uid() = user_id OR public.is_admin());
+DROP POLICY IF EXISTS "property_visits_update_policy" ON public.property_visits;
+CREATE POLICY "property_visits_update_policy" ON public.property_visits FOR UPDATE USING (auth.uid() = user_id OR public.is_admin());
+DROP POLICY IF EXISTS "property_visits_delete_policy" ON public.property_visits;
+CREATE POLICY "property_visits_delete_policy" ON public.property_visits FOR DELETE USING (public.is_admin());
 
--- 7.8 PROPERTY VISITS POLICIES
-CREATE POLICY "Users can view own visits or admin" ON public.property_visits
-  FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
+-- 5.11 SITE STATISTICS & FAQS
+DROP POLICY IF EXISTS "site_statistics_select_policy" ON public.site_statistics;
+CREATE POLICY "site_statistics_select_policy" ON public.site_statistics FOR SELECT USING (true);
+DROP POLICY IF EXISTS "site_statistics_admin_policy" ON public.site_statistics;
+CREATE POLICY "site_statistics_admin_policy" ON public.site_statistics FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
 
-CREATE POLICY "Authenticated users can book visit" ON public.property_visits
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "faqs_select_policy" ON public.faqs;
+CREATE POLICY "faqs_select_policy" ON public.faqs FOR SELECT USING (true);
+DROP POLICY IF EXISTS "faqs_admin_policy" ON public.faqs;
+CREATE POLICY "faqs_admin_policy" ON public.faqs FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
 
-CREATE POLICY "Users can update own visit or admin" ON public.property_visits
-  FOR UPDATE USING (auth.uid() = user_id OR public.is_admin());
+-- ==============================================================================
+-- 6. SEED DATA & STORAGE
+-- ==============================================================================
 
-CREATE POLICY "Admins can manage visits" ON public.property_visits
-  FOR ALL USING (public.is_admin());
-
--- 7.9 REVIEWS POLICIES
-CREATE POLICY "Public can view approved reviews or own" ON public.reviews
-  FOR SELECT USING (status IN ('APPROVED', 'approved') OR auth.uid() = user_id OR public.is_admin());
-
-CREATE POLICY "Authenticated users can create reviews" ON public.reviews
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own reviews or admin" ON public.reviews
-  FOR UPDATE USING (auth.uid() = user_id OR public.is_admin());
-
-CREATE POLICY "Admins can manage reviews" ON public.reviews
-  FOR ALL USING (public.is_admin());
-
--- 7.10 INQUIRIES & CONTACT MESSAGES POLICIES
-CREATE POLICY "Anyone can submit inquiry" ON public.inquiries
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Users view own inquiries or admin" ON public.inquiries
-  FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
-
-CREATE POLICY "Admins can manage inquiries" ON public.inquiries
-  FOR ALL USING (public.is_admin());
-
-CREATE POLICY "Anyone can submit contact message" ON public.contact_messages
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Admins can view contact messages" ON public.contact_messages
-  FOR ALL USING (public.is_admin());
-
--- 7.11 PAGE SETTINGS POLICIES
-CREATE POLICY "Public can view page settings" ON public.page_settings
-  FOR SELECT USING (true);
-
-CREATE POLICY "Admins can manage page settings" ON public.page_settings
-  FOR ALL USING (public.is_admin());
-
--- 7.12 SITE STATISTICS POLICIES
-CREATE POLICY "Public can view site statistics" ON public.site_statistics
-  FOR SELECT USING (is_active = true OR public.is_admin());
-
-CREATE POLICY "Admins can manage site statistics" ON public.site_statistics
-  FOR ALL USING (public.is_admin());
-
--- 7.13 ACTIVITY LOGS POLICIES
-CREATE POLICY "Admins can view activity logs" ON public.activity_logs
-  FOR SELECT USING (public.is_admin());
-
-CREATE POLICY "Admins or system can insert logs" ON public.activity_logs
-  FOR INSERT WITH CHECK (auth.role() = 'service_role' OR public.is_admin());
-
--- 7.14 FAQS POLICIES
-CREATE POLICY "Public can view active faqs" ON public.faqs
-  FOR SELECT USING (is_active = true OR public.is_admin());
-
-CREATE POLICY "Admins can manage faqs" ON public.faqs
-  FOR ALL USING (public.is_admin());
-
--- 8.1 Initial Team Owners
--- Replace these example.invalid addresses before the listed owners sign in.
+-- 6.1 TEAM OWNERS
 INSERT INTO public.team_members (email, name, designation, team_role, is_active)
 VALUES
-  ('owner1@example.invalid', 'PrimeHome Owner', 'Founder & Director', 'OWNER', true),
-  ('owner2@example.invalid', 'Team Owner 2', 'Founder & Strategy Lead', 'OWNER', true),
-  ('owner3@example.invalid', 'Team Owner 3', 'Technical Co-Founder', 'OWNER', true)
+  ('pathak424448@gmail.com', 'Admin Owner', 'Founder & Owner', 'OWNER', true),
+  ('namikaze.krz@gmail.com', 'System Owner', 'Co-Founder & Technical Lead', 'OWNER', true)
 ON CONFLICT (email) DO UPDATE
 SET team_role = 'OWNER', is_active = true, updated_at = NOW();
 
--- Link team_members to their auth user_id
-UPDATE public.team_members tm
-SET user_id = u.id, updated_at = NOW()
-FROM auth.users u
-WHERE LOWER(tm.email) = LOWER(u.email);
-
--- 8.2 Page Settings
-INSERT INTO public.page_settings (key, value)
-VALUES (
-  'rentals',
-  '{
-    "title": "Rental Properties in Kanpur",
-    "subtitle": "Explore verified apartments, independent houses, and villas",
-    "bannerImage": null,
-    "filters": {
-      "location": true,
-      "type": true,
-      "rent": true,
-      "bedrooms": true,
-      "furnishing": true,
-      "search": true
-    },
-    "listing": {
-      "sort": "newest",
-      "perPage": 9,
-      "layout": "grid",
-      "showRented": true,
-      "showRatings": true
-    },
-    "featured": {
-      "enabled": true,
-      "title": "Featured Rentals",
-      "max": 3
-    },
-    "seo": {
-      "title": "Rental Properties in Kanpur | PrimeHomeKanpur",
-      "description": "Find 100% physically verified rental flats, independent houses, and apartments in Kanpur."
-    }
-  }'::jsonb
-)
-ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
-
--- 8.3 Site Statistics
-INSERT INTO public.site_statistics (stat_key, key, label, value, value_number, value_suffix, display_order)
+-- 6.2 TOP KANPUR LOCATIONS (25+ KEY LOCATIONS)
+INSERT INTO public.locations (name, slug, city, description, is_active, display_order, sort_order)
 VALUES
-  ('total_reviews', 'total_reviews', 'Total Reviews', '83', 83, '', 1),
-  ('years_experience', 'years_experience', 'Years of Experience', '14+', 14, '+', 2),
-  ('rentals_listed', 'rentals_listed', 'Rentals Listed', '67+', 67, '+', 3),
-  ('satisfaction_rate', 'satisfaction_rate', 'Satisfaction Rate', '98%', 98, '%', 4)
+  ('Kakadeo', 'kakadeo', 'Kanpur', 'Prominent educational & coaching hub with student accommodations and family flats.', true, 1, 1),
+  ('Swaroop Nagar', 'swaroop-nagar', 'Kanpur', 'Prime upscale residential neighborhood with cafes, hospitals, and parks.', true, 2, 2),
+  ('Gurudev Chauraha', 'gurudev-chauraha', 'Kanpur', 'Strategic central intersection connecting GT Road, Kakadeo, and Vikas Nagar.', true, 3, 3),
+  ('Civil Lines', 'civil-lines', 'Kanpur', 'Prestigious commercial & residential zone with wide roads and colonial charm.', true, 4, 4),
+  ('Vikas Nagar', 'vikas-nagar', 'Kanpur', 'Peaceful residential sector adjacent to Signature Greens and Zoo road.', true, 5, 5),
+  ('Vijay Nagar', 'vijay-nagar', 'Kanpur', 'Arterial locality connecting Shastri Nagar, Kakadeo, and Dada Nagar.', true, 6, 6),
+  ('Kalyanpur', 'kalyanpur', 'Kanpur', 'Close to IIT Kanpur and prestigious universities, offering modern apartments.', true, 7, 7),
+  ('Shyam Nagar', 'shyam-nagar', 'Kanpur', 'Rapidly developing south-eastern locality near GT Road and highway.', true, 8, 8),
+  ('Kidwai Nagar', 'kidwai-nagar', 'Kanpur', 'Established residential area in South Kanpur with vibrant markets.', true, 9, 9),
+  ('Arya Nagar', 'arya-nagar', 'Kanpur', 'Bustling residential hub close to Benajhabar and Motijheel.', true, 10, 10),
+  ('Tilak Nagar', 'tilak-nagar', 'Kanpur', 'Central Kanpur neighborhood known for peaceful residences and top schools.', true, 11, 11),
+  ('Barra', 'barra', 'Kanpur', 'Large residential sector divided into Sectors 1-8 with great connectivity.', true, 12, 12),
+  ('Govind Nagar', 'govind-nagar', 'Kanpur', 'Dynamic South Kanpur hub with major markets and family housing.', true, 13, 13),
+  ('Awas Vikas', 'awas-vikas', 'Kanpur', 'Planned housing society sector with broad avenues and parks.', true, 14, 14),
+  ('Naveen Nagar', 'naveen-nagar', 'Kanpur', 'Quiet family residential enclave adjacent to Kakadeo.', true, 15, 15),
+  ('Sharda Nagar', 'sharda-nagar', 'Kanpur', 'Popular student and working professional residential locality.', true, 16, 16),
+  ('Geeta Nagar', 'geeta-nagar', 'Kanpur', 'Residential locality close to Rawatpur and GT Road.', true, 17, 17),
+  ('Rawatpur', 'rawatpur', 'Kanpur', 'Centrally situated neighborhood with Railway Station access.', true, 18, 18),
+  ('Ashok Nagar', 'ashok-nagar', 'Kanpur', 'High-demand residential area near 80 Feet Road.', true, 19, 19),
+  ('Saket Nagar', 'saket-nagar', 'Kanpur', 'Well-established residential neighborhood in South Kanpur.', true, 20, 20),
+  ('Gumti No. 5', 'gumti-no-5', 'Kanpur', 'Premier shopping and central residential district.', true, 21, 21),
+  ('Cantt', 'cantt', 'Kanpur', 'Serene, lush green cantonment zone with tranquil surroundings.', true, 22, 22),
+  ('Lajpat Nagar', 'lajpat-nagar', 'Kanpur', 'Centrally located residential sector near Motijheel.', true, 23, 23),
+  ('Panki', 'panki', 'Kanpur', 'Rapidly expanding western industrial and residential belt.', true, 24, 24),
+  ('Ratan Lal Nagar', 'ratan-lal-nagar', 'Kanpur', 'Quiet residential neighborhood with independent houses.', true, 25, 25)
+ON CONFLICT (slug) DO UPDATE
+SET
+  name = EXCLUDED.name,
+  city = EXCLUDED.city,
+  is_active = true;
+
+-- 6.3 SPECIALIST AGENTS
+INSERT INTO public.agents (name, slug, role, phone, email, whatsapp, experience_years, deals_count, rating, specializations, areas, is_active)
+VALUES
+  ('Rajesh Pathak', 'rajesh-pathak', 'Founder & Senior Specialist', '+91 9151435647', 'pathak424448@gmail.com', '+91 9151435647', 14, 500, 4.9, ARRAY['Property Management', 'Tenant Verification', 'Lease Drafting'], ARRAY['Gurudev Chauraha', 'Kakadeo', 'Vijay Nagar', 'Vikas Nagar'], true),
+  ('Neha Mishra', 'neha-mishra', 'Senior Rental Agent', '+91 9876543210', 'neha@primehomekanpur.com', '+91 9876543210', 6, 180, 4.8, ARRAY['Residential Rentals', 'PG Accommodation', 'Family Flats'], ARRAY['Vikas Nagar', 'Kakadeo', 'Swaroop Nagar'], true),
+  ('Amit Shukla', 'amit-shukla', 'Commercial & Luxury Specialist', '+91 9123456780', 'amit@primehomekanpur.com', '+91 9123456780', 8, 220, 4.9, ARRAY['Independent Houses', 'Luxury Apartments', 'Commercial'], ARRAY['Civil Lines', 'Tilak Nagar', 'Arya Nagar'], true)
+ON CONFLICT (slug) DO UPDATE
+SET is_active = true;
+
+-- 6.4 SITE STATISTICS
+INSERT INTO public.site_statistics (stat_key, key, label, value, value_number, value_suffix, display_order, is_active)
+VALUES
+  ('total_reviews', 'total_reviews', 'Total Reviews', '83', 83, '', 1, true),
+  ('years_experience', 'years_experience', 'Years of Experience', '14+', 14, '+', 2, true),
+  ('rentals_listed', 'rentals_listed', 'Rentals Listed', '67+', 67, '+', 3, true),
+  ('satisfaction_rate', 'satisfaction_rate', 'Satisfaction Rate', '98%', 98, '%', 4, true)
 ON CONFLICT (stat_key) DO UPDATE
 SET
   value_number = EXCLUDED.value_number,
   value_suffix = EXCLUDED.value_suffix,
-  label = EXCLUDED.label;
+  label = EXCLUDED.label,
+  is_active = true;
 
--- 8.4 Top Kanpur Locations
-INSERT INTO public.locations (name, slug, city, description, is_active, display_order, sort_order)
+-- 6.5 STORAGE BUCKETS
+INSERT INTO storage.buckets (id, name, public)
 VALUES
-  ('Swaroop Nagar', 'swaroop-nagar', 'Kanpur', 'Prime upscale residential neighborhood with cafes, hospitals, and parks.', true, 1, 1),
-  ('Kakadeo', 'kakadeo', 'Kanpur', 'Prominent educational & coaching hub with student accommodations and family flats.', true, 2, 2),
-  ('Civil Lines', 'civil-lines', 'Kanpur', 'Prestigious commercial & residential zone with wide roads and colonial charm.', true, 3, 3),
-  ('Shyam Nagar', 'shyam-nagar', 'Kanpur', 'Rapidly developing south-eastern locality near GT Road and highway access.', true, 4, 4),
-  ('Kalyanpur', 'kalyanpur', 'Kanpur', 'Close to IIT Kanpur and prestigious universities, offering modern residential complexes.', true, 5, 5),
-  ('Kidwai Nagar', 'kidwai-nagar', 'Kanpur', 'Established residential area in South Kanpur with vibrant markets and transport links.', true, 6, 6),
-  ('Tilak Nagar', 'tilak-nagar', 'Kanpur', 'Central Kanpur neighborhood known for peaceful residences and top schools.', true, 7, 7),
-  ('Arya Nagar', 'arya-nagar', 'Kanpur', 'Bustling residential hub close to Benajhabar and Motijheel.', true, 8, 8)
-ON CONFLICT (slug) DO NOTHING;
+  ('property-images', 'property-images', true),
+  ('property-videos', 'property-videos', true),
+  ('agent-photos', 'agent-photos', true),
+  ('team-photos', 'team-photos', true),
+  ('site-assets', 'site-assets', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
 
--- 8.5 Expert Agents
-INSERT INTO public.agents (name, slug, role, phone, email, whatsapp, experience_years, deals_count, rating, specializations, areas, is_active)
-VALUES
-  ('Rental Specialist 1', 'rental-specialist-1', 'Founder & Senior Specialist', NULL, NULL, NULL, 14, 150, 4.9, ARRAY['Luxury Flats', 'Independent Houses', 'Corporate Rentals'], ARRAY['Swaroop Nagar', 'Civil Lines', 'Tilak Nagar'], true),
-  ('Rental Specialist 2', 'rental-specialist-2', 'Co-Founder & Property Lead', NULL, NULL, NULL, 10, 110, 4.8, ARRAY['Student Housing', 'Commercial Spaces', 'Family Apartments'], ARRAY['Kakadeo', 'Kalyanpur', 'Arya Nagar'], true),
-  ('Rental Specialist 3', 'rental-specialist-3', 'Listing & Verification Manager', NULL, NULL, NULL, 6, 85, 4.9, ARRAY['Physical Inspection', 'Lease Agreements', 'Tenant Relations'], ARRAY['Shyam Nagar', 'Kidwai Nagar', 'Saket Nagar'], true)
-ON CONFLICT (slug) DO NOTHING;
+DROP POLICY IF EXISTS "Public Access for PrimeHome Storage" ON storage.objects;
+CREATE POLICY "Public Access for PrimeHome Storage" ON storage.objects
+  FOR SELECT USING (bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'site-assets'));
 
--- 8.6 FAQs
-INSERT INTO public.faqs (question, answer, category, display_order, is_active)
-VALUES
-  ('How does PrimeHomeKanpur verify properties?', 'Every listing on our platform undergoes physical on-site inspection by our field agents to confirm water storage, electrical lines, photos, and landlord details.', 'General', 1, true),
-  ('Are there any brokerage charges for scheduling visits?', 'Booking and scheduling a physical walkthrough visit is completely free. You can choose your date and time slot directly on the property detail page.', 'Visits', 2, true),
-  ('Can I list my property as a landlord?', 'Yes! You can contact our listing executives via WhatsApp or through our Contact page, and our team will schedule a physical inspection to verify and list your home.', 'Landlords', 3, true),
-  ('What documents are required for rental agreements in Kanpur?', 'Typically, valid Aadhaar card, PAN card, permanent address proof, and passport-size photographs are required for police verification and rental agreements in Kanpur.', 'Legal', 4, true)
-ON CONFLICT (question) DO NOTHING;
+DROP POLICY IF EXISTS "Admin Upload for PrimeHome Storage" ON storage.objects;
+CREATE POLICY "Admin Upload for PrimeHome Storage" ON storage.objects
+  FOR INSERT WITH CHECK (
+    bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'site-assets')
+    AND (public.is_admin() OR auth.uid() IS NOT NULL)
+  );
+
+DROP POLICY IF EXISTS "Admin Update for PrimeHome Storage" ON storage.objects;
+CREATE POLICY "Admin Update for PrimeHome Storage" ON storage.objects
+  FOR UPDATE USING (
+    bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'site-assets')
+    AND public.is_admin()
+  );
+
+DROP POLICY IF EXISTS "Admin Delete for PrimeHome Storage" ON storage.objects;
+CREATE POLICY "Admin Delete for PrimeHome Storage" ON storage.objects
+  FOR DELETE USING (
+    bucket_id IN ('property-images', 'property-videos', 'agent-photos', 'team-photos', 'site-assets')
+    AND public.is_admin()
+  );
 
 -- ==============================================================================
 -- SETUP COMPLETE

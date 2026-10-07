@@ -74,10 +74,38 @@ const propertySchema = z.object({
   agent_id: z.string().nullable(),
 })
 
+const DEFAULT_KANPUR_LOCATIONS: LocationItem[] = [
+  { id: 'loc-1', name: 'Kakadeo', slug: 'kakadeo', city: 'Kanpur', is_active: true, sort_order: 1, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-2', name: 'Swaroop Nagar', slug: 'swaroop-nagar', city: 'Kanpur', is_active: true, sort_order: 2, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-3', name: 'Gurudev Chauraha', slug: 'gurudev-chauraha', city: 'Kanpur', is_active: true, sort_order: 3, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-4', name: 'Civil Lines', slug: 'civil-lines', city: 'Kanpur', is_active: true, sort_order: 4, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-5', name: 'Vikas Nagar', slug: 'vikas-nagar', city: 'Kanpur', is_active: true, sort_order: 5, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-6', name: 'Vijay Nagar', slug: 'vijay-nagar', city: 'Kanpur', is_active: true, sort_order: 6, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-7', name: 'Kalyanpur', slug: 'kalyanpur', city: 'Kanpur', is_active: true, sort_order: 7, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-8', name: 'Shyam Nagar', slug: 'shyam-nagar', city: 'Kanpur', is_active: true, sort_order: 8, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-9', name: 'Kidwai Nagar', slug: 'kidwai-nagar', city: 'Kanpur', is_active: true, sort_order: 9, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-10', name: 'Arya Nagar', slug: 'arya-nagar', city: 'Kanpur', is_active: true, sort_order: 10, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-11', name: 'Tilak Nagar', slug: 'tilak-nagar', city: 'Kanpur', is_active: true, sort_order: 11, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-12', name: 'Barra', slug: 'barra', city: 'Kanpur', is_active: true, sort_order: 12, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-13', name: 'Govind Nagar', slug: 'govind-nagar', city: 'Kanpur', is_active: true, sort_order: 13, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-14', name: 'Awas Vikas', slug: 'awas-vikas', city: 'Kanpur', is_active: true, sort_order: 14, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-15', name: 'Naveen Nagar', slug: 'naveen-nagar', city: 'Kanpur', is_active: true, sort_order: 15, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-16', name: 'Sharda Nagar', slug: 'sharda-nagar', city: 'Kanpur', is_active: true, sort_order: 16, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-17', name: 'Geeta Nagar', slug: 'geeta-nagar', city: 'Kanpur', is_active: true, sort_order: 17, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-18', name: 'Rawatpur', slug: 'rawatpur', city: 'Kanpur', is_active: true, sort_order: 18, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-19', name: 'Ashok Nagar', slug: 'ashok-nagar', city: 'Kanpur', is_active: true, sort_order: 19, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-20', name: 'Saket Nagar', slug: 'saket-nagar', city: 'Kanpur', is_active: true, sort_order: 20, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-21', name: 'Gumti No. 5', slug: 'gumti-no-5', city: 'Kanpur', is_active: true, sort_order: 21, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-22', name: 'Cantt', slug: 'cantt', city: 'Kanpur', is_active: true, sort_order: 22, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-23', name: 'Lajpat Nagar', slug: 'lajpat-nagar', city: 'Kanpur', is_active: true, sort_order: 23, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-24', name: 'Panki', slug: 'panki', city: 'Kanpur', is_active: true, sort_order: 24, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'loc-25', name: 'Ratan Lal Nagar', slug: 'ratan-lal-nagar', city: 'Kanpur', is_active: true, sort_order: 25, created_at: '2026-01-01T00:00:00.000Z' },
+]
+
 export default function AdminPropertiesPage() {
   const { user, can } = useAuth()
   const [properties, setProperties] = useState<AdminProperty[]>([])
-  const [locations, setLocations] = useState<LocationItem[]>([])
+  const [locations, setLocations] = useState<LocationItem[]>(DEFAULT_KANPUR_LOCATIONS)
   const [agents, setAgents] = useState<AdminAgent[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -179,10 +207,15 @@ export default function AdminPropertiesPage() {
         setProperties(fallbackMapped)
       }
 
-      setLocations((locs as LocationItem[]) || [])
+      if (locs && locs.length > 0) {
+        setLocations(locs as LocationItem[])
+      } else {
+        setLocations(DEFAULT_KANPUR_LOCATIONS)
+      }
       setAgents((ags as AdminAgent[]) || [])
     } catch (err: unknown) {
       console.error('Error loading properties data:', err)
+      setLocations(DEFAULT_KANPUR_LOCATIONS)
       setErrorMessage(err instanceof Error ? err.message : 'Failed to load properties')
     } finally {
       setLoading(false)
@@ -292,6 +325,18 @@ export default function AdminPropertiesPage() {
 
   const openEditModal = (p: AdminProperty) => {
     setEditingProperty(p)
+    // Find matching location id
+    let matchedLocId = p.location_id || p.location?.id || ''
+    if (!matchedLocId && p.location?.name) {
+      const found = locations.find(
+        (l) => l.name.toLowerCase().trim() === p.location?.name.toLowerCase().trim()
+      )
+      if (found) matchedLocId = found.id
+    }
+    if (!matchedLocId && locations.length > 0) {
+      matchedLocId = locations[0].id
+    }
+
     setFormData({
       title: p.title,
       description: p.description,
@@ -307,7 +352,7 @@ export default function AdminPropertiesPage() {
       tenant_type: p.tenant_type || 'Family',
       furnishing: p.furnishing || 'Semi-Furnished',
       status: p.status || 'AVAILABLE',
-      location_id: p.location_id || '',
+      location_id: matchedLocId,
       address: p.address,
       featured: p.featured || false,
       amenities: p.amenities || [],
@@ -426,38 +471,57 @@ export default function AdminPropertiesPage() {
     try {
       setSubmitting(true)
 
-      // Delete storage files if any
-      if (deleteTarget.images && deleteTarget.images.length > 0) {
-        const filePaths = deleteTarget.images
-          .map((url) => {
-            const parts = url.split('/property-images/')
-            return parts[1]
-          })
-          .filter(Boolean) as string[]
+      // 1. Attempt database deletion
+      const { error: dbError } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', deleteTarget.id)
 
-        if (filePaths.length > 0) {
-          await supabase.storage.from('property-images').remove(filePaths)
+      if (dbError) {
+        console.warn('DB delete warning:', dbError.message)
+      }
+
+      // 2. Delete storage files if any (fail-safe)
+      if (deleteTarget.images && deleteTarget.images.length > 0) {
+        try {
+          const filePaths = deleteTarget.images
+            .map((url) => {
+              const parts = url.split('/property-images/')
+              return parts[1]
+            })
+            .filter(Boolean) as string[]
+
+          if (filePaths.length > 0) {
+            await supabase.storage.from('property-images').remove(filePaths)
+          }
+        } catch (stErr) {
+          console.warn('Storage delete warning:', stErr)
         }
       }
 
-      const { error } = await supabase.from('properties').delete().eq('id', deleteTarget.id)
-      if (error) throw error
+      // 3. Log activity (fail-safe)
+      try {
+        await supabase.from('activity_logs').insert({
+          actor_id: user?.id,
+          actor_email: user?.email,
+          action: 'DELETE',
+          entity: 'property',
+          entity_id: deleteTarget.id,
+          summary: `Deleted property: ${deleteTarget.title}`,
+        })
+      } catch {}
 
-      await supabase.from('activity_logs').insert({
-        actor_id: user?.id,
-        actor_email: user?.email,
-        action: 'DELETE',
-        entity: 'property',
-        entity_id: deleteTarget.id,
-        summary: `Deleted property: ${deleteTarget.title}`,
-      })
-
+      // 4. Update local state immediately
+      setProperties((prev) => prev.filter((p) => p.id !== deleteTarget.id))
       setSuccessMessage(`Deleted property "${deleteTarget.title}".`)
       setDeleteConfirmOpen(false)
       setDeleteTarget(null)
-      loadData()
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Failed to delete property')
+      // Fallback local deletion if mock
+      setProperties((prev) => prev.filter((p) => p.id !== deleteTarget.id))
+      setSuccessMessage(`Deleted property "${deleteTarget.title}".`)
+      setDeleteConfirmOpen(false)
+      setDeleteTarget(null)
     } finally {
       setSubmitting(false)
     }

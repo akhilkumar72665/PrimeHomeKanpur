@@ -28,8 +28,21 @@ export default function PropertyMediaViewer({
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'photos' | 'video'>('photos')
-
-  const validImages = images.filter((img) => img.image_url)
+  const validImages = (images || [])
+    .map((img: any, idx: number) => {
+      if (typeof img === 'string') {
+        return {
+          id: `img-${idx}`,
+          property_id: '',
+          image_url: img,
+          is_primary: idx === 0,
+          sort_order: idx,
+          created_at: '',
+        }
+      }
+      return img
+    })
+    .filter((img: any) => img && (img.image_url || typeof img === 'string'))
 
   const handlePrev = () => {
     if (validImages.length === 0) return

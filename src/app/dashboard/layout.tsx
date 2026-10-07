@@ -19,8 +19,12 @@ const navItems = [
   { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Wishlist', href: '/dashboard/wishlist', icon: Heart },
   { name: 'My Visits', href: '/dashboard/visits', icon: Calendar },
+  { name: 'Applications', href: '/dashboard/applications', icon: Shield },
   { name: 'My Reviews', href: '/dashboard/reviews', icon: Star },
+  { name: 'Documents', href: '/dashboard/documents', icon: Shield },
+  { name: 'Notifications', href: '/dashboard/notifications', icon: Star },
   { name: 'Profile & Settings', href: '/dashboard/profile', icon: User },
+  { name: 'Security & Privacy', href: '/dashboard/security', icon: LogOut },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

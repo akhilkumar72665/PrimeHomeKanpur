@@ -119,7 +119,12 @@ export default function PropertyCard({ property, initialIsFavorite = false, onFa
   const isPremium = property.slug.includes('executive') || property.slug.includes('luxurious') || property.price >= 25000
   const showBadge = property.featured || isPremium
   const badgeText = isPremium ? 'Premium' : 'Featured'
-  const primaryImg = property.images?.find((img) => img.is_primary)?.image_url || property.images?.[0]?.image_url
+  const primaryImg =
+    property.images?.find((img: any) => img && img.is_primary)?.image_url ||
+    (typeof property.images?.[0] === 'string'
+      ? (property.images[0] as unknown as string)
+      : property.images?.[0]?.image_url) ||
+    ((property as any).image_url || null)
 
   return (
     <Link href={`/rentals/${property.slug}`} className="card property-card group block relative w-full overflow-hidden">

@@ -146,12 +146,16 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <div className="foot-title">Legal</div>
+            <div className="foot-title">Legal &amp; Policies</div>
             <ul className="space-y-1.5">
               {[
                 { label: 'Privacy Policy', href: '/privacy-policy' },
                 { label: 'Terms & Conditions', href: '/terms' },
+                { label: 'Refund Policy', href: '/refund-policy' },
+                { label: 'Verification Policy', href: '/verification-policy' },
+                { label: 'Disclaimer', href: '/disclaimer' },
                 { label: 'Cookie Policy', href: '/cookie-policy' },
+                { label: 'Unsubscribe', href: '/unsubscribe' },
               ].map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} className="text-sm text-text-secondary hover:text-white transition-colors py-0.5 inline-block">
@@ -166,19 +170,23 @@ export default function Footer() {
         {/* Bottom Bar: Copyright & Legal Links */}
         <div className="foot-bottom mt-8 sm:mt-12 pt-6 pb-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-text-secondary w-full">
           <p className="text-center sm:text-left text-[#94A3B8] font-medium m-0">
-            &copy; 2026 PrimeHomeKanpur. All rights reserved.
+            &copy; 2026 PrimeHomeKanpur. 100% Verified Rentals &amp; Brokerage in Kanpur.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[#94A3B8]">
-            <Link href="/terms" className="hover:text-white font-medium transition-colors py-1 px-1">
-              Terms of Use
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-[#94A3B8]">
+            <Link href="/landlord" className="hover:text-accent-cyan font-semibold transition-colors py-1 px-1">
+              Landlord Hub
+            </Link>
+            <span className="text-white/20 select-none">•</span>
+            <Link href="/refund-policy" className="hover:text-white font-medium transition-colors py-1 px-1">
+              Refund Policy
+            </Link>
+            <span className="text-white/20 select-none">•</span>
+            <Link href="/verification-policy" className="hover:text-white font-medium transition-colors py-1 px-1">
+              Verification Standards
             </Link>
             <span className="text-white/20 select-none">•</span>
             <Link href="/privacy-policy" className="hover:text-white font-medium transition-colors py-1 px-1">
               Privacy Policy
-            </Link>
-            <span className="text-white/20 select-none">•</span>
-            <Link href="/cookie-policy" className="hover:text-white font-medium transition-colors py-1 px-1">
-              Cookie Policy
             </Link>
           </div>
         </div>
