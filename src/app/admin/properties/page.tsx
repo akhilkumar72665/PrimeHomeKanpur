@@ -26,6 +26,7 @@ import {
 import { StatusBadge } from '@/components/admin/StatusBadge'
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
 import { ImageUploader } from '@/components/admin/ImageUploader'
+import { VideoUploader } from '@/components/admin/VideoUploader'
 import { z } from 'zod'
 
 import { mockProperties } from '@/lib/data/mockData'
@@ -120,7 +121,6 @@ export default function AdminPropertiesPage() {
   // Form Modal State
   const [modalOpen, setModalOpen] = useState(false)
   const [editingProperty, setEditingProperty] = useState<AdminProperty | null>(null)
-  const [uploadingVideo, setUploadingVideo] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -219,51 +219,6 @@ export default function AdminPropertiesPage() {
       setErrorMessage(err instanceof Error ? err.message : 'Failed to load properties')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Validation: Size <= 50MB
-    if (file.size > 50 * 1024 * 1024) {
-      setErrorMessage('Video file must be less than 50MB')
-      return
-    }
-
-    // Validation: Allowed video MIME types
-    const allowedMimeTypes = ['video/mp4', 'video/webm', 'video/quicktime']
-    if (!allowedMimeTypes.includes(file.type)) {
-      setErrorMessage('Invalid video format. Please upload a valid MP4 or WebM video file.')
-      return
-    }
-
-    setUploadingVideo(true)
-    setErrorMessage(null)
-    try {
-      const rawExt = file.name.split('.').pop()?.toLowerCase() || 'mp4'
-      const validExts = ['mp4', 'webm', 'mov']
-      const ext = validExts.includes(rawExt) ? rawExt : 'mp4'
-      const fileName = `prop_vid_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`
-
-      const { error: uploadErr } = await supabase.storage
-        .from('property-videos')
-        .upload(fileName, file, { cacheControl: '3600', upsert: false })
-
-      if (uploadErr) throw uploadErr
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('property-videos')
-        .getPublicUrl(fileName)
-
-      setFormData((prev) => ({ ...prev, video_url: publicUrl }))
-      setSuccessMessage('Video uploaded successfully!')
-    } catch (err: any) {
-      setErrorMessage('Video upload failed: ' + (err.message || ''))
-    } finally {
-      setUploadingVideo(false)
-      e.target.value = ''
     }
   }
 
@@ -1045,65 +1000,23 @@ export default function AdminPropertiesPage() {
                   </select>
                 </div>
 
-                <div className="sm:col-span-2 space-y-2">
-                  <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                    Property Video Walkthrough (Upload MP4/WebM or YouTube URL)
-                  </label>
+                {/* Property Images Uploader (Cloudinary) */}
+                <div className="sm:col-span-2 pt-2 border-t border-white/5">
+                  <ImageUploader
+                    images={formData.images}
+                    onChange={(imgs) => setFormData({ ...formData, images: imgs })}
+                    maxImages={12}
+                    folder="primehomekanpur/properties"
+                  />
+                </div>
 
-                  {/* Video Preview if present */}
-                  {formData.video_url && (
-                    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/60 p-2 mb-3">
-                      {formData.video_url.includes('youtube.com') || formData.video_url.includes('youtu.be') ? (
-                        <div className="flex items-center gap-2 p-3 text-xs text-amber-300">
-                          <Film size={18} className="text-amber-400 shrink-0" />
-                          <span className="truncate">YouTube Video: {formData.video_url}</span>
-                        </div>
-                      ) : (
-                        <video
-                          src={formData.video_url}
-                          controls
-                          className="w-full max-h-48 rounded-xl object-contain bg-black"
-                        />
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => setFormData({ ...formData, video_url: '' })}
-                        className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/80 hover:bg-rose-600 text-white text-xs transition-colors flex items-center gap-1 shadow"
-                      >
-                        <X size={14} /> Remove Video
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* File Upload Button */}
-                    <label className="flex items-center justify-center gap-2 h-11 px-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-dashed border-white/20 hover:border-primary/50 text-white text-xs font-semibold cursor-pointer transition-all">
-                      <Upload size={16} className="text-primary" />
-                      <span>{uploadingVideo ? 'Uploading (≤50MB)...' : 'Upload Video File (≤50MB)'}</span>
-                      <input
-                        type="file"
-                        accept="video/mp4,video/webm"
-                        onChange={handleVideoUpload}
-                        disabled={uploadingVideo}
-                        className="hidden"
-                      />
-                    </label>
-
-                    {/* URL Input */}
-                    <div className="relative flex items-center">
-                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
-                        <Film size={16} />
-                      </div>
-                      <input
-                        type="url"
-                        value={formData.video_url || ''}
-                        onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                        placeholder="Or paste YouTube / video URL"
-                        style={{ paddingLeft: '2.5rem' }}
-                        className="w-full h-11 pr-3 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs focus:outline-none focus:border-primary transition-all"
-                      />
-                    </div>
-                  </div>
+                {/* Property Walkthrough Video Uploader (Cloudinary) */}
+                <div className="sm:col-span-2 pt-2 border-t border-white/5">
+                  <VideoUploader
+                    videoUrl={formData.video_url}
+                    onChange={(url) => setFormData({ ...formData, video_url: url })}
+                    folder="primehomekanpur/property-videos"
+                  />
                 </div>
               </div>
 

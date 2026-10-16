@@ -78,9 +78,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const defaultProfile: UserProfile = {
           id: authUser.id,
           email: authUser.email || '',
-          full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Admin',
+          full_name:
+            authUser.user_metadata?.full_name ||
+            authUser.user_metadata?.name ||
+            authUser.email?.split('@')[0] ||
+            'User',
           phone: authUser.user_metadata?.phone || null,
-          avatar_url: authUser.user_metadata?.avatar_url || null,
+          avatar_url:
+            authUser.user_metadata?.avatar_url ||
+            authUser.user_metadata?.picture ||
+            null,
           role: isAdminRole ? 'ADMIN' : 'TENANT',
           is_active: true,
           created_at: new Date().toISOString(),

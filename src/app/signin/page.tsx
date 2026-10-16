@@ -42,6 +42,17 @@ function SignInContent() {
   const redirectPath = searchParams.get('redirect')
 
   useEffect(() => {
+    const urlError = searchParams.get('error')
+    if (urlError) {
+      if (urlError === 'auth_callback_failed') {
+        setErrorMsg('Authentication failed or was cancelled. Please try again.')
+      } else {
+        setErrorMsg(decodeURIComponent(urlError))
+      }
+    }
+  }, [searchParams])
+
+  useEffect(() => {
     if (isAuthenticated) {
       if (isAdmin) {
         router.push('/admin')

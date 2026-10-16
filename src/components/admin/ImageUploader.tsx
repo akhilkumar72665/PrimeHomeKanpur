@@ -1,26 +1,35 @@
 'use client'
 
 import React, { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Upload, X, ArrowLeft, ArrowRight, Image as ImageIcon, Star, AlertCircle } from 'lucide-react'
+import { uploadToCloudinary } from '@/lib/cloudinaryUpload'
+import {
+  Upload,
+  X,
+  ArrowLeft,
+  ArrowRight,
+  Star,
+  AlertCircle,
+  Cloud,
+  CheckCircle2,
+} from 'lucide-react'
 
 interface ImageUploaderProps {
   images: string[]
   onChange: (images: string[]) => void
   maxImages?: number
-  bucketName?: string
+  folder?: string
 }
 
 export function ImageUploader({
   images,
   onChange,
-  maxImages = 10,
-  bucketName = 'property-images',
+  maxImages = 12,
+  folder = 'primehomekanpur/properties',
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState<string | null>(null)
+  const [uploadProgressText, setUploadProgressText] = useState<string | null>(null)
+  const [currentPercent, setCurrentPercent] = useState<number>(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const supabase = createClient()
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -39,45 +48,39 @@ export function ImageUploader({
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
 
-      // Validation: Size <= 5MB
-      if (file.size > 5 * 1024 * 1024) {
-        setErrorMessage(`"${file.name}" exceeds the maximum allowed size of 5MB.`)
+      // Validation: Size <= 10MB
+      if (file.size > 10 * 1024 * 1024) {
+        setErrorMessage(`"${file.name}" exceeds the maximum allowed size of 10MB.`)
         continue
       }
 
-      // Validation: format jpg/png/webp
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
-      if (!validTypes.includes(file.type)) {
-        setErrorMessage(`"${file.name}" is not a valid format. Please upload JPG, PNG, or WEBP.`)
+      // Validation: format jpg/png/webp/avif
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/avif', 'image/heic']
+      if (!validTypes.includes(file.type.toLowerCase())) {
+        setErrorMessage(`"${file.name}" is not a supported format. Please upload JPG, PNG, WEBP, or AVIF.`)
         continue
       }
 
-      setUploadProgress(`Uploading ${i + 1} of ${files.length}...`)
-
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
-      const filePath = `properties/${fileName}`
+      setUploadProgressText(`Uploading ${i + 1} of ${files.length}...`)
+      setCurrentPercent(0)
 
       try {
-        const { error: uploadError } = await supabase.storage
-          .from(bucketName)
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false,
-          })
+        const result = await uploadToCloudinary(file, {
+          folder,
+          resourceType: 'image',
+          onProgress: (pct) => {
+            setCurrentPercent(pct)
+          },
+        })
 
-        if (uploadError) {
-          throw uploadError
+        if (result?.secure_url) {
+          uploadedUrls.push(result.secure_url)
         }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from(bucketName)
-          .getPublicUrl(filePath)
-
-        uploadedUrls.push(publicUrl)
       } catch (err: unknown) {
-        console.error('Image upload failed:', err)
-        setErrorMessage(`Failed to upload ${file.name}: ${err instanceof Error ? err.message : 'Unknown error'}`)
+        console.error('Cloudinary image upload failed:', err)
+        setErrorMessage(
+          `Failed to upload ${file.name}: ${err instanceof Error ? err.message : 'Unknown error'}`
+        )
       }
     }
 
@@ -86,7 +89,8 @@ export function ImageUploader({
     }
 
     setUploading(false)
-    setUploadProgress(null)
+    setUploadProgressText(null)
+    setCurrentPercent(0)
     e.target.value = ''
   }
 
@@ -106,10 +110,32 @@ export function ImageUploader({
     onChange(updated)
   }
 
+  const handleSetPrimary = (index: number) => {
+    if (index === 0) return
+    const updated = [...images]
+    const [selected] = updated.splice(index, 1)
+    updated.unshift(selected)
+    onChange(updated)
+  }
+
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+            Property Photos ({images.length}/{maxImages})
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] text-cyan-400 font-semibold">
+            <Cloud size={10} /> Cloudinary CDN
+          </span>
+        </div>
+        <span className="text-[11px] text-text-muted">
+          First photo is used as Cover Photo
+        </span>
+      </div>
+
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+        <div className="flex items-center gap-2.5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
           <AlertCircle size={16} className="shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -122,16 +148,30 @@ export function ImageUploader({
             <div
               key={`${url}-${idx}`}
               className={`group relative aspect-[4/3] rounded-xl overflow-hidden border bg-[#150F30] ${
-                idx === 0 ? 'border-primary ring-2 ring-primary/40' : 'border-white/10'
+                idx === 0 ? 'border-primary ring-2 ring-primary/40 shadow-lg' : 'border-white/10'
               }`}
             >
-              <img src={url} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
+              <img
+                src={url}
+                alt={`Property photo ${idx + 1}`}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
 
               {/* Cover Badge */}
-              {idx === 0 && (
+              {idx === 0 ? (
                 <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-primary text-[#04121a] text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-md">
                   <Star size={10} className="fill-current" /> Cover Photo
                 </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleSetPrimary(idx)}
+                  title="Make Cover Photo"
+                  className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 hover:bg-primary hover:text-black text-white text-[10px] font-medium transition-all opacity-0 group-hover:opacity-100 flex items-center gap-1"
+                >
+                  <Star size={10} /> Set Cover
+                </button>
               )}
 
               {/* Controls on hover */}
@@ -140,7 +180,7 @@ export function ImageUploader({
                   <button
                     type="button"
                     onClick={() => handleMove(idx, 'left')}
-                    title="Move Left (Earlier)"
+                    title="Move Left"
                     className="w-7 h-7 rounded-lg bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-colors"
                   >
                     <ArrowLeft size={14} />
@@ -160,7 +200,7 @@ export function ImageUploader({
                   <button
                     type="button"
                     onClick={() => handleMove(idx, 'right')}
-                    title="Move Right (Later)"
+                    title="Move Right"
                     className="w-7 h-7 rounded-lg bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-colors"
                   >
                     <ArrowRight size={14} />
@@ -174,11 +214,11 @@ export function ImageUploader({
 
       {/* Upload Dropzone */}
       {images.length < maxImages && (
-        <label className="relative flex flex-col items-center justify-center p-6 border-2 border-dashed border-white/15 hover:border-primary/50 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer group">
+        <label className="relative flex flex-col items-center justify-center p-6 sm:p-8 border-2 border-dashed border-white/15 hover:border-primary/60 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] transition-all cursor-pointer group">
           <input
             type="file"
             multiple
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png,image/webp,image/avif"
             disabled={uploading}
             onChange={handleFileUpload}
             className="sr-only"
@@ -193,10 +233,22 @@ export function ImageUploader({
           </div>
 
           <p className="text-sm font-semibold text-white mb-1">
-            {uploading ? uploadProgress || 'Uploading...' : 'Click or Drag images to upload'}
+            {uploading
+              ? `${uploadProgressText || 'Uploading to Cloudinary...'} ${currentPercent}%`
+              : 'Click or Drag photos to upload to Cloudinary'}
           </p>
-          <p className="text-xs text-text-muted">
-            PNG, JPG, or WEBP up to 5MB each ({images.length}/{maxImages} uploaded)
+
+          {uploading && (
+            <div className="w-48 h-1.5 bg-white/10 rounded-full overflow-hidden mt-2">
+              <div
+                className="h-full bg-gradient-to-r from-primary to-cyan-400 transition-all duration-200"
+                style={{ width: `${currentPercent}%` }}
+              />
+            </div>
+          )}
+
+          <p className="text-xs text-text-muted mt-1">
+            JPEG, PNG, WEBP, or AVIF up to 10MB each ({images.length}/{maxImages} uploaded)
           </p>
         </label>
       )}
