@@ -8,10 +8,12 @@ export async function proxy(request: NextRequest) {
     },
   })
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://unwifyqenmopagltuqew.supabase.co'
   const supabaseAnonKey =
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVud2lmeXFlbm1vcGFnbHR1cWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NTYwNzksImV4cCI6MjEwNjUzMjA3OX0.OQnLewVtacUhHaJFumactBcFOG_Wten0tocowEXeYd4'
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return response
