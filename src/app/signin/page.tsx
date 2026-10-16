@@ -45,7 +45,9 @@ function SignInContent() {
     const urlError = searchParams.get('error')
     if (urlError) {
       if (urlError === 'auth_callback_failed') {
-        setErrorMsg('Authentication failed or was cancelled. Please try again.')
+        setErrorMsg('Authentication failed or was cancelled. Please check your Supabase & Google Console settings.')
+      } else if (urlError === 'no_auth_code_returned') {
+        setErrorMsg('No authentication code received. Please ensure Google provider is enabled in your Supabase dashboard.')
       } else {
         setErrorMsg(decodeURIComponent(urlError))
       }

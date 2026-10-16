@@ -88,8 +88,15 @@ export async function GET(request: Request) {
 
       return NextResponse.redirect(new URL(targetDestination, baseUrl))
     }
+
+    if (error) {
+      console.error('Auth callback exchangeCodeForSession error:', error)
+      return NextResponse.redirect(
+        new URL(`/signin?error=${encodeURIComponent(error.message)}`, origin)
+      )
+    }
   }
 
-  // Return the user to signin on failure
-  return NextResponse.redirect(new URL('/signin?error=auth_callback_failed', origin))
+  // Return the user to signin on failure if no code
+  return NextResponse.redirect(new URL('/signin?error=no_auth_code_returned', origin))
 }
