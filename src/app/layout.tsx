@@ -17,14 +17,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://prime-home-kanpur.netlify.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://primehomekanpur.vercel.app"),
   title: "PrimeHomeKanpur — Verified Rental Properties in Kanpur",
   description: "Kanpur's most trusted rental marketplace. Browse 100% physically verified apartments, flats, and houses for rent in Kakadeo, Swaroop Nagar, Civil Lines, and more.",
   keywords: ["rental Kanpur", "flat for rent Kanpur", "house for rent Kanpur", "Kakadeo flat", "Swaroop Nagar apartment", "PrimeHomeKanpur"],
   openGraph: {
     title: "PrimeHomeKanpur — Verified Rental Properties in Kanpur",
     description: "Browse 100% physically verified apartments, flats, and houses for rent in Kanpur. Instant physical visit booking.",
-    url: "https://prime-home-kanpur.netlify.app",
+    url: "https://primehomekanpur.vercel.app",
     siteName: "PrimeHomeKanpur",
     locale: "en_IN",
     type: "website",

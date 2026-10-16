@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { getProperties } from '@/lib/data/properties'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://prime-home-kanpur.netlify.app'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://primehomekanpur.vercel.app'
 
   const staticPages = [
     '',
