@@ -1,12 +1,14 @@
 import { v2 as cloudinary } from 'cloudinary'
 
-// Configure Cloudinary server-side instance
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
-})
+// Configure Cloudinary server-side instance (server-only)
+if (typeof window === 'undefined') {
+  cloudinary.config({
+    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
+  })
+}
 
 export { cloudinary }
 
@@ -24,11 +26,16 @@ export function isCloudinaryConfigured(): boolean {
 /**
  * Generates signature for secure client-side direct uploads.
  * This avoids routing large image/video payloads through Next.js server limits.
+ * STRICT SECURITY: Throws if called on client.
  */
 export function generateCloudinarySignature(params: Record<string, any>) {
+  if (typeof window !== 'undefined') {
+    throw new Error('SECURITY VIOLATION: Cloudinary signing cannot be executed in the browser context.')
+  }
+
   const apiSecret = process.env.CLOUDINARY_API_SECRET
   if (!apiSecret) {
-    throw new Error('CLOUDINARY_API_SECRET is not configured in environment variables.')
+    throw new Error('CLOUDINARY_API_SECRET is not configured in server environment variables.')
   }
 
   const signature = cloudinary.utils.api_sign_request(params, apiSecret)
@@ -37,6 +44,7 @@ export function generateCloudinarySignature(params: Record<string, any>) {
 
 /**
  * Uploads a file buffer directly to Cloudinary (for server-side operations).
+ * STRICT SECURITY: Throws if called on client.
  */
 export async function uploadBufferToCloudinary(
   buffer: Buffer,
@@ -55,6 +63,10 @@ export async function uploadBufferToCloudinary(
   height?: number
   duration?: number
 }> {
+  if (typeof window !== 'undefined') {
+    throw new Error('SECURITY VIOLATION: Direct buffer upload cannot be executed in the browser context.')
+  }
+
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
@@ -88,11 +100,16 @@ export async function uploadBufferToCloudinary(
 
 /**
  * Deletes a Cloudinary asset by public_id.
+ * STRICT SECURITY: Throws if called on client.
  */
 export async function deleteFromCloudinary(
   publicId: string,
   resourceType: 'image' | 'video' | 'raw' = 'image'
 ) {
+  if (typeof window !== 'undefined') {
+    throw new Error('SECURITY VIOLATION: Cloudinary asset deletion cannot be executed in the browser context.')
+  }
+
   return cloudinary.uploader.destroy(publicId, {
     resource_type: resourceType,
   })

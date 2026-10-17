@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, Heart } from 'lucide-react'
 import { Property } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
@@ -95,7 +96,7 @@ export default function PropertyCard({ property, initialIsFavorite = false, onFa
       if (onFavoriteToggle) {
         onFavoriteToggle(property.id, nextState)
       }
-    } catch (err) {
+    } catch {
       // Revert on failure
       setIsFavorite(!nextState)
     } finally {
@@ -131,12 +132,12 @@ export default function PropertyCard({ property, initialIsFavorite = false, onFa
       {/* 4:3 Photo Area with fixed aspect ratio */}
       <div className={`photo ${gradClass} relative overflow-hidden aspect-[4/3] w-full bg-[#140B36]`}>
         {primaryImg ? (
-          <img
+          <Image
             src={primaryImg}
             alt={property.title}
-            width={400}
-            height={300}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />
         ) : (

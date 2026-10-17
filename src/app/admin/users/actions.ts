@@ -26,8 +26,7 @@ async function checkUserRoleChangePermission() {
   const isAuthorized =
     profile?.role === 'ADMIN' ||
     member?.team_role === 'OWNER' ||
-    user.app_metadata?.role === 'admin' ||
-    user.user_metadata?.role === 'admin'
+    user.app_metadata?.role === 'admin'
 
   if (!isAuthorized) {
     throw new Error('Forbidden: Only an Admin or Owner can change user roles.')

@@ -67,6 +67,22 @@ Every table in the PostgreSQL database has RLS enabled with granular policies:
 ### 4.4 Activity Logs Table
 - **IMMUTABLE**: Append-only table for audit events. Updates and deletions are strictly restricted.
 
+### 4.5 Private Document Vault (`verification_documents` & Storage)
+- **PRIVATE STORAGE**: Encrypted bucket `property-documents` is strictly private (no public read).
+- **MAGIC BYTES BINARY VERIFICATION**: Server-side inspection of magic bytes (`%PDF-`, `\x89PNG`, `\xFF\xD8\xFF`) blocks MIME-spoofing and executable uploads.
+- **ACCESS ISOLATION**: Only the document uploader (`user_id = auth.uid()`) and authorized Super Admins can generate short-lived (60-second) signed download URLs.
+- **COMPLIANCE & TAMPER LOCK**: Verified documents cannot be deleted directly by users without administrative escalation.
+
+### 4.6 Newsletter Anti-Harvesting & Cryptographic Tokens
+- **ANTI-HARVESTING**: Subscriber list is completely shielded from public SELECT queries.
+- **GENERIC RESPONSES**: Subscription and unsubscription endpoints return identical generic messages regardless of whether an email address exists, preventing user enumeration.
+- **SECURE TOKENS**: 32-byte cryptographic tokens (`crypto.randomBytes(32).toString('hex')`) protect unsubscribe workflows.
+
+### 4.7 Payments Integrity & Fail-Closed Gateways
+- **FAIL-CLOSED ARCHITECTURE**: Missing `RAZORPAY_KEY_SECRET` immediately halts with HTTP 500 and never marks payments verified.
+- **CONSTANT-TIME HMAC**: Uses `crypto.timingSafeEqual` with SHA-256 HMAC comparison to protect against timing attacks.
+- **HONEST PERSISTENCE**: Pay-on-visit bookings create honest `pending_agent_assignment` records with ₹0 charged online.
+
 ---
 
 ## 5. Layer 4: HTTP Defensive Headers (`next.config.ts` & `src/proxy.ts`)
@@ -94,3 +110,10 @@ Every table in the PostgreSQL database has RLS enabled with granular policies:
 - **Public vs Secret Boundary**:
   - `NEXT_PUBLIC_*`: Allowed for public client consumption (Supabase URL, Anon Key, Site URL).
   - `SUPABASE_SERVICE_ROLE_KEY`, `RAZORPAY_KEY_SECRET`: Strict server-side access only via server components/route handlers.
+
+---
+
+## 7. Anti-Privilege Escalation Architecture
+- **Server-Controlled Authorization**: Authorization evaluates trusted server-controlled `app_metadata` claims or verified database role mappings (`is_admin()`), never client-writable `user_metadata`.
+- **Self-Elevation Mitigation**: RLS triggers block non-admin users from altering their own `role` in the database.
+

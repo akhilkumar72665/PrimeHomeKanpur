@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { MapPin, Clock3, AtSign, Phone } from 'lucide-react'
 import { SocialSquircleRow, WhatsAppLogo } from '@/components/ui/SocialSquircleIcons'
-
+import { NewsletterForm } from '@/components/layout/NewsletterForm'
 
 export default function Footer() {
   return (
@@ -84,23 +84,7 @@ export default function Footer() {
             <p className="text-text-muted text-xs sm:text-sm mb-4 leading-relaxed">
               Get the latest rental listings and market updates in Kanpur delivered straight to your inbox.
             </p>
-            <form className="flex flex-col sm:flex-row gap-2 max-w-md">
-              <input
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                required
-                aria-label="Email address for newsletter"
-                placeholder="Enter your email"
-                className="h-11 flex-1 rounded-xl border border-white/15 bg-[#0A0719] px-4 text-sm text-white placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
-              />
-              <button
-                type="submit"
-                className="btn btn-primary h-11 px-5 text-sm font-bold rounded-xl whitespace-nowrap active:scale-95"
-              >
-                Submit
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
 
           {/* Navigation */}

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { uploadToCloudinary } from '@/lib/cloudinaryUpload'
 import {
   Upload,
@@ -10,7 +11,6 @@ import {
   Star,
   AlertCircle,
   Cloud,
-  CheckCircle2,
 } from 'lucide-react'
 
 interface ImageUploaderProps {
@@ -151,11 +151,12 @@ export function ImageUploader({
                 idx === 0 ? 'border-primary ring-2 ring-primary/40 shadow-lg' : 'border-white/10'
               }`}
             >
-              <img
+              <Image
                 src={url}
                 alt={`Property photo ${idx + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
+                fill
+                sizes="(max-width: 768px) 50vw, 20vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
 
               {/* Cover Badge */}

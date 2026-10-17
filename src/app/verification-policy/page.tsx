@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
-import { ShieldCheck, CheckCircle2, Search, Home, FileText, Camera } from 'lucide-react'
+import { ShieldCheck, CheckCircle2, Home, FileText, Camera } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Property Verification Policy & Standards | PrimeHomeKanpur',

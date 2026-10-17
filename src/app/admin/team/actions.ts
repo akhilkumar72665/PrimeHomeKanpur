@@ -29,8 +29,7 @@ async function getCallerOwnerSession() {
   const isOwnerOrAdmin =
     profile?.role === 'ADMIN' ||
     member?.team_role === 'OWNER' ||
-    user.app_metadata?.role === 'admin' ||
-    user.user_metadata?.role === 'admin'
+    user.app_metadata?.role === 'admin'
 
   if (!isOwnerOrAdmin) {
     throw new Error('Forbidden: Only an OWNER or Platform Admin can manage team members.')

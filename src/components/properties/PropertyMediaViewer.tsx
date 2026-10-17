@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import {
   ChevronLeft,
   ChevronRight,
   Maximize2,
   X,
-  Play,
   Film,
   Image as ImageIcon
 } from 'lucide-react'
@@ -90,11 +90,13 @@ export default function PropertyMediaViewer({
           {/* Main Photo Display */}
           <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl overflow-hidden bg-[#140F2B] border border-white/10 group">
             {validImages.length > 0 ? (
-              <img
+              <Image
                 src={validImages[activeImageIndex]?.image_url}
                 alt={`${title} - Photo ${activeImageIndex + 1}`}
-                className="w-full h-full object-cover transition-transform duration-500"
-                loading="lazy"
+                fill
+                priority={activeImageIndex === 0}
+                sizes="(max-width: 1024px) 100vw, 800px"
+                className="object-cover transition-transform duration-500"
               />
             ) : (
               <div className={`w-full h-full photo ${fallbackGradientClass} flex items-center justify-center`}>
@@ -157,10 +159,12 @@ export default function PropertyMediaViewer({
                       : 'border-white/10 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img
+                  <Image
                     src={img.image_url}
                     alt={`Thumbnail ${idx + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="80px"
+                    className="object-cover"
                   />
                 </button>
               ))}
@@ -213,13 +217,15 @@ export default function PropertyMediaViewer({
           </button>
 
           <div
-            className="relative max-w-5xl max-h-[85vh] w-full flex items-center justify-center"
+            className="relative max-w-5xl h-[80vh] w-full flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
+            <Image
               src={validImages[activeImageIndex]?.image_url}
               alt={title}
-              className="max-h-[80vh] max-w-full object-contain rounded-xl shadow-2xl"
+              fill
+              sizes="(max-width: 1200px) 100vw, 1200px"
+              className="object-contain rounded-xl shadow-2xl"
             />
 
             {validImages.length > 1 && (

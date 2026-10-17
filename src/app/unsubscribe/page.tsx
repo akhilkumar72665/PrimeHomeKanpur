@@ -8,6 +8,7 @@ import { MailX, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react'
 function UnsubscribeContent() {
   const searchParams = useSearchParams()
   const initialEmail = searchParams.get('email') || ''
+  const token = searchParams.get('token') || ''
   const [email, setEmail] = useState(initialEmail)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -15,8 +16,8 @@ function UnsubscribeContent() {
 
   const handleUnsubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email) {
-      setErrorMsg('Please provide a valid email address.')
+    if (!email && !token) {
+      setErrorMsg('Please provide a valid email address or unsubscribe token.')
       return
     }
 
@@ -24,10 +25,14 @@ function UnsubscribeContent() {
     setErrorMsg(null)
 
     try {
+      const payload: { email?: string; token?: string } = {}
+      if (token) payload.token = token
+      if (email) payload.email = email.trim().toLowerCase()
+
       const res = await fetch('/api/newsletter/unsubscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify(payload),
       })
 
       const data = await res.json()

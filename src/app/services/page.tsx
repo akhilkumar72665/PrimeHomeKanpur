@@ -6,8 +6,7 @@ import {
   FileCheck,
   Building2,
   Check,
-  Phone,
-  ArrowRight
+  Phone
 } from 'lucide-react'
 import { OurServicesPill, FindRentalIcon, ListRentalHouseIcon, RenewalsDocIcon } from '@/components/ui/Service3DIcons'
 

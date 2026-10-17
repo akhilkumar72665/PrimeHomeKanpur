@@ -167,5 +167,8 @@ The database is built on PostgreSQL with strict foreign keys, cascade rules, and
 6. **`reviews`**: Verified tenant feedback, star ratings, and moderation flags.
 7. **`activity_logs`**: System-wide administrative audit trail.
 8. **`property_reports`**: User-submitted violation complaints.
-9. **`newsletter_subscribers`**: Email mailing list with unsubscribe tokens.
-10. **`payment_transactions`**: Razorpay order tracking, payment IDs, and verification receipts.
+9. **`newsletter_subscribers`**: Email mailing list with cryptographically secure 32-byte unsubscribe tokens.
+10. **`payment_transactions`**: Razorpay order tracking, payment IDs, honest ledger, and reconciliation records.
+11. **`verification_documents`**: Private encrypted storage references for Aadhaar, electricity bills, and registry papers.
+12. **`notifications`**: Real-time user notifications for visit confirmations, document verifications, and listing approvals.
+13. **`rental_applications`**: Formal tenant rental application workflow linked to property ownership.

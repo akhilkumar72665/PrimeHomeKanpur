@@ -8,13 +8,17 @@ export async function proxy(request: NextRequest) {
     },
   })
 
-  const supabaseUrl =
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://unwifyqenmopagltuqew.supabase.co'
+  // Attach baseline security headers unconditionally
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey =
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVud2lmeXFlbm1vcGFnbHR1cWV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NTYwNzksImV4cCI6MjEwNjUzMjA3OX0.OQnLewVtacUhHaJFumactBcFOG_Wten0tocowEXeYd4'
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
+  // If Supabase environment variables are missing, pass through safely without crashing edge proxy
   if (!supabaseUrl || !supabaseAnonKey) {
     return response
   }
@@ -54,11 +58,6 @@ export async function proxy(request: NextRequest) {
     url.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
-
-  // Attach baseline security headers
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
   return response
 }

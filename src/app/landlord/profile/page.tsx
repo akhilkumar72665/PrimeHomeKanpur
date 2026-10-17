@@ -4,19 +4,48 @@ import React, { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { User, Phone, Mail, Building, Save, CheckCircle2, Shield } from 'lucide-react'
 
-export default function LandlordProfilePage() {
-  const { user, profile } = useAuth()
-  const [fullName, setFullName] = useState(profile?.full_name || 'Landlord Partner')
-  const [phone, setPhone] = useState(profile?.phone || '+91 9151435647')
-  const [whatsapp, setWhatsapp] = useState('+91 9151435647')
-  const [bankAccount, setBankAccount] = useState('State Bank of India · A/C Ending in 8912')
-  const [upiId, setUpiId] = useState('landlord@upi')
-  const [saved, setSaved] = useState(false)
+import { createClient } from '@/lib/supabase/client'
 
-  const handleSave = (e: React.FormEvent) => {
+export default function LandlordProfilePage() {
+  const { user, profile, refreshProfile } = useAuth()
+  const [fullName, setFullName] = useState(profile?.full_name || '')
+  const [phone, setPhone] = useState(profile?.phone || '')
+  const [whatsapp, setWhatsapp] = useState(profile?.phone || '')
+  const [bankAccount, setBankAccount] = useState('Account on file')
+  const [upiId, setUpiId] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const supabase = createClient()
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+    if (!user?.id) return
+    setLoading(true)
+    setErrorMsg(null)
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: fullName.trim(),
+          phone: phone.trim() || null,
+        })
+        .eq('id', user.id)
+
+      setLoading(false)
+
+      if (error) {
+        setErrorMsg('Failed to update landlord profile.')
+      } else {
+        await refreshProfile()
+        setSaved(true)
+        setTimeout(() => setSaved(false), 3000)
+      }
+    } catch (err: any) {
+      setLoading(false)
+      setErrorMsg(err.message || 'Error saving profile.')
+    }
   }
 
   return (

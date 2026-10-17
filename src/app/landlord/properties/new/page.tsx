@@ -1,11 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Building, Upload, ShieldCheck, CheckCircle2, AlertCircle, ArrowLeft, Plus } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import { Building, ShieldCheck, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react'
 
 export default function NewLandlordPropertyPage() {
+  const { isAuthenticated, openAuthModal } = useAuth()
   const [title, setTitle] = useState('')
   const [locality, setLocality] = useState('Kakadeo')
   const [address, setAddress] = useState('')
@@ -19,18 +20,64 @@ export default function NewLandlordPropertyPage() {
   const [description, setDescription] = useState('')
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const router = useRouter()
+  const [createdProperty, setCreatedProperty] = useState<{
+    id: string
+    title: string
+    slug: string
+  } | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setErrorMsg(null)
+
+    if (!isAuthenticated) {
+      openAuthModal('Please sign in to list your property for verification.')
+      return
+    }
+
     setLoading(true)
 
-    // Simulate property submission
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/landlord/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          locality: locality.trim(),
+          address: address.trim(),
+          bhk: Number(bhk),
+          bathrooms: Number(bathrooms),
+          rent: Number(rent),
+          deposit: deposit ? Number(deposit) : null,
+          maintenance: maintenance ? Number(maintenance) : 0,
+          furnishing,
+          tenantType,
+          description: description.trim() || undefined,
+          phone: phone.trim(),
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setLoading(false)
+        setErrorMsg(data.error || 'Failed to submit property listing.')
+        return
+      }
+
       setLoading(false)
+      setCreatedProperty({
+        id: data.property.id,
+        title: data.property.title,
+        slug: data.property.slug,
+      })
       setSuccess(true)
-    }, 1500)
+    } catch (err: any) {
+      setLoading(false)
+      setErrorMsg(err.message || 'A network error occurred while submitting.')
+    }
   }
 
   return (
@@ -58,17 +105,27 @@ export default function NewLandlordPropertyPage() {
             <CheckCircle2 size={32} />
           </div>
           <h3 className="text-xl font-bold text-white mb-2">Property Submitted for Verification!</h3>
-          <p className="text-xs sm:text-sm text-text-secondary leading-relaxed mb-6">
-            Thank you! Our Kanpur listing executive will contact you within 24 hours to schedule the physical walkthrough and finalize your listing.
+          <p className="text-xs sm:text-sm text-text-secondary leading-relaxed mb-4">
+            Thank you! Your listing <strong className="text-white">&ldquo;{createdProperty?.title}&rdquo;</strong> has been saved in <span className="text-purple-300 font-semibold">DRAFT (Pending Review)</span>.
+          </p>
+          <p className="text-xs text-text-muted mb-6 leading-relaxed">
+            Our Kanpur field executive will contact you to schedule the free physical walkthrough, verify documents, and activate your listing on the public marketplace.
           </p>
           <div className="flex items-center justify-center gap-3">
             <Link href="/landlord/properties" className="btn btn-primary px-5 py-2.5 rounded-xl text-xs font-bold">
-              View My Properties
+              View My Listed Properties
             </Link>
           </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-white/10 bg-[#0E0B1F] p-6 sm:p-8">
+          {errorMsg && (
+            <div className="flex items-center gap-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-rose-300">
+              <AlertCircle size={16} className="shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
           {/* Section 1: Basic Details */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-accent-cyan uppercase tracking-wider">
@@ -112,6 +169,8 @@ export default function NewLandlordPropertyPage() {
                   <option value="Barra">Barra</option>
                   <option value="Govind Nagar">Govind Nagar</option>
                   <option value="Vijay Nagar">Vijay Nagar</option>
+                  <option value="Rawatpur">Rawatpur</option>
+                  <option value="Cantt">Cantt</option>
                 </select>
               </div>
             </div>
@@ -201,6 +260,7 @@ export default function NewLandlordPropertyPage() {
                 <input
                   type="number"
                   required
+                  min="500"
                   value={rent}
                   onChange={(e) => setRent(e.target.value)}
                   placeholder="e.g. 18000"
@@ -214,6 +274,7 @@ export default function NewLandlordPropertyPage() {
                 </label>
                 <input
                   type="number"
+                  min="0"
                   value={deposit}
                   onChange={(e) => setDeposit(e.target.value)}
                   placeholder="e.g. 36000"
@@ -227,6 +288,7 @@ export default function NewLandlordPropertyPage() {
                 </label>
                 <input
                   type="number"
+                  min="0"
                   value={maintenance}
                   onChange={(e) => setMaintenance(e.target.value)}
                   placeholder="e.g. 1000"
@@ -282,7 +344,7 @@ export default function NewLandlordPropertyPage() {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary w-full py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-purple-900/50 flex items-center justify-center gap-2"
+              className="btn btn-primary w-full py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-purple-900/50 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? 'Submitting for Verification...' : 'Submit Listing for Free Inspection'}
             </button>

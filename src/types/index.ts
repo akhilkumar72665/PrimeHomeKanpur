@@ -671,3 +671,65 @@ export interface WishlistItem {
   created_at: string
   property?: Property
 }
+
+export type VerificationDocumentType =
+  | 'IDENTITY_PROOF'
+  | 'ADDRESS_PROOF'
+  | 'EMPLOYMENT_PROOF'
+  | 'OWNERSHIP_PROOF'
+  | 'ELECTRICITY_BILL'
+  | 'TAX_RECEIPT'
+  | 'OTHER'
+
+export type VerificationDocumentStatus = 'PENDING_REVIEW' | 'VERIFIED' | 'REJECTED'
+
+export interface VerificationDocument {
+  id: string
+  user_id: string
+  property_id?: string | null
+  document_type: VerificationDocumentType
+  title: string
+  file_name: string
+  storage_path: string
+  file_size_bytes: number
+  mime_type: string
+  status: VerificationDocumentStatus
+  rejection_reason?: string | null
+  verified_by?: string | null
+  verified_at?: string | null
+  created_at: string
+  updated_at: string
+  user_email?: string
+  user_name?: string
+  property_title?: string
+}
+
+export type NotificationType = 'visit' | 'price' | 'document' | 'system' | 'application'
+
+export interface UserNotification {
+  id: string
+  user_id: string
+  title: string
+  message: string
+  type: NotificationType
+  read: boolean
+  link?: string | null
+  created_at: string
+}
+
+export type RentalApplicationStatus = 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'LEASE_GENERATED'
+
+export interface RentalApplication {
+  id: string
+  property_id: string
+  user_id: string
+  move_in_date?: string | null
+  occupants?: number
+  employment_status?: string | null
+  monthly_income?: number | null
+  notes?: string | null
+  status: RentalApplicationStatus
+  created_at: string
+  updated_at: string
+  property?: Property
+}

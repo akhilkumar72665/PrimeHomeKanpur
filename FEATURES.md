@@ -49,36 +49,32 @@ graph LR
 ```
 
 - **Overview Hub**: Quick view of upcoming visits, active tenancy applications, and saved properties.
-- **Visit Tracking (`/dashboard/visits`)**: Status pipeline (`Pending Confirmation` ➔ `Confirmed` ➔ `Completed` ➔ `Cancelled`) with visit reschedule capability.
-- **Saved Wishlist (`/dashboard/wishlist`)**: Live synchronization of bookmarked properties with quick remove and direct visit booking.
-- **Rental Applications (`/dashboard/applications`)**: Stage-by-stage tracker for rental applications submitted to landlords.
-- **Document Locker (`/dashboard/documents`)**: Secure storage for signed rental agreements, rent receipts, and KYC verification copies.
-- **Security & Privacy (`/dashboard/security`)**: Password change, active device session review, and two-factor authentication controls.
+- **Visit Tracking (`/dashboard/visits`)** `[LIVE]`: Direct PostgreSQL query to `property_visits` table with status badges (`Pending`, `Confirmed`, `Completed`, `Cancelled`).
+- **Saved Wishlist (`/dashboard/wishlist`)** `[LIVE]`: Real database synchronization of bookmarked properties with quick remove and direct visit booking.
+- **My Reviews (`/dashboard/reviews`)** `[LIVE]`: Direct query to `reviews` table with moderation status (`Published`, `In Review`, `Rejected`).
+- **Profile Management (`/dashboard/profile`, `/dashboard/security`)** `[LIVE]`: Direct Supabase profile updates and password reset capabilities.
+- **Rental Applications (`/dashboard/applications`)** `[MOCK STUB]`: Currently renders hardcoded sample state (`app-101`). No backend `applications` table or submission form on property pages.
+- **Document Locker (`/dashboard/documents`)** `[MOCK STUB]`: Simulated upload with `setTimeout` and hardcoded masked sample documents. Real encrypted bucket storage is deferred to Phase 2.
+- **Notification Center (`/dashboard/notifications`)** `[MOCK STUB]`: Static sample alerts. No database table or notification engine.
 
 ---
 
 ## 3. Landlord & Property Owner Portal (`/landlord`)
 
-### 3.1 Overview & Cashflow Analytics (`/landlord`)
-- **KPI Metrics**: Active Listings count, Total Inquiries, Scheduled Visits this week, Estimated Monthly Rental Yield.
-- **Recent Leads Table**: Quick actions to reply, call, or archive prospective tenant inquiries.
+### 3.1 Overview & Cashflow Analytics (`/landlord`) `[MOCK STUB]`
+- **KPI Metrics**: Hardcoded counters for Active Listings, Leads, Visits, and Rental Cashflow.
+- **Recent Leads Table**: Hardcoded mock inquiries; not tied to authenticated landlord properties.
 
-### 3.2 Property Onboarding & Listing Management (`/landlord/properties`)
-- **Multi-Step Creation Wizard (`/landlord/properties/new`)**:
-  - Title, description, slug auto-generation.
-  - Granular pricing (Rent, Security Deposit, Maintenance, Brokerage terms).
-  - Physical specifications (Locality, Address, BHK, Bathrooms, Balconies, Floor, Total Floors, Carpet Area).
-  - Amenity selector (25+ granular amenities).
-  - Photo upload with drag-and-drop integration to Supabase Storage.
-- **Listing Status Manager**: Instant toggles (`Available`, `Rented Out`, `Under Review`, `Inactive`).
+### 3.2 Property Onboarding & Listing Management (`/landlord/properties`) `[MOCK STUB]`
+- **Creation Form (`/landlord/properties/new`)**: Interactive UI exists, but submission executes a client-side `setTimeout` simulation rather than inserting into Supabase `properties`.
+- **Listing Status Manager**: Displays static mock property cards (`Gurudev Chauraha 2BHK`).
 
-### 3.3 Leads, Inquiries & Visits (`/landlord/leads`, `/landlord/visits`)
-- **Tenant Lead Inbox**: Contact info, tenant type (Student, Family, Corporate), requested move-in date, message thread.
-- **Appointment Manager**: Approve, reject, or propose alternate visit timings for tenant visit requests.
+### 3.3 Leads, Inquiries & Visits (`/landlord/leads`, `/landlord/visits`) `[MOCK STUB]`
+- **Tenant Lead Inbox & Appointment Manager**: Displays sample tenant inquiries and visit requests in local state.
 
-### 3.4 Payments & Documents (`/landlord/payments`, `/landlord/documents`)
-- **Rent Invoices & Payment Ledger**: Track tenant rent payments, security deposits, and outstanding dues.
-- **Digital Rental Agreements**: Upload and manage lease agreements and tenant police verification acknowledgments.
+### 3.4 Payments & Documents (`/landlord/payments`, `/landlord/documents`) `[MOCK STUB]`
+- **Payment Ledger**: Static mock records of brokerage settlements and rent receipts.
+- **Document Vault**: Unbound `<input type="file">` without upload handler.
 
 ---
 
@@ -87,33 +83,38 @@ graph LR
 ```mermaid
 graph TD
     Admin["Super Admin Panel (/admin)"]
-    Admin --> Analytics["KPI Analytics & Revenue"]
-    Admin --> PropMod["Property Moderation (/admin/properties)"]
-    Admin --> UserRBAC["Users & Staff RBAC (/admin/users, /admin/team)"]
-    Admin --> Verif["KYC Verification Desk (/admin/verifications)"]
-    Admin --> Reports["Listing Complaints Desk (/admin/reports)"]
-    Admin --> InqDesk["Inquiries & Leads Desk (/admin/inquiries)"]
-    Admin --> AuditLog["Activity & Security Audit (/admin/activity)"]
-    Admin --> NewsDesk["Newsletter Subscribers (/admin/newsletter)"]
-    Admin --> PayDesk["Payment Ledger (/admin/payments)"]
+    Admin --> Analytics["KPI Analytics & Revenue [LIVE]"]
+    Admin --> PropMod["Property Moderation [LIVE]"]
+    Admin --> UserRBAC["Users & Staff RBAC [LIVE]"]
+    Admin --> Verif["KYC Verification Desk [MOCK]"]
+    Admin --> Reports["Listing Complaints Desk [LIVE]"]
+    Admin --> InqDesk["Inquiries & Leads Desk [LIVE]"]
+    Admin --> AuditLog["Activity & Security Audit [LIVE]"]
+    Admin --> NewsDesk["Newsletter Subscribers [LIVE]"]
+    Admin --> PayDesk["Payment Ledger [MOCK]"]
 ```
 
-- **Executive Analytics**: Real-time stats across all properties, tenants, landlords, and agents.
-- **Property Moderation**: Review submitted properties, toggle physical verification status, assign verified badges, or request revisions.
-- **User & RBAC Controls**: Promote users to `agent`, `landlord`, or `admin`; suspend problematic accounts.
-- **Verification Desk**: Review Aadhaar/Govt ID and property ownership documents submitted by landlords.
-- **Reports & Safety Center**: Review user-submitted violation reports, inspect flagged listings, and take disciplinary actions.
-- **Activity & Security Audit Trail**: Real-time queryable audit logs recording all administrative actions.
-- **Newsletter & Marketing Center**: Manage subscribers and export subscriber lists.
+- **Executive Analytics (`/admin`)** `[LIVE]`: Real-time KPI counts powered by Supabase RPC and table aggregations.
+- **Property Moderation (`/admin/properties`)** `[LIVE]`: Functional CRUD operations, publish/unpublish toggles, and deletion with cascading foreign keys.
+- **Inquiries Desk (`/admin/inquiries`)** `[LIVE]`: Live management of contact and rental inquiry records.
+- **Review Moderation (`/admin/reviews`)** `[LIVE]`: Approve or reject submitted user reviews with real-time database updates.
+- **Locality Manager (`/admin/locations`)** `[LIVE]`: Create and edit Kanpur locality hubs directly in PostgreSQL.
+- **Users & Team RBAC (`/admin/users`, `/admin/team`)** `[LIVE]`: Manage user profiles and granular staff role delegations (`OWNER`, `MANAGER`, `EDITOR`, `SUPPORT`).
+- **Reports & Safety Center (`/admin/reports`)** `[LIVE]`: Live intake of user-flagged property violations.
+- **Activity & Security Audit Trail (`/admin/activity`)** `[LIVE]`: Queryable audit log backed by `activity_logs` table.
+- **Verification Desk (`/admin/documents`, `/admin/verifications`)** `[MOCK STUB]`: Mock document inspection with browser `alert()` popups.
+- **Payment Ledger (`/admin/payments`)** `[MOCK STUB]`: Static transaction table; not synced with Razorpay or database.
 
 ---
 
 ## 5. Security & Legal Infrastructure
-- **Cookie Consent Banner (`CookieConsentBanner.tsx`)**: GDPR & Indian Digital Personal Data Protection (DPDP) compliant cookie banner with customizable preferences.
-- **Comprehensive Legal Suite**:
+- **Cookie Consent Banner (`CookieConsentBanner.tsx`)** `[LIVE]`: GDPR & Indian Digital Personal Data Protection (DPDP) compliant cookie banner with customizable preferences.
+- **Comprehensive Legal Suite** `[LIVE]`:
   - Privacy Policy (`/privacy-policy`)
   - Terms of Service (`/terms`)
   - Refund Policy (`/refund-policy`)
   - Verification & Safety Policy (`/verification-policy`)
   - Disclaimer (`/disclaimer`)
-- **Rate Limiting Engine (`rateLimit.ts`)**: In-memory token bucket rate limiting on sensitive API endpoints (Contact, Newsletter, Report, Payments).
+- **Rate Limiting Engine (`rateLimit.ts`)** `[LIVE]`: In-memory token bucket rate limiting on sensitive API endpoints (Contact, Newsletter, Report, Payments).
+- **Physical Lease Assistance** `[OFFLINE SERVICE]`: On-ground assisted drafting of standard 11-month tenancy agreements and Kanpur Nagar police verification support. (Digital in-browser e-signatures and stamp duty automation are deferred to future phases pending legal compliance).
+

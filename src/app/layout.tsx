@@ -40,10 +40,10 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "RealEstateAgent",
   "name": "PrimeHomeKanpur",
-  "image": "https://prime-home-kanpur.netlify.app/favicon.ico",
+  "image": "https://primehomekanpur.vercel.app/favicon.ico",
   "telephone": "+919151435647",
   "email": "primehomekanpur@gmail.com",
-  "url": "https://prime-home-kanpur.netlify.app",
+  "url": "https://primehomekanpur.vercel.app",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Awadhpuri, Near Sales Tax Office",

@@ -36,8 +36,7 @@ async function checkInquiriesPermission() {
     hasPerm ||
     profile?.role === 'ADMIN' ||
     member?.is_active === true ||
-    user.app_metadata?.role === 'admin' ||
-    user.user_metadata?.role === 'admin'
+    user.app_metadata?.role === 'admin'
 
   if (!isAuthorized) {
     throw new Error('Forbidden: You do not have permission to manage inquiries.')

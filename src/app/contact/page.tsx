@@ -61,17 +61,10 @@ export default function ContactPage() {
       setLoading(false)
 
       if (error) {
-        // Fallback friendly success
         setStatusMsg({
-          type: 'success',
-          text: 'Thank you! Your message has been sent to our Kanpur team. We will call you back shortly.',
+          type: 'error',
+          text: 'Unable to deliver your message right now. Please call or WhatsApp our Kanpur desk at +91 9151435647.',
         })
-        setName('')
-        setEmail('')
-        setPhone('')
-        setMessage('')
-        setLocation('')
-        setConsent(false)
       } else {
         setStatusMsg({
           type: 'success',
@@ -87,8 +80,8 @@ export default function ContactPage() {
     } catch (err: any) {
       setLoading(false)
       setStatusMsg({
-        type: 'success',
-        text: 'Thank you! Your inquiry has been registered. Our team will contact you at +91 9151435647.',
+        type: 'error',
+        text: 'A network error occurred. Please contact us directly at +91 9151435647 or primehomekanpur@gmail.com.',
       })
     }
   }

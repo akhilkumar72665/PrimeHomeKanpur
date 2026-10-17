@@ -1,0 +1,46 @@
+name: CI - Security, Types & Build Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Least-privilege permissions: read-only access to repository contents
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify Code Quality & Security Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      # Non-sensitive synthetic build-time configuration for CI verification
+      NEXT_PUBLIC_SITE_URL: "https://primehomekanpur.vercel.app"
+      NEXT_PUBLIC_SUPABASE_URL: "https://placeholder-ci-project.supabase.co"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder-ci-anon-key"
+      NODE_ENV: "production"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies (reproducible clean install)
+        run: npm ci
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Run security & regression test suites (node:test)
+        run: npm test
+
+      - name: Verify production build
+        run: npm run build

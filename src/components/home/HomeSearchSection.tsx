@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, MapPin, Home, IndianRupee, Users, SlidersHorizontal, X, Check, ArrowRight } from 'lucide-react'
+import { Search, MapPin, Home, IndianRupee, Users, SlidersHorizontal, X } from 'lucide-react'
 
 const KANPUR_LOCATIONS = [
   'All Kanpur areas',

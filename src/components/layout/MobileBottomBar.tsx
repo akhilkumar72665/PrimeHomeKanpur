@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Phone, Search, Home } from 'lucide-react'
+import { Phone, Search } from 'lucide-react'
 import { WhatsAppLogo } from '@/components/ui/SocialSquircleIcons'
 
 export default function MobileBottomBar() {

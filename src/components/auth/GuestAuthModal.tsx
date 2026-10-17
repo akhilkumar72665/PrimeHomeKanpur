@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { X, Lock, Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
 
@@ -40,7 +39,6 @@ export default function GuestAuthModal() {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
-  const router = useRouter()
 
   if (!authModalOpen) return null
 

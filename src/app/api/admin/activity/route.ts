@@ -47,8 +47,7 @@ export async function GET(request: NextRequest) {
     const isAdmin =
       profile?.role === 'ADMIN' ||
       teamMember?.is_active === true ||
-      user.app_metadata?.role === 'admin' ||
-      user.user_metadata?.role === 'admin'
+      user.app_metadata?.role === 'admin'
 
     if (!isAdmin) {
       return NextResponse.json(

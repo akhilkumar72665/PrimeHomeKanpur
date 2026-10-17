@@ -69,10 +69,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('is_active', true)
         .maybeSingle()
 
-      const resolvedTeamRole = (claimedRole || memberData?.team_role || (data?.role === 'ADMIN' ? 'OWNER' : null)) as TeamRole | null
+      const isAppAdmin = authUser.app_metadata?.role === 'admin'
+      const resolvedTeamRole = (claimedRole || memberData?.team_role || (data?.role === 'ADMIN' || isAppAdmin ? 'OWNER' : null)) as TeamRole | null
       setTeamRole(resolvedTeamRole)
 
-      const isAdminRole = !!claimedRole || memberData?.is_active || data?.role === 'ADMIN'
+      const isAdminRole = !!claimedRole || memberData?.is_active || data?.role === 'ADMIN' || isAppAdmin
 
       if (error || !data) {
         const defaultProfile: UserProfile = {

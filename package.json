@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test tests/security/*.test.mjs"
+  },
+  "overrides": {
+    "braces": "^3.0.3"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

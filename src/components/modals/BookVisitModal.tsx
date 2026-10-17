@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { createClient } from '@/lib/supabase/client'
 import { Property } from '@/types'
-import { X, Calendar, Clock, MessageSquare, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react'
+import { X, Calendar, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react'
 
 interface BookVisitModalProps {
   property: Property
@@ -14,14 +13,17 @@ interface BookVisitModalProps {
 }
 
 export default function BookVisitModal({ property, isOpen, onClose, onSuccess }: BookVisitModalProps) {
-  const { user, isAuthenticated, openAuthModal } = useAuth()
+  const { isAuthenticated, openAuthModal } = useAuth()
   const [preferredDate, setPreferredDate] = useState('')
   const [preferredTime, setPreferredTime] = useState('Morning (10:00 AM - 1:00 PM)')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const supabase = createClient()
+  const [confirmedBooking, setConfirmedBooking] = useState<{
+    preferredDate: string
+    preferredTime: string
+  } | null>(null)
 
   if (!isOpen) return null
 
@@ -43,35 +45,47 @@ export default function BookVisitModal({ property, isOpen, onClose, onSuccess }:
     setLoading(true)
 
     try {
-      const { error } = await supabase
-        .from('property_visits')
-        .insert({
-          user_id: user!.id,
-          property_id: property.id,
-          preferred_date: preferredDate,
-          preferred_time: preferredTime,
-          message: message || null,
-          status: 'pending',
-        })
+      const res = await fetch('/api/visits/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          propertyId: property.id,
+          preferredDate,
+          preferredTime,
+          message: message.trim() || undefined,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setLoading(false)
+        setErrorMsg(data.error || 'Failed to submit visit request. Please try again.')
+        return
+      }
 
       setLoading(false)
-
-      if (error) {
-        setErrorMsg(error.message || 'Failed to submit visit request.')
-      } else {
-        setSuccess(true)
-        if (onSuccess) onSuccess()
-      }
+      setConfirmedBooking({
+        preferredDate,
+        preferredTime,
+      })
+      setSuccess(true)
+      if (onSuccess) onSuccess()
     } catch (err: any) {
       setLoading(false)
-      setErrorMsg(err.message || 'An error occurred while booking.')
+      setErrorMsg(err.message || 'A network error occurred while booking.')
     }
   }
 
-  // Get tomorrow's date string for min date
+  // Get tomorrow's date string for min date (minimum 1 day in advance)
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
   const minDate = tomorrow.toISOString().split('T')[0]
+
+  // Max date (up to 30 days in advance)
+  const maxDateObj = new Date()
+  maxDateObj.setDate(maxDateObj.getDate() + 30)
+  const maxDate = maxDateObj.toISOString().split('T')[0]
 
   return (
     <div
@@ -95,15 +109,35 @@ export default function BookVisitModal({ property, isOpen, onClose, onSuccess }:
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
               <CheckCircle2 size={32} />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Visit Request Submitted!</h3>
-            <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto mb-6">
-              Our Kanpur listing executive will contact you to confirm the schedule for{' '}
+            <h3 className="text-xl font-bold text-white mb-2">Physical Visit Confirmed!</h3>
+            <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto mb-4">
+              Your appointment is recorded for{' '}
               <span className="text-white font-semibold">{property.title}</span>.
             </p>
-            <div className="bg-white/5 rounded-xl p-3 text-xs text-text-muted mb-6 border border-white/5">
-              Visit charge: ₹300 payable upon physical visit · You can track status in{' '}
+
+            {confirmedBooking && (
+              <div className="bg-white/[0.03] border border-white/10 rounded-xl p-3.5 text-xs text-left space-y-1.5 mb-5 max-w-sm mx-auto">
+                <div className="flex items-center justify-between text-text-muted">
+                  <span>Scheduled Date:</span>
+                  <span className="text-white font-medium">{confirmedBooking.preferredDate}</span>
+                </div>
+                <div className="flex items-center justify-between text-text-muted">
+                  <span>Slot Window:</span>
+                  <span className="text-white font-medium">{confirmedBooking.preferredTime}</span>
+                </div>
+                <div className="flex items-center justify-between text-text-muted">
+                  <span>Status:</span>
+                  <span className="text-emerald-400 font-semibold uppercase text-[11px]">Pending Agent Assignment</span>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-purple-950/40 rounded-xl p-3 text-xs text-text-secondary mb-6 border border-purple-800/30 leading-relaxed text-left">
+              <span className="text-white font-semibold block mb-0.5">Pay-on-Visit Model:</span>
+              ₹300 visit fee is payable directly on-site to our Kanpur listing executive during the walkthrough. You can track tour status in{' '}
               <span className="text-accent-cyan font-medium">My Visits</span>.
             </div>
+
             <button
               onClick={() => {
                 setSuccess(false)
@@ -136,13 +170,14 @@ export default function BookVisitModal({ property, isOpen, onClose, onSuccess }:
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-text-secondary mb-1.5">
-                  Preferred Date
+                  Preferred Date (Advance Booking)
                 </label>
                 <div className="relative">
                   <input
                     type="date"
                     required
                     min={minDate}
+                    max={maxDate}
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
                     className="w-full h-11 px-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-sm focus:outline-none focus:border-primary transition-colors [color-scheme:dark]"
@@ -182,7 +217,7 @@ export default function BookVisitModal({ property, isOpen, onClose, onSuccess }:
               <div className="rounded-xl bg-purple-950/40 border border-purple-800/30 p-3 text-xs text-text-secondary flex items-start gap-2.5">
                 <ShieldCheck size={16} className="text-accent-cyan shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-white font-semibold">Transparent Fees:</span> ₹300 visit charge, 15 days brokerage upon closing deal, free phone consultation.
+                  <span className="text-white font-semibold">Transparent Pricing:</span> Free online reservation. Standard ₹300 visit fee is collected on-site by our field agent during the walkthrough. 15 days brokerage only upon finalized lease.
                 </div>
               </div>
 
@@ -191,7 +226,7 @@ export default function BookVisitModal({ property, isOpen, onClose, onSuccess }:
                 disabled={loading}
                 className="w-full h-11 rounded-xl bg-gradient-to-r from-primary via-purple-600 to-accent-cyan text-white font-semibold text-sm hover:opacity-95 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-purple-900/40 mt-2"
               >
-                {loading ? 'Submitting Request...' : 'Confirm Visit Booking'}
+                {loading ? 'Submitting Reservation...' : 'Confirm Physical Tour Booking'}
               </button>
             </form>
           </div>

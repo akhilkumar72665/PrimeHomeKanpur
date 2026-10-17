@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import {
-  Phone,
   User,
   Building2,
   Heart,
@@ -15,7 +14,6 @@ import {
   Shield,
   ChevronDown,
   LayoutDashboard,
-  Sparkles
 } from 'lucide-react'
 
 const navItems = [
