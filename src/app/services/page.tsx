@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import HeroBackground from '@/components/ui/HeroBackground'
 import {
   ShieldCheck,
   FileCheck,
@@ -17,8 +18,14 @@ export default function ServicesPage() {
 
       <main>
         {/* 1. Page Hero */}
-        <section className="page-hero">
-          <div className="wrap">
+        <section className="page-hero relative overflow-hidden">
+          <HeroBackground
+            src="/images/heroes/services_hero.jpg"
+            alt="Futuristic Skyscrapers and Waterfront in Kanpur"
+            priority
+            opacity="opacity-60 sm:opacity-80"
+          />
+          <div className="wrap relative z-10">
             <div className="breadcrumbs">
               <Link href="/">Home</Link>
               <span>/</span>

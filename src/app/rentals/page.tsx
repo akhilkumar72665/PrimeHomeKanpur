@@ -5,6 +5,7 @@ import PropertyCard from '@/components/cards/PropertyCard'
 import HomeSearchSection from '@/components/home/HomeSearchSection'
 import { getProperties } from '@/lib/data/properties'
 import { createClient } from '@/lib/supabase/server'
+import HeroBackground from '@/components/ui/HeroBackground'
 import { Search, Heart, Phone, ArrowRight, Check, Calendar, Key } from 'lucide-react'
 import { Metadata } from 'next'
 
@@ -127,8 +128,14 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
 
       <main>
         {/* 1. Page Hero */}
-        <section className="page-hero">
-          <div className="wrap">
+        <section className="page-hero relative overflow-hidden">
+          <HeroBackground
+            src={settings.bannerImage || '/images/heroes/rentals_hero.jpg'}
+            alt="High-Rise Luxury Residential Towers in Kanpur"
+            priority
+            opacity="opacity-60 sm:opacity-80"
+          />
+          <div className="wrap relative z-10">
             {/* Breadcrumb */}
             <div className="breadcrumbs">
               <Link href="/">Home</Link>

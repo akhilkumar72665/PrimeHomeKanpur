@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import HeroBackground from '@/components/ui/HeroBackground'
 import { Phone, Mail, ArrowRight } from 'lucide-react'
 
 export default function FAQPage() {
@@ -55,8 +56,14 @@ export default function FAQPage() {
 
       <main>
         {/* 1. Page Hero */}
-        <section className="page-hero">
-          <div className="wrap">
+        <section className="page-hero relative overflow-hidden">
+          <HeroBackground
+            src="/images/heroes/faq_hero.jpg"
+            alt="Sophisticated Library and Lounge in Kanpur"
+            priority
+            opacity="opacity-60 sm:opacity-80"
+          />
+          <div className="wrap relative z-10">
             <div className="breadcrumbs">
               <Link href="/">Home</Link>
               <span>/</span>

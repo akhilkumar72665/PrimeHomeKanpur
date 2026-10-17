@@ -1,10 +1,12 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/cards/PropertyCard'
 import LocationAreaCard from '@/components/cards/LocationAreaCard'
 import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter'
 import HomeSearchSection from '@/components/home/HomeSearchSection'
+import HeroBackground from '@/components/ui/HeroBackground'
 import { getFeaturedProperties } from '@/lib/data/properties'
 import { popularAreas } from '@/lib/data/areas'
 import { Star, Shield, Clock, Award, Check, ArrowRight, Search } from 'lucide-react'
@@ -19,8 +21,14 @@ export default async function HomePage() {
 
       <main className="flex-1">
         {/* 1. Hero Section */}
-        <section className="hero py-12 md:py-20" id="top">
-          <div className="wrap hero-inner max-w-7xl mx-auto">
+        <section className="hero py-12 md:py-20 relative overflow-hidden" id="top">
+          <HeroBackground
+            src="/images/heroes/home_hero.jpg"
+            alt="Luxury Kanpur Penthouse Living Room"
+            priority
+            opacity="opacity-60 sm:opacity-80"
+          />
+          <div className="wrap hero-inner max-w-7xl mx-auto relative z-10">
             {/* Trusted Avatar Stack */}
             <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-6">
               <div className="flex -space-x-2 shrink-0">
@@ -226,8 +234,35 @@ export default async function HomePage() {
           <div className="wrap">
             <div className="why-grid items-center gap-12">
               <div className="relative w-full aspect-[4/3] max-w-md mx-auto lg:max-w-none">
-                <div className="absolute top-0 left-0 w-[80%] h-[80%] rounded-3xl bg-gradient-to-br from-[#3b0764] via-[#581c87] to-[#7c3aed] border-2 border-violet/30 shadow-[0_20px_50px_rgba(124,58,237,0.35)]" />
-                <div className="absolute bottom-0 right-0 w-[80%] h-[80%] rounded-3xl bg-gradient-to-br from-[#0f766e] via-[#0d9488] to-[#00c2d9] border-2 border-primary/40 shadow-[0_25px_60px_rgba(0,194,217,0.25)] p1" />
+                {/* Back card - Illuminated luxury architecture */}
+                <div className="absolute top-0 left-0 w-[82%] h-[82%] rounded-3xl overflow-hidden border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] group">
+                  <Image
+                    src="/images/features/luxury_building.jpg"
+                    alt="Luxury residential estate architecture"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 80vw, 420px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07050F]/75 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 bg-[#0E0A20]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-[11px] font-semibold text-white flex items-center gap-1.5 shadow-lg">
+                    <Shield className="w-3.5 h-3.5 text-primary" /> Verified Estates
+                  </div>
+                </div>
+
+                {/* Front overlapping card - Sunlit modern interior */}
+                <div className="absolute bottom-0 right-0 w-[76%] h-[76%] rounded-3xl overflow-hidden border-2 border-white/20 shadow-[0_30px_70px_rgba(0,0,0,0.7)] group">
+                  <Image
+                    src="/images/features/modern_interior.jpg"
+                    alt="Sunlit modern luxury apartment interior"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 80vw, 400px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07050F]/75 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 bg-[#0E0A20]/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 text-xs font-semibold text-white flex items-center gap-1.5 shadow-lg">
+                    <Award className="w-3.5 h-3.5 text-[#00C2D9]" /> 100% Ready To Move
+                  </div>
+                </div>
               </div>
 
               <div>

@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnimatedStatCounter from '@/components/ui/AnimatedStatCounter'
-import { Check, Target, Eye, Heart, Users, ArrowRight } from 'lucide-react'
+import HeroBackground from '@/components/ui/HeroBackground'
+import { Check, Target, Eye, Heart, Users, ArrowRight, Building2, Home } from 'lucide-react'
 
 export default function AboutPage() {
   return (
@@ -11,8 +13,14 @@ export default function AboutPage() {
 
       <main>
         {/* 1. Page Hero */}
-        <section className="page-hero">
-          <div className="wrap">
+        <section className="page-hero relative overflow-hidden">
+          <HeroBackground
+            src="/images/heroes/about_hero.jpg"
+            alt="Kanpur Riverfront & Cityscape Twilight View"
+            priority
+            opacity="opacity-60 sm:opacity-80"
+          />
+          <div className="wrap relative z-10">
             <div className="breadcrumbs">
               <Link href="/">Home</Link>
               <span>/</span>
@@ -33,9 +41,45 @@ export default function AboutPage() {
         {/* 2. Story Section */}
         <section className="sect bg-bg">
           <div className="wrap">
-            <div className="about items-center gap-12">
-              {/* Visual Block with diagonal pattern */}
-              <div className="art violet" />
+            <div className="about items-center gap-10 md:gap-14">
+              {/* Dual Visual Panels matching real_estate reference */}
+              <div className="grid grid-cols-2 gap-4 h-[380px] sm:h-[440px] md:h-[480px]">
+                {/* Panel 1 - Luxury Apartment Lobby */}
+                <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group -translate-y-2 sm:-translate-y-3">
+                  <Image
+                    src="/images/story/apartment_lobby.jpg"
+                    alt="Luxury residential reception and lobby in Kanpur"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 50vw, 280px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07050F]/80 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3 bg-[#0E0A20]/80 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white">
+                    <p className="text-xs font-bold flex items-center gap-1.5 text-primary">
+                      <Building2 className="w-3.5 h-3.5" /> Concierge & Verified
+                    </p>
+                    <p className="text-[10px] text-text-muted mt-0.5">Physical check for every home</p>
+                  </div>
+                </div>
+
+                {/* Panel 2 - Modern Villa Exterior at Dusk */}
+                <div className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group translate-y-2 sm:translate-y-3">
+                  <Image
+                    src="/images/story/modern_villa.jpg"
+                    alt="Modern residential villa at twilight in Kanpur"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 50vw, 280px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07050F]/80 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3 bg-[#0E0A20]/80 backdrop-blur-md p-2.5 rounded-xl border border-white/10 text-white">
+                    <p className="text-xs font-bold flex items-center gap-1.5 text-[#00C2D9]">
+                      <Home className="w-3.5 h-3.5" /> 40+ Neighborhoods
+                    </p>
+                    <p className="text-[10px] text-text-muted mt-0.5">From Civil Lines to Kalyanpur</p>
+                  </div>
+                </div>
+              </div>
 
               {/* Story Content */}
               <div>

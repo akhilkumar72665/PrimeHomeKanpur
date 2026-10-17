@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import HeroBackground from '@/components/ui/HeroBackground'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import {
@@ -92,8 +93,14 @@ export default function ContactPage() {
 
       <main>
         {/* 1. Page Hero */}
-        <section className="page-hero">
-          <div className="wrap">
+        <section className="page-hero relative overflow-hidden">
+          <HeroBackground
+            src="/images/heroes/contact_hero.jpg"
+            alt="Kanpur Luxury Residential Facade at Dusk"
+            priority
+            opacity="opacity-60 sm:opacity-80"
+          />
+          <div className="wrap relative z-10">
             <div className="breadcrumbs">
               <Link href="/">Home</Link>
               <span>/</span>
