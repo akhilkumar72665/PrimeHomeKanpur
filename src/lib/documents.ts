@@ -65,12 +65,17 @@ export function validateDocumentMagicBytes(buffer: Buffer): {
 
 /**
  * Sanitizes uploaded file names by stripping path traversal sequences and dangerous characters.
+ * Cross-platform compatible (normalizes both Windows \ and POSIX / separators).
  */
 export function sanitizeDocumentFileName(fileName: string): string {
-  const base = path.basename(fileName).trim()
-  // Strip null bytes and non-printable characters
+  // Normalize both Windows and POSIX separators to defend against path traversal on all operating systems
+  const normalized = (fileName || '').replace(/\\/g, '/')
+  const base = path.posix.basename(normalized).trim()
+
+  // Strip null bytes, directory climbing artifacts, and dangerous characters
   const clean = base
     .replace(/\0/g, '')
+    .replace(/\.\.+/g, '')
     .replace(/[^a-zA-Z0-9._-]/g, '_')
     .replace(/_+/g, '_')
     .substring(0, 100)
